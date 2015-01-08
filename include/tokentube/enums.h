@@ -1,0 +1,62 @@
+#ifndef __TT_LIBRARY_ENUMS_H__
+#define __TT_LIBRARY_ENUMS_H__
+
+
+typedef enum {
+	TT_LOG__UNDEFINED = 0,
+	TT_LOG__FATAL = 1,
+	TT_LOG__ERROR = 2,
+	TT_LOG__WARN = 3,
+	TT_LOG__INFO = 4
+} tt_loglevel_t;
+
+
+typedef enum {
+	TT_DEBUG__UNDEFINED = 0,
+	TT_DEBUG__VERBOSITY1 = 1,
+	TT_DEBUG__VERBOSITY2 = 2,
+	TT_DEBUG__VERBOSITY3 = 3,
+	TT_DEBUG__VERBOSITY4 = 4,
+	TT_DEBUG__VERBOSITY5 = 5,
+	TT_DEBUG__TRACE = 9
+} tt_debuglevel_t;
+
+
+typedef enum {
+	TT_STATUS__UNDEFINED = 0,
+	TT_STATUS__YES = 1,
+	TT_STATUS__NO = 2
+} tt_status_t;
+
+
+typedef enum {
+	TT_RUNTIME__UNDEFINED = 0,
+	TT_RUNTIME__PBA = 1,
+	TT_RUNTIME__STANDARD = 2
+} tt_runtime_t;
+
+
+typedef enum {
+	TT_FILE__UNDEFINED = 0,
+	TT_FILE__CONFIG_PBA = 1,
+	TT_FILE__CONFIG_STANDARD = 2,
+	TT_FILE__USER = 3,
+	TT_FILE__OTP = 4,
+	TT_FILE__HELPDESK = 5
+} tt_file_t;
+
+
+typedef enum {
+	TT_EVENT__UNDEFINED = 0,
+	TT_EVENT__USER_CREATED = 1,
+	TT_EVENT__USER_VERIFIED = 2,
+	TT_EVENT__USER_UPDATED = 3,
+	TT_EVENT__USER_DELETED = 4,
+	TT_EVENT__OTP_CREATED = 5,
+	TT_EVENT__OTP_APPLIED = 6,
+	TT_EVENT__OTP_DELETED = 7
+} tt_event_t;
+
+
+#endif /* __TT_LIBRARY_ENUMS_H__ */
+

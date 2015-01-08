@@ -1,0 +1,41 @@
+This document describes the cryptographic concepts/relations as they are used by tokentube.
+
+Item 1: User Key Files (/boot/tokentube/user/*)
+- the filename is the hash of the username (algorithm is configurable)
+- file contents are
+  - the encrypted LUKS key (cipher and key-derivative are configurable)
+  - a hash value acting as a verifier (for a given password)
+
+Item 2a: One-Time-Password File / Client (/boot/tokentube/otp/*)
+- the filename is the hash of the identifier (algorithm is configurable)
+- file contents are
+  - a hash derivation of the LUKS key
+  - the number of bits to use for the challenge/response-cycle (this is thus
+    the upper limit of the cryptographic strength of the C/R-cycle...upper
+    limit implies that bad entropy might further impact this limit)
+
+Item 2b: One-Time-Password File / Helpdesk (located at helpdesk)
+- contains the LUKS-key, the bit strength to use and the current iteration count
+
+Item 2c: Challenge-Response/One-Time-Password Protocol
+- client (PBA) randomly generates a challenge-code (according to the configured
+  bit strength ("otp|bits")
+- server (helpdesk) calculates a corresponding response-code
+  - server has LUKS key in plaintext: hashes n-times the LUKS key according to
+    current hash-depths (first OTP 1, then +1 for each request)
+  - server verifies that the first block of the challenge-code matches crc16 of
+    the calculated hash-value (usability improvement)
+  - server calculates response: challenge ^ hash-value ^ LUKS-key 
+- client (askpass) XOR's the challenge, the response and the hash-value stored
+  in the OTP-file ("luks|data")
+
+
+General Aspects
+- the encryption algorithm is configurable (applies to every tokentube subsystem:
+  user and otp); any cipher provided by libgcrypt is supported, AES-256-CFB is
+  recommended
+- the encryption key is derived from the password by a key-derivative-function
+  (KDF); any KDF provided by libgcrypt is supported, SCRYPT is recommended
+- the hash algorithm is configurable (apples to all tokentube subsystems);
+  any hash algorithm provided by libgcrypt is supported, SHA-256 is recommended
+

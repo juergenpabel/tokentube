@@ -1,0 +1,39 @@
+This document describes the basic architectural design of tokentube.
+
+Item 1: tokentube library
+- implements most of the core logic of tokentube, linked by all other components
+- includes subsystems for: logging, config file parsing, cryptography, runtime, etc 
+- the lifecycle phases are: initialization, configuration, RUN, finalization
+- during the RUN phase the application (the "client") invokes the actions via
+  exposed C functions (/usr/include/tokentube.h)
+- some specific functionality is delegated out into plugins, which can be
+  specified in the configuration and are automatically loaded by the tokentube
+  library during configuration phase
+
+Item 2: tokentube library plugins
+- provide specific implementations for mostly storage-related aspects to
+  libtokentube.so (refer to /usr/include/tokentube/plugin.h)
+- the build-in 'default' plugin provides handlers for filesystem (ext2) based
+  storage of user files and configuration file
+- other plugins can be specified in configuration file and will be loaded 
+  during the configuration-phase
+
+Item 3: PAM module [sic]
+- the pam_tokentube.so module implements user enrollment and password updates (it
+  re-encrypts the user's key file with the user's new password) 
+- the pam_tokentube.so is linked to libtokentube.so and acts as the "client" to
+  libtokentube.so
+
+Item 5: TokenTube Binaries
+Item 5a: PBA User Authenticator
+- implements the user interface for querying the username and pasword (instead of
+  the original user interface, like askpass in older Debian releases)
+- locates the user's key file (filename=hash of username) on the boot partition
+- decrypts the user's key file using a KDF from the supplied password
+- prints the decrypted key to stdout (which is piped into cryptsetup)
+Item 5b: TokenTube client
+- user management: create, update, verify, delete
+- otp management: create, update, verify, delete & challenge + apply
+Item 5c: Helpdesk client
+- otp execution: response (based on the challenge from TokenTube client)
+

@@ -1,0 +1,53 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.69])
+AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
+AC_CONFIG_SRCDIR([config.h.in])
+AC_CONFIG_HEADERS([config.h])
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_AWK
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+
+# Checks for libraries.
+# FIXME: Replace `main' with a function in `-lconfuse':
+AC_CHECK_LIB([confuse], [main])
+# FIXME: Replace `main' with a function in `-ldl':
+AC_CHECK_LIB([dl], [main])
+# FIXME: Replace `main' with a function in `-lext2fs':
+AC_CHECK_LIB([ext2fs], [main])
+# FIXME: Replace `main' with a function in `-lgcrypt':
+AC_CHECK_LIB([gcrypt], [main])
+# FIXME: Replace `main' with a function in `-lpam':
+AC_CHECK_LIB([pam], [main])
+# FIXME: Replace `main' with a function in `-lply':
+AC_CHECK_LIB([ply], [main])
+# FIXME: Replace `main' with a function in `-ltokentube':
+AC_CHECK_LIB([tokentube], [main])
+
+# Checks for header files.
+AC_FUNC_ALLOCA
+AC_CHECK_HEADERS([fcntl.h limits.h stdlib.h string.h sys/socket.h syslog.h unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_TYPE_UID_T
+AC_TYPE_SIZE_T
+AC_CHECK_MEMBERS([struct stat.st_rdev])
+AC_TYPE_UINT64_T
+
+# Checks for library functions.
+AC_FUNC_CHOWN
+AC_FUNC_FORK
+AC_FUNC_MALLOC
+AC_CHECK_FUNCS([getpass memset mkdir socket strchr strncasecmp])
+
+AC_CONFIG_FILES([Makefile src/lib/Makefile src/pam/Makefile src/plugins/Makefile src/plugins/exec/Makefile src/plugins/log/Makefile src/plugins/syslog/Makefile src/plugins/test/Makefile src/plugins/helpdesk/Makefile src/plugins/lua/Makefile src/bin/cli/Makefile src/bin/helpdesk/Makefile src/bin/pba/Makefile src/bin/ssod/Makefile src/bin/sso-greeter-lightdm/Makefile tests/cmocka/Makefile tests/cmocka/library/Makefile tests/cmocka/library/00_compile/Makefile tests/cmocka/library/01_init/Makefile tests/cmocka/library/02_config/Makefile tests/cmocka/library/03_testvectors/Makefile tests/cmocka/library/04_user/Makefile tests/cmocka/library/05_otp/Makefile])
+
+AC_OUTPUT

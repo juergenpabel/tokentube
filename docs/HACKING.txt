@@ -1,0 +1,41 @@
+This document describes what you need to know in order to get hacking on tokentube.
+
+First off, read the DESIGN.txt and CRYPTOGRAPHY.txt documents - they'll describe
+some basic stuff you need to know.
+
+Item 1: library
+The first stop is the src/lib directory: it contains the source files for the
+libtokentube.so library. This library implements all the core/generic/reusable stuff.
+
+The library is linked into all tokentube objects (PAM module, tokentube binary, ...).
+These "consumers" of the libtokentube are called "clients".
+
+A list of some of the source files for the library:
+init.c - contains tt_initialize(), tt_configure(FILENAME) and tt_finalize(), which
+         govern the lifecycle phases of libtokentube
+crypto.c - provides single function-call interface for any gcrypt supported primitives
+conf.c - implements the configuration stuff
+user.c - provides single function-call interface for user stuff (implying key files)
+otp.c - provides single function-call interface for one-time-password stuff
+plugin.c - plugin interface and grunt stuff for plugin handling
+util-*.c - various functions, like obtaining the UUID of the root filesystem
+
+The PAM module in src/pam implements the PAM functions for password verification and
+password changes. The functions do nothing but call the corresponding functions in
+the library. The PAM module needs to be registered in the corresponding configuration
+files in /etc/pam.d/
+
+Item 2: pam module [sic]
+The PAM-module is a wrapper to libtokentube, tying the PAM-specific actions (auth,
+password changes, etc) to the libtokentube user-management interface - this is really
+straigt forward.
+
+Item 3: tokentube binary
+The application is a tool for admins to manually inspect/setup the user management, otp
+initialization and execution as well as generating initrd/initramfs-images for PBA.
+
+Item 4: PBA binary
+This application is (almost) single-purpose: read in a username/password, call the
+corresponding library function and output the decrypted LUKS key to stdout. The
+second-purpose is to handle the OTP-logic.
+

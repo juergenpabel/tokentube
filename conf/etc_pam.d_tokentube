@@ -1,0 +1,10 @@
+Name: TokenTube authentication management
+Default: yes
+Priority: 256
+Auth-Type: Additional
+Auth-Final:
+        optional	pam_tokentube.so
+Password-Type: Additional
+Password-Final:
+        optional	pam_tokentube.so
+
