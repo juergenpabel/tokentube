@@ -14,6 +14,8 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
+AM_MAINTAINER_MODE([disable])
+
 # Checks for libraries.
 AM_PROG_LIBTOOL
 

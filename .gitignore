@@ -1,0 +1,6 @@
+Makefile
+*.[oa]
+*.Plo
+*.Po
+*~
+autom4te.cache
