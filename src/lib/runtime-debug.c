@@ -15,9 +15,6 @@ int libtokentube_debug_initialize() {
 	env_debug_level = getenv( "TT_DEBUG_LEVEL" );
 	if( env_debug_level != NULL ) {
 		g_debug_level = atoi( env_debug_level );
-		if( g_debug_level < 0 ) {
-			g_debug_level = 0;
-		}
 		if( g_debug_level > 9 ) {
 			g_debug_level = 9;
 		}
