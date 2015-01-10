@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <gcrypt.h>
+#include <libscrypt.h>
 #include "libtokentube.h"
 
 
@@ -147,7 +148,7 @@ int libtokentube_crypto_kdf(const void* salt, size_t salt_size, const void* in, 
 		return TT_OK;
 	}
 	if( strncasecmp( g_crypto_kdf, "scrypt", 6 ) == 0 ) {
-		if( gcry_kdf_derive( in, in_size, GCRY_KDF_SCRYPT, g_crypto_kdf_iter, salt, salt_size, 1, *out_size, out ) != GPG_ERR_NO_ERROR ) {
+		if( libscrypt_scrypt( in, in_size, salt, salt_size, g_crypto_kdf_iter, 8, 1, out, *out_size ) != 0 ) {
 			TT_LOG_ERROR( "library/crypto", "gcry_kdf_derive() failed for 'scrypt' in %s()", __FUNCTION__ );
 			return TT_ERR;
 		}
