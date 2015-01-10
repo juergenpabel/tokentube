@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = 00_compile 01_init 02_config 03_testvectors 04_user
+SUBDIRS = 00_compile 01_init 02_config 03_testvectors 04_user 05_otp
 
 .PHONY:	tests
 tests:
@@ -9,4 +9,5 @@ tests:
 	make -C 02_config	tests
 	make -C 03_testvectors	tests
 	make -C 04_user		tests
+	make -C 05_otp		tests
 

@@ -7,7 +7,7 @@
 #include <tokentube.h>
 
 
-static void test_user_create(void **state) {
+static void test_user_create_failure(void **state) {
 	tt_status_t	status;
 	tt_library_t*	library;
 
@@ -33,6 +33,14 @@ static void test_user_create(void **state) {
 	assert_true( library->api.user.create( "user", "" ) == TT_ERR );
 	assert_true( library->api.user.exists( "user", &status ) == TT_OK );
 	assert_true( status == TT_NO );
+}
+
+
+static void test_user_create_success(void **state) {
+	tt_status_t	status;
+	tt_library_t*	library;
+
+	library = (tt_library_t*)*state;
 
 	/* positive tests: create user */
 	status = TT_STATUS__UNDEFINED;
@@ -42,7 +50,7 @@ static void test_user_create(void **state) {
 }
 
 
-static void test_user_delete(void **state) {
+static void test_user_delete_failure(void **state) {
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 	tt_library_t*	library;
 
@@ -52,6 +60,14 @@ static void test_user_delete(void **state) {
 	assert_true( library->api.user.delete( NULL, NULL ) == TT_ERR );
 	assert_true( library->api.user.delete( "", NULL ) == TT_ERR );
 	assert_true( library->api.user.delete( NULL, &status ) == TT_ERR );
+}
+
+
+static void test_user_delete_success(void **state) {
+	tt_status_t	status = TT_STATUS__UNDEFINED;
+	tt_library_t*	library;
+
+	library = (tt_library_t*)*state;
 
 	/* positive tests: delete user */
 	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
@@ -64,7 +80,7 @@ static void test_user_delete(void **state) {
 }
 
 
-static void test_user_verify(void **state) {
+static void test_user_verify_failure(void **state) {
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 	tt_library_t*	library;
 
@@ -76,6 +92,14 @@ static void test_user_verify(void **state) {
 	assert_true( status == TT_NO );
 	assert_true( library->api.user.delete( "user", &status ) == TT_OK );
 	assert_true( status == TT_YES );
+}
+
+
+static void test_user_verify_success(void **state) {
+	tt_status_t	status = TT_STATUS__UNDEFINED;
+	tt_library_t*	library;
+
+	library = (tt_library_t*)*state;
 
 	/* positive tests */
 	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
@@ -112,9 +136,12 @@ static void self_teardown(void **state) {
 
 int main(void) {
 	const UnitTest tests[] = {
-		unit_test_setup_teardown(test_user_create, self_setup, self_teardown),
-		unit_test_setup_teardown(test_user_delete, self_setup, self_teardown),
-		unit_test_setup_teardown(test_user_verify, self_setup, self_teardown),
+		unit_test_setup_teardown(test_user_create_failure, self_setup, self_teardown),
+		unit_test_setup_teardown(test_user_create_success, self_setup, self_teardown),
+		unit_test_setup_teardown(test_user_delete_failure, self_setup, self_teardown),
+		unit_test_setup_teardown(test_user_delete_success, self_setup, self_teardown),
+		unit_test_setup_teardown(test_user_verify_failure, self_setup, self_teardown),
+		unit_test_setup_teardown(test_user_verify_success, self_setup, self_teardown),
 	};
 	return run_tests(tests);
 }

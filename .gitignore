@@ -2,5 +2,10 @@ Makefile
 *.[oa]
 *.Plo
 *.Po
+*.lo
+*.la
 *~
 autom4te.cache
+.libs
+.deps
+.dirstamp
