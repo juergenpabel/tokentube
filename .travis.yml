@@ -29,6 +29,6 @@ addons:
     project:
       name: "juergenpabel/tokentube"
     notification_email: juergen@pabel.net
-    branch_pattern: /^travis-ci-.*$/
+    branch_pattern: travis-ci
     build_command_prepend: ./configure
     build_command: make
