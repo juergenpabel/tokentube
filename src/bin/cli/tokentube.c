@@ -360,7 +360,7 @@ int main(int argc, char* argv[]) {
 				err = -1;
 				break;
 			}
-			if( challenge == NULL ) {
+			if( challenge[0] == '\0' ) {
 				fprintf( stderr, "ERROR: challenge required for \"otp-response\"\n" );
 				err = -1;
 				break;

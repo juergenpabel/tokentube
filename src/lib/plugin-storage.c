@@ -147,6 +147,7 @@ int libtokentube_plugin__file_delete(tt_file_t type, const char* identifier, tt_
 						} else {
 							TT_DEBUG4( "library/plugin", "plugin '%s' return TT_NO for 'file_delete'", module->name );
 						}
+						break;
 					case TT_IGN:
 						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'file_delete'", module->name );
 						break;

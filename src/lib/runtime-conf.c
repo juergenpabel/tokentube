@@ -247,12 +247,14 @@ int libtokentube_conf_read_list(const char* name, size_t index, char* value, siz
 	data = cfg_getnstr( g_configuration, name, index );
 	if( data == NULL ) {
 		TT_LOG_ERROR( "library/runtime", "internal error in %s at %d", __FUNCTION__, __LINE__ );
+		return TT_ERR;
 	}
 	if( *value_size <= strnlen( data, *value_size ) ) {
 		TT_LOG_ERROR( "library/runtime", "internal error in %s at %d", __FUNCTION__, __LINE__ );
 		return TT_ERR;
 	}
-	strncpy( value, data, *value_size );
+	memset( value, '\0', *value_size );
+	strncpy( value, data, *value_size-1 );
 	*value_size = strnlen( value, *value_size );
 	return TT_OK;
 }

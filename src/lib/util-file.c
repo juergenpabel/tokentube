@@ -22,11 +22,17 @@ int libtokentube_util_posix_mkdir(const char* path) {
 	for( pos=0; data[pos] != '\0'; pos++ ) {
 		if( data[pos] == '/' ) {
 			data[pos] = '\0';
-			mkdir( data, 0700 );
+			if( mkdir( data, 0700 ) < 0 && errno != EEXIST ) {
+				TT_LOG_ERROR( "library/util", "mkdir() failed for '%s' in %s()", data, __FUNCTION__ );
+				return TT_ERR;
+			}
 			data[pos] = '/';
 		}
 	}
-	mkdir( data, 0700 );
+	if( mkdir( data, 0700 ) < 0 && errno != EEXIST ) {
+		TT_LOG_ERROR( "library/util", "mkdir() failed for '%s' in %s()", data, __FUNCTION__ );
+		return TT_ERR;
+	}
 	return TT_OK;
 }
 
@@ -34,7 +40,7 @@ int libtokentube_util_posix_mkdir(const char* path) {
 __attribute__ ((visibility ("hidden")))
 int libtokentube_util_posix_copy(const char* src, const char* dst) {
 	char		buffer[4096];
-	ssize_t		bytes;
+	size_t		bytes;
 	struct stat	st;
 	int		fd_src, fd_dst;
 
@@ -57,8 +63,10 @@ int libtokentube_util_posix_copy(const char* src, const char* dst) {
 	fchown( fd_dst, st.st_uid, st.st_gid );
 	do {
 		bytes = read( fd_src, buffer, sizeof(buffer) );
-		if( write( fd_dst, buffer, bytes ) != bytes ) {
+		if( write( fd_dst, buffer, bytes ) != (ssize_t)bytes ) {
 			TT_LOG_ERROR( "library/util", "write() failed for %zd bytes in %s()", bytes, __FUNCTION__ );
+			close( fd_src );
+			close( fd_dst );
 			return TT_ERR;
 		}
 	} while( bytes > 0 );

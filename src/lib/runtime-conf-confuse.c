@@ -51,19 +51,24 @@ int libtokentube_cfg_include(cfg_t* cfg, cfg_opt_t* opt, int argc, const char** 
 		TT_LOG_FATAL( "library/conf", "file '%s' could not be opened in %s()", argv[0], __FUNCTION__ );
 		return 1;
 	}
-	read( fd, buffer, buffer_size );
+	if( read( fd, buffer, sizeof(buffer)-1 ) <= 0 ) {
+		TT_LOG_FATAL( "library/conf", "file '%s' could not be read in %s()", argv[0], __FUNCTION__ );
+		close ( fd );
+		return 1;
+	}
 	close ( fd );
 	hash_id = gcry_md_map_name( libtokentube_name2oid( argv[1] ) );
 	if( gcry_md_open( &digest, hash_id, 0 ) != GPG_ERR_NO_ERROR ) {
 		TT_LOG_FATAL( "library/conf", "unsupported hash-algorithm '%s' in %s()", (char*)argv[1], __FUNCTION__ );
 		return 1;
 	}
-	gcry_md_write( digest, buffer, strlen(buffer) );
+	gcry_md_write( digest, buffer, strnlen( buffer, sizeof(buffer) ) );
 	digest_result = gcry_md_read( digest, 0 );
 	if( digest_result == NULL ) {
 		TT_LOG_FATAL( "library/conf", "gcry_md_read() failed in %s()", __FUNCTION__ );
 		return 1;
 	}
+	buffer_size = sizeof(buffer);
 	if( libtokentube_util_hex_encode( digest_result, gcry_md_get_algo_dlen(hash_id), buffer, &buffer_size ) != TT_OK ) {
 		TT_LOG_FATAL( "library/conf", "libtokentube_util_hex_encode() failed in %s()", __FUNCTION__ );
 		return 1;

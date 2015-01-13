@@ -48,9 +48,10 @@ int default__impl__user_storage_load(const char* username, tt_user_t* user) {
 		cfg_free( cfg );
 		return TT_ERR;
 	}
-	strncpy( user->cipher, cfg_getstr( cfg, "user|cipher" ), sizeof(user->cipher) );
-	strncpy( user->hash, cfg_getstr( cfg, "user|hash" ), sizeof(user->hash) );
-	strncpy( user->kdf, cfg_getstr( cfg, "user|kdf" ), sizeof(user->kdf) );
+	memset( user, '\0', sizeof(tt_user_t) );
+	strncpy( user->cipher, cfg_getstr( cfg, "user|cipher" ), sizeof(user->cipher)-1 );
+	strncpy( user->hash, cfg_getstr( cfg, "user|hash" ), sizeof(user->hash)-1 );
+	strncpy( user->kdf, cfg_getstr( cfg, "user|kdf" ), sizeof(user->kdf)-1 );
 	user->kdf_iter = cfg_getint( cfg, "user|kdf-iterations" );
 	user->luks_data_len = sizeof(user->luks_data);
 	if( libtokentube_util_base64_decode( cfg_getstr( cfg, "user|key" ), 0, user->luks_data, &user->luks_data_len ) != TT_OK ) {

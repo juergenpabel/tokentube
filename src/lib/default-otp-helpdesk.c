@@ -182,11 +182,11 @@ int default__api__otp_execute_response(const char* identifier, const char* chall
 		TT_LOG_ERROR( "plugin/default", "cfg_parse() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
-	strncpy( helpdesk_otp_hash, cfg_getstr( cfg, "helpdesk|otp-hash" ), sizeof(helpdesk_otp_hash) );
+	strncpy( helpdesk_otp_hash, cfg_getstr( cfg, "helpdesk|otp-hash" ), sizeof(helpdesk_otp_hash)-1 );
 	helpdesk_otp_bits = cfg_getint( cfg, "helpdesk|otp-bits" );
 	helpdesk_otp_iterations = cfg_getint( cfg, "helpdesk|otp-iterations" );
-	strncpy( helpdesk_luks_key, cfg_getstr( cfg, "helpdesk|luks-key" ), sizeof(helpdesk_luks_key) );
-	if( helpdesk_otp_hash == NULL || helpdesk_otp_hash[0] == '\0' || helpdesk_otp_iterations == 0 || helpdesk_otp_bits == 0 || helpdesk_luks_key == NULL || helpdesk_luks_key[0] == '\0' ) {
+	strncpy( helpdesk_luks_key, cfg_getstr( cfg, "helpdesk|luks-key" ), sizeof(helpdesk_luks_key)-1 );
+	if( helpdesk_otp_hash[0] == '\0' || helpdesk_otp_iterations == 0 || helpdesk_otp_bits == 0 || helpdesk_luks_key[0] == '\0' ) {
 		TT_LOG_ERROR( "plugin/default", "error while parsing helpdesk file for identifier '%s'", identifier );
 		cfg_free( cfg );
 		return TT_ERR;

@@ -27,9 +27,7 @@ static char* password = NULL;
 
 
 static void ssod_punt(int code) {
-	if( username != NULL ) {
-		memset( username, '\0', LEN_USERNAME_MAX );
-	}
+	memset( username, '\0', sizeof(username) );
 	if( password != NULL ) {
 		memset( password, '\0', LEN_PASSWORD_BUF );
 		free( password );
@@ -80,9 +78,15 @@ int main(int argc __attribute__((unused)), char* argv[] __attribute__((unused)))
 	close(2);
 	close(1);
 	close(0);
-	open( "/dev/null", O_RDWR );
-	open( "/dev/null", O_RDWR );
-	open( "/dev/null", O_RDWR );
+	if( open( "/dev/null", O_RDWR ) < 0 ) {
+		ssod_punt(-4);
+	}
+	if( open( "/dev/null", O_RDWR ) < 0 ) {
+		ssod_punt(-4);
+	}
+	if( open( "/dev/null", O_RDWR ) < 0 ) {
+		ssod_punt(-4);
+	}
 
 	mlockall( MCL_CURRENT|MCL_FUTURE );
 
@@ -105,7 +109,9 @@ int main(int argc __attribute__((unused)), char* argv[] __attribute__((unused)))
 	if( bind( sock_local, (struct sockaddr*)&sa_local, sizeof(sa_local.sun_family)+strlen(sa_local.sun_path) ) < 0 ) {
 		ssod_punt(-2);
 	}
-	chmod( TT_FILENAME__SSOD_SOCKET, S_IWUSR|S_IRUSR|S_IWGRP|S_IRGRP|S_IWOTH|S_IROTH );
+	if( chmod( TT_FILENAME__SSOD_SOCKET, S_IWUSR|S_IRUSR|S_IWGRP|S_IRGRP|S_IWOTH|S_IROTH ) < 0 ) {
+		ssod_punt(-1);
+	}
 	if( listen(sock_local, 1) < 0 ) {
 		ssod_punt(-5);
 	}

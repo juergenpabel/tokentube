@@ -78,7 +78,9 @@ int main(int argc, char* argv[]) {
 	int	sock;
 	struct sockaddr_un sa = {0};
 
-	fcntl( 0, F_SETFL, O_NONBLOCK );
+	if( fcntl( 0, F_SETFL, O_NONBLOCK ) < 0 ) {
+		greeter_log( LOG_INFO, "switching to non-blocking mode failed, continuing in blocking-mode" );
+	}
 	sa.sun_family = AF_UNIX;
 	strncpy( sa.sun_path, TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR "/" TT_FILENAME__SSOD_SOCKET, sizeof(sa.sun_path)-1 );
 	sock = socket( AF_UNIX, SOCK_STREAM, 0 );

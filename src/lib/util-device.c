@@ -29,7 +29,11 @@ int libtokentube_util_device_find(dev_t device, char* buffer, size_t* buffer_siz
 	for( i=0; i<entries; i++ ) {
 		if( name != NULL ) {
 			snprintf( name, *buffer_size-1, "/dev/disk/by-uuid/%s", list[i]->d_name );
-			stat( name, &st );
+			if( stat( name, &st ) < 0 ) {
+				TT_LOG_ERROR( "library/util", "stat() failed for '%s' in %s()", name, __FUNCTION__ );
+				free( name );
+				return TT_ERR;
+			}
 			if( st.st_rdev == device ) {
 				strncpy( buffer, name, *buffer_size );
 				*buffer_size = strnlen( buffer, *buffer_size );

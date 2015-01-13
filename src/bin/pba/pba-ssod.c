@@ -45,9 +45,9 @@ int pba_ssod_stop() {
 		sock = socket( AF_UNIX, SOCK_STREAM, 0 );
 		if( sock >= 0 ) {
 			if( connect(sock, (struct sockaddr*)&sa, sizeof(sa.sun_family)+strlen(sa.sun_path)) == 0 ) {
-				close( sock );
 				result = TT_OK;
 			}
+			close( sock );
 		}
 	} else {
 		result = TT_OK;

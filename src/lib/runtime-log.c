@@ -37,6 +37,7 @@ __attribute__ ((visibility ("hidden")))
 int libtokentube_log_initialize() {
 	const char*	env_log_level = NULL;
 	const char*	env_log_target = NULL;
+	FILE*		fp;
 	size_t		i;
 
 	openlog( NULL, LOG_PID|LOG_CONS, LOG_USER );
@@ -69,15 +70,19 @@ int libtokentube_log_initialize() {
 					g_env_log_fd = open( env_log_target, O_CREAT|O_WRONLY|O_APPEND, S_IRUSR|S_IWUSR );
 					if( g_env_log_fd < 0 ) {
 						fprintf( stderr, "TokenTube: open() failed for TT_LOG_TARGET_FILE=%s\n", env_log_target);
+						return TT_ERR;
 					}
 				}
 			} else if( strncasecmp( env_log_target, "EXEC", 5 ) == 0) {
 				env_log_target = getenv( "TT_LOG_TARGET_EXEC" );
 				if( env_log_target != NULL ) {
-					g_env_log_fd = fileno( popen( env_log_target, "w" ) );
-					if( g_env_log_fd < 0 ) {
-						fprintf( stderr, "TokenTube: popen() failed for TT_LOG_TARGET_EXEC=%s\n", env_log_target );
+					fp = popen( env_log_target, "w" );
+					if( fp == NULL ) {
+						fprintf( stderr, "TokenTube: popen() failed for TT_LOG_TARGET_EXEC=%s\n", env_log_target);
+						return TT_ERR;
 					}
+					g_env_log_fd = dup( fileno( fp ) );
+					fclose( fp );
 				}
 			} else {
 				g_env_log_level = TT_LOG__UNDEFINED;
