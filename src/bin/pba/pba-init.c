@@ -7,14 +7,14 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <errno.h>
-
-#include "pba.h"
 #include <confuse.h>
 #include <tokentube.h>
 
+#include "pba.h"
+
 
 int pba_initialize(tt_library_t* api, const char* bootdevice, const char* configuration) {
-	if( bootdevice[0] != '\0' ) {
+	if( bootdevice != NULL && bootdevice[0] != '\0' ) {
 		setenv( "TT_RUNTIME_BOOTDEVICE", bootdevice, 1 );
 	} else {
 		signal( SIGPIPE, SIG_IGN );

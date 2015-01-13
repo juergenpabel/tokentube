@@ -80,11 +80,12 @@ int test__impl__posix_save(const char* filename, const char* buffer, const size_
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "invalid filename in test__impl__posix_save()" );
 		return TT_ERR;
 	}
+	g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY5, "plugin/test", "saving '%s' in test__impl__posix_save()", filename );
 	fd = open( filename, O_CREAT|O_WRONLY|O_TRUNC, 0600 );
 	if( fd >= 0 ) {
 		if( write( fd, buffer, buffer_size ) == (int)buffer_size ) {
 			result = TT_OK;
-			g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY5, "plugin/test", "successfully saved '%s' in test__impl__posix_save()", filename );
+			g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY4, "plugin/test", "successfully saved '%s' in test__impl__posix_save()", filename );
 		}
 		close(fd);
         }

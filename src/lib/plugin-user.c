@@ -70,7 +70,7 @@ int libtokentube_plugin__user_update(const char* username, const char* old_passw
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_update'", module->name );
 						if( *status == TT_YES ) {
 							if( libtokentube_runtime_broadcast( TT_EVENT__USER_UPDATED, username ) != TT_OK ) {
-								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in __FUNCTION__" );
+								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
 							}
 						}
 						return TT_OK;
@@ -111,7 +111,7 @@ int libtokentube_plugin__user_delete(const char* username, tt_status_t* status) 
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_delete'", module->name );
 						if( *status == TT_YES ) {
 							if( libtokentube_runtime_broadcast( TT_EVENT__USER_DELETED, username ) != TT_OK ) {
-								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in __FUNCTION__" );
+								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
 							}
 						}
 						return TT_OK;
@@ -188,7 +188,7 @@ int libtokentube_plugin__user_execute_load( const char* username, const char* pa
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_execute_load'", module->name );
 						if( *key_size > 0 ) {
 							if( libtokentube_runtime_broadcast( TT_EVENT__USER_VERIFIED, username ) != TT_OK ) {
-								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in __FUNCTION__" );
+								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
 							}
 						}
 						return TT_OK;
@@ -229,7 +229,7 @@ int libtokentube_plugin__user_execute_verify( const char* username, const char* 
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_execute_verify'", module->name );
 						if( *status == TT_YES ) {
 							if( libtokentube_runtime_broadcast( TT_EVENT__USER_VERIFIED, username ) != TT_OK ) {
-								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in __FUNCTION__" );
+								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
 							}
 						}
 						return TT_OK;
