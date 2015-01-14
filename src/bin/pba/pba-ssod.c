@@ -1,7 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -13,39 +13,48 @@
 #include "pba.h"
 
 
-int pba_ssod_start() {
-	if( access( TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR "/" TT_FILENAME__SSOD_SOCKET, F_OK ) == -1 ) {
-		if( errno == ENOENT ) {
-			switch( fork() ) {
-				case -1:
-					fprintf( stderr, "pba: fork() for tokentube's ssod failed\n" );
-					return TT_ERR;
-				case 0:
-					execl( "/lib/tokentube/ssod", "ssod", NULL );
-					exit(-1);
-				default:
-					sleep( 1 );
+int pba_ssod_start(const char* executable, const char* config, const char* sockname) {
+	int	status = 0;
+
+	if( access( sockname, F_OK ) == 0 ) {
+		return TT_OK;
+	}
+	if( errno != ENOENT ) {
+		return TT_ERR;
+	}
+	switch( fork() ) {
+		case -1:
+			fprintf( stderr, "pba: fork() failed in %s()\n", __FUNCTION__ );
+			return TT_ERR;
+		case 0:
+			execl( executable, "ssod", config, NULL );
+			fprintf( stderr, "pba: execl() failed for '%s' in %s()\n", executable, __FUNCTION__ );
+			exit(-1);
+		default:
+			wait( &status );
+			if( WIFEXITED( status ) != 0 ) {
+				fprintf( stderr, "pba: ssod failed\n" );
+				return TT_ERR;
 			}
-		}
 	}
 	return TT_OK;
 }
 
 
-int pba_ssod_stop() {
-	struct sockaddr_un	sa;
+int pba_ssod_stop(const char* sockname) {
+	struct sockaddr_un	sa = {0};
 	int			sock;
 
 	if( access( TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR "/" TT_FILENAME__SSOD_SOCKET, F_OK ) < 0 ) {
 		return TT_OK;
 	}
 	sa.sun_family = AF_UNIX;
-	strncpy( sa.sun_path, TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR "/" TT_FILENAME__SSOD_SOCKET, sizeof(sa.sun_path)-1 );
+	strncpy( sa.sun_path, sockname, sizeof(sa.sun_path)-1 );
 	sock = socket( AF_UNIX, SOCK_STREAM, 0 );
 	if( sock < 0 ) {
 		return TT_ERR;
 	}
-	if( connect(sock, (struct sockaddr*)&sa, sizeof(sa.sun_family)+strlen(sa.sun_path)) != 0 ) {
+	if( connect( sock, (struct sockaddr*)&sa, sizeof(sa.sun_family) + strnlen( sa.sun_path, sizeof(sa.sun_path) ) ) != 0 ) {
 		close( sock );
 		return TT_ERR;
 	}
@@ -54,23 +63,23 @@ int pba_ssod_stop() {
 }
 
 
-int pba_ssod_credentials(const char* username, const char* password) {
-	struct sockaddr_un	sa;
+int pba_ssod_credentials(const char* sockname, const char* username, const char* password) {
+	struct sockaddr_un	sa = {0};
 	int			sock;
 
 	sa.sun_family = AF_UNIX;
-	strncpy( sa.sun_path, TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR "/" TT_FILENAME__SSOD_SOCKET, sizeof(sa.sun_path)-1 );
+	strncpy( sa.sun_path, sockname, sizeof(sa.sun_path)-1 );
 	sock = socket( AF_UNIX, SOCK_STREAM, 0 );
 	if( sock < 0 ) {
 		return TT_ERR;
 	}
-	if( connect(sock, (struct sockaddr*)&sa, sizeof(sa.sun_family)+strlen(sa.sun_path)) != 0 ) {
+	if( connect(sock, (struct sockaddr*)&sa, sizeof(sa.sun_family) + strnlen( sa.sun_path, sizeof(sa.sun_path) ) ) != 0 ) {
 		close( sock );
 		return TT_ERR;
 	}
-	write( sock, username, strlen(username) );
+	write( sock, username, strnlen( username, TT_USERNAME_CHAR_MAX ) );
 	write( sock, "\n", 1 );
-	write( sock, password, strlen(password) );
+	write( sock, password, strnlen( password, TT_PASSWORD_CHAR_MAX ) );
 	write( sock, "\n", 1 );
 	close( sock );
 	return TT_OK;

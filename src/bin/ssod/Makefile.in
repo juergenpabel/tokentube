@@ -281,7 +281,7 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 ssod_SOURCES = ssod.c
 ssod_CFLAGS = -I../../../include 
-ssod_LDFLAGS = -L../../lib/ -ltokentube
+ssod_LDFLAGS = -lconfuse
 all: all-am
 
 .SUFFIXES:

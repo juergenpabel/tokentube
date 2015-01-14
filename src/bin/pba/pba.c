@@ -44,9 +44,22 @@ static cfg_opt_t opt_pba[] = {
 	CFG_END()
 };
 
+static cfg_opt_t opt_sso_greeters[] = {
+	CFG_STR("listing", NULL, CFGF_NONE),
+	CFG_INT("uid-min", 0, CFGF_NONE),
+	CFG_INT("uid-max", INT_MAX, CFGF_NONE),
+	CFG_END()
+};
+
+static cfg_opt_t opt_sso_ssod[] = {
+	CFG_STR("executable", SSOD_EXECUTABLE, CFGF_NONE),
+	CFG_STR("socket", SSOD_SOCKET, CFGF_NONE),
+	CFG_END()
+};
 
 static cfg_opt_t opt_sso[] = {
-	CFG_BOOL("sso", cfg_false, CFGF_NONE),
+	CFG_SEC("ssod", opt_sso_ssod, CFGF_NONE),
+	CFG_SEC("greeters", opt_sso_greeters, CFGF_NONE),
 	CFG_END()
 };
 
@@ -63,7 +76,7 @@ int main (int argc, char *argv[]) {
 	char*	password = NULL;
 	size_t	password_size = 0;
 	cfg_t*	cfg = NULL;
-	int	verbose = 0;
+	int	fd, verbose = 0;
 	char	c;
 
         opterr = 0;
@@ -196,24 +209,34 @@ int main (int argc, char *argv[]) {
 			tt_finalize();
 			exit(-1);
 		}
-		if( g_library.api.storage.file_load( TT_FILE__CONFIG_PBA, "[boot]/tokentube/pba/sso.conf", buffer, &buffer_size ) == TT_OK ) {
-			cfg = cfg_init( opt_sso, CFGF_NONE );
-			if( cfg != NULL ) {
-				if( cfg_parse_buf( cfg, buffer ) == 0 ) {
-					if( conf_ssod == TT_YES ) {
-						if( cfg_getbool( cfg, "sso" ) > 0 ) {
-							if( pba_ssod_start() == TT_OK ) {
-								pba_ssod_credentials( username, password );
-							}
+		if( conf_ssod == TT_YES ) {
+			if( g_library.api.storage.file_load( TT_FILE__CONFIG_PBA, "/boot/tokentube/sso.conf", buffer, &buffer_size ) == TT_OK ) {
+				cfg = cfg_init( opt_sso, CFGF_NONE );
+				if( cfg == NULL ) {
+					g_library.api.runtime.log( TT_LOG__ERROR, "pba", "cfg_init() failed in %s()", __FUNCTION__ );
+				}
+				if( cfg != NULL && cfg_parse_buf( cfg, buffer ) != 0 ) {
+					g_library.api.runtime.log( TT_LOG__ERROR, "pba", "cfg_parse_buf() failed in %s()", __FUNCTION__ );
+					cfg_free( cfg );
+					cfg = NULL;
+				}
+				if( access( SSO_CONFIG, F_OK ) != 0 ) {
+					fd = open( SSO_CONFIG, O_CREAT|O_WRONLY );
+					if( fd >= 0 ) {
+						if( write( fd, buffer, buffer_size ) != (ssize_t)buffer_size ) {
+							unlink( SSO_CONFIG );
 						}
+						close( fd );
 					}
 				}
+				if( pba_ssod_start( SSO_CONFIG, cfg_getstr( cfg, "ssod|executable" ), cfg_getstr( cfg, "ssod|socket" ) ) == TT_OK ) {
+					pba_ssod_credentials( cfg_getstr( cfg, "ssod|socket" ), username, password );
+				}
+				cfg_free( cfg );
 			}
-			cfg_free( cfg );
 		}
 		write( STDOUT_FILENO, key, key_size );
 	}
-
 	memset( key, '\0', sizeof(key) );
 	if( username != NULL ) {
 		memset( username, '\0', username_size );

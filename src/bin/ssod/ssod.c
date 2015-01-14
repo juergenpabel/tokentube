@@ -5,179 +5,214 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/signal.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/mman.h>
+#include <sys/prctl.h>
 #include <fcntl.h>
-#include <time.h>
-#include <errno.h>
-#include <syslog.h>
-#include <tokentube/defines.h>
+#include <dirent.h>
+#include <limits.h>
+#include <confuse.h>
+#include <tokentube.h>
 
-#define LEN_USERNAME_MAX   32
-#define LEN_PASSWORD_MAX  256
-#define LEN_PASSWORD_BUF 4096
 
-#define PEER_UNKNOWN 0
-#define PEER_PBA     1
-#define PEER_GREETER 2
+#define SSOD_SOCKET TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR "/" TT_FILENAME__SSOD_SOCKET
 
-static char username[LEN_USERNAME_MAX] = {0};
-static char* password = NULL;
+
+typedef enum {
+        PEER_UNKNOWN = 0,
+        PEER_PBA = 1,
+        PEER_GREETER = 2
+} ssod_peer_t;
+
+
+static cfg_opt_t opt_sso_greeters[] = {
+	CFG_STR("listing", NULL, CFGF_NONE),
+	CFG_INT("uid-min", 0, CFGF_NONE),
+	CFG_INT("uid-max", INT_MAX, CFGF_NONE),
+	CFG_END()
+};
+
+static cfg_opt_t opt_sso_ssod[] = {
+	CFG_STR("executable", NULL, CFGF_NONE),
+	CFG_STR("socket", SSOD_SOCKET, CFGF_NONE),
+	CFG_END()
+};
+
+static cfg_opt_t opt_sso[] = {
+	CFG_SEC("ssod", opt_sso_ssod, CFGF_NONE),
+	CFG_SEC("greeters", opt_sso_greeters, CFGF_NONE),
+	CFG_END()
+};
+
+
+static char	g_username[TT_USERNAME_CHAR_MAX+1] = {0};
+static char	g_password[TT_PASSWORD_CHAR_MAX+1] = {0};
+static cfg_t*	g_cfg = NULL;
 
 
 static void ssod_punt(int code) {
-	memset( username, '\0', sizeof(username) );
-	if( password != NULL ) {
-		memset( password, '\0', LEN_PASSWORD_BUF );
-		free( password );
+	memset( g_username, '\0', sizeof(g_username) );
+	memset( g_password, '\0', sizeof(g_password) );
+	if( g_cfg != NULL ) {
+		unlink( cfg_getstr( g_cfg, "ssod|socket" ) );
+		cfg_free( g_cfg );
 	}
-	unlink( TT_FILENAME__SSOD_SOCKET );
-	syslog( LOG_CRIT, "ssod:exiting with code=%d", code );
-	exit(code);
+	exit( code );
 }
 
 
-static int ssod_identifypeer(int sock) {
-	struct ucred usercred;
-	socklen_t uclen = sizeof(usercred);
+static int ssod_verifypeer(int sock) {
+	char		filename[FILENAME_MAX+1] = {0};
+	char		greeter[FILENAME_MAX+1] = {0};
+	char		peer[FILENAME_MAX+1] = {0};
+	struct ucred	usercred = {0};
+	socklen_t	uclen = sizeof(usercred);
+	char*		path = NULL;
+	DIR*		dir = NULL;
+	struct dirent*	entry = NULL;
 
-	if( getsockopt(sock, SOL_SOCKET, SO_PEERCRED, &usercred, &uclen) < 0 ) {
+	if( getsockopt( sock, SOL_SOCKET, SO_PEERCRED, &usercred, &uclen ) < 0 ) {
 		return TT_ERR;
 	}
-	syslog( LOG_DEBUG, "ssod: connection accepted by PID=%d", usercred.pid );
-	if( usercred.uid == 0 ) {
-		return PEER_PBA;
+	if( usercred.uid < cfg_getint( g_cfg, "greeters|uid-min" ) || usercred.uid > cfg_getint( g_cfg, "greeters|uid-max" ) ) {
+		return TT_NO;
 	}
-	if( usercred.uid > 0 && usercred.uid < 1000 ) {
-		return PEER_GREETER;
+	path = cfg_getstr( g_cfg, "greeters|listing" );
+	if( path == NULL ) {
+		return TT_YES;
 	}
-	return PEER_UNKNOWN;
+	snprintf( filename, sizeof(filename), "/proc/%d/exe", (int)usercred.pid );
+	if( realpath( filename, peer ) == NULL ) {
+		return TT_ERR;
+	}
+	dir = opendir( path );
+	if( dir == NULL ) {
+		return TT_ERR;
+	}
+	entry = readdir( dir );
+	while( entry != NULL ) {
+		snprintf( filename, sizeof(filename), "%s/%s", path, entry->d_name );
+		if( realpath( filename, greeter ) != NULL ) {
+			if( strncmp( peer, greeter, FILENAME_MAX ) == 0 ) {
+				closedir( dir );
+				return TT_YES;
+			}
+		}
+		entry = readdir( dir );
+	}
+	closedir( dir );
+	return TT_NO;
 }
 
 
-int main(int argc __attribute__((unused)), char* argv[] __attribute__((unused))) {
-	int i, result = 0;
-	int password_offset = 0;
-	int password_length = 0;
-	int sock_local, sock_remote;
-	struct sockaddr_un sa_local;
+int main(int argc, char* argv[]) {
+	ssod_peer_t		state = PEER_UNKNOWN;
+	int			i, sock_local, sock_remote;
+	struct sockaddr_un	sa_local = {0};
 
-	setsid();
-	umask(022);
-	if( chdir(TT_FILENAME__SSOD_INITRAMFS_DIR) < 0 ) {
-		ssod_punt(-1);
+	if( argc != 2 ) {
+		fprintf( stderr, "usage: ssod <CONFIG_FILE>\n" );
+		ssod_punt( -1 );
 	}
-	if( chroot(TT_FILENAME__SSOD_INITRAMFS_DIR) < 0 ) {
-		ssod_punt(-2);
+	g_cfg = cfg_init( opt_sso, CFGF_NONE );
+	if( g_cfg == NULL ) {
+		ssod_punt( -1 );
 	}
-	if( chdir(TT_FILENAME__SSOD_TOKENTUBE_DIR) < 0 ) {
-		ssod_punt(-3);
+	if( cfg_parse( g_cfg, argv[1] ) != 0 ) {
+		ssod_punt( -1 );
 	}
-
-	close(2);
-	close(1);
-	close(0);
-	if( open( "/dev/null", O_RDWR ) < 0 ) {
-		ssod_punt(-4);
+	if( access( cfg_getstr( g_cfg, "ssod|socket" ), F_OK ) == 0 ) {
+		ssod_punt( -1 );
 	}
-	if( open( "/dev/null", O_RDWR ) < 0 ) {
-		ssod_punt(-4);
-	}
-	if( open( "/dev/null", O_RDWR ) < 0 ) {
-		ssod_punt(-4);
-	}
-
-	mlockall( MCL_CURRENT|MCL_FUTURE );
-
-	srand( time(NULL) );
-	password = malloc( LEN_PASSWORD_BUF );
-	if(password == NULL) {
-		ssod_punt(-4);
-	}
-	password_offset = rand() % (LEN_PASSWORD_BUF-LEN_PASSWORD_MAX);
-
-	if( access(TT_FILENAME__SSOD_SOCKET, F_OK) == 0 ) {
-		ssod_punt(-99);
+	if( getuid() == 0 && geteuid() == 0 ) {
+		setsid();
+		umask( 077 );
+		if( chdir( TT_FILENAME__SSOD_INITRAMFS_DIR ) < 0 ) {
+			ssod_punt(-1);
+		}
+		if( chdir( TT_FILENAME__SSOD_TOKENTUBE_DIR ) < 0 ) {
+			ssod_punt(-3);
+		}
+		prctl( PR_SET_DUMPABLE, 0 );
+		mlockall( MCL_CURRENT|MCL_FUTURE );
 	}
 	sock_local = socket( AF_UNIX, SOCK_STREAM, 0 );
 	if( sock_local < 0 ) {
-		ssod_punt(-1);
+		ssod_punt( -1 );
 	}
 	sa_local.sun_family = AF_UNIX;
-	strncpy( sa_local.sun_path, TT_FILENAME__SSOD_SOCKET, sizeof(sa_local.sun_path)-1 );
-	if( bind( sock_local, (struct sockaddr*)&sa_local, sizeof(sa_local.sun_family)+strlen(sa_local.sun_path) ) < 0 ) {
-		ssod_punt(-2);
+	strncpy( sa_local.sun_path, cfg_getstr( g_cfg, "ssod|socket" ), sizeof(sa_local.sun_path)-1 );
+	if( bind( sock_local, (struct sockaddr*)&sa_local, sizeof(sa_local.sun_family) + strnlen(sa_local.sun_path, sizeof(sa_local.sun_path) ) ) < 0 ) {
+		ssod_punt(-1 );
 	}
-	if( chmod( TT_FILENAME__SSOD_SOCKET, S_IWUSR|S_IRUSR|S_IWGRP|S_IRGRP|S_IWOTH|S_IROTH ) < 0 ) {
-		ssod_punt(-1);
+	if( chmod( cfg_getstr( g_cfg, "ssod|socket" ), S_IWUSR|S_IRUSR|S_IWGRP|S_IRGRP|S_IWOTH|S_IROTH ) < 0 ) {
+		ssod_punt(-1 );
 	}
-	if( listen(sock_local, 1) < 0 ) {
-		ssod_punt(-5);
+	if( listen( sock_local, 1 ) < 0 ) {
+		ssod_punt( -1 );
 	}
-
-	syslog(LOG_DEBUG, "ssod: entering connection handler loop");
+	state = PEER_PBA;
+	kill( getppid(), SIGCONT );
 	for(;;) {
 		sock_remote = accept( sock_local, NULL, NULL );
-		if( sock_remote >= 0 ) {
-			switch( ssod_identifypeer(sock_remote) ) {
-				case PEER_PBA:
-					syslog( LOG_INFO, "ssod: accepted connection from PBA executable" );
-					memset( username, '\0', LEN_USERNAME_MAX );
-					for(i=0; i<LEN_USERNAME_MAX-1; i++) {
-						if( read( sock_remote, &username[i], 1 ) == 1 ) {
-							if(username[i] == '\n') {
-								username[i] = '\0';
-								break;
-							}
-						} else {
+		if( sock_remote < 0 ) {
+			fprintf( stderr, "SSOD: accept() failed\n" );
+			ssod_punt( -1 );
+		}
+		switch( state ) {
+			case PEER_PBA:
+				memset( g_username, '\0', sizeof(g_username) );
+				for( i=0; i<(int)sizeof(g_username)-1; i++ ) {
+					if( read( sock_remote, &g_username[i], 1) == 1) {
+						if( g_username[i] == '\n' ) {
+							g_username[i] = '\0';
 							break;
 						}
 					}
-					if( i == 0 ) {
-						syslog( LOG_INFO, "ssod: terminating due to request from PBA executable" );
-						ssod_punt(0);
-					}
-					for(i=0; i<LEN_PASSWORD_BUF; i++) {
-						password[i] = 32 + (rand() % 96);
-					}
-					for(password_length=0; password_length<LEN_PASSWORD_MAX; password_length++) {
-						if( read(sock_remote, &password[password_offset+password_length], 1) == 1) {
-							if( password[password_offset+password_length] == '\n' ) {
-								break;
-							}
+				}
+				if( strnlen( g_username, sizeof(g_username) ) == 0 ) {
+					ssod_punt( 0 );
+				}
+				for( i=0; i<(int)sizeof(g_password)-1; i++ ) {
+					if( read( sock_remote, &g_password[i], 1) == 1) {
+						if( g_password[i] == '\n' ) {
+							g_password[i] = '\0';
+							break;
 						}
 					}
-					password[password_offset+password_length] = 32 + (rand() % 96);
+				}
+				state = PEER_GREETER;
 				break;
-				case PEER_GREETER:
-					syslog( LOG_INFO, "ssod: accepted connection from GREETER executable");
-					unlink( TT_FILENAME__SSOD_SOCKET );
-					result |= write( sock_remote, username, strlen(username) );
-					result |= write( sock_remote, "\n", 1 );
-					result |= write( sock_remote, &password[password_offset], password_length );
-					result |= write( sock_remote, "\n", 1 );
-					close( sock_remote );
-					close( sock_local );
-					syslog( LOG_INFO, "ssod: sent user credentials to greeter" );
-					ssod_punt( result );
+			case PEER_GREETER:
+				cfg_free( g_cfg );
+				g_cfg = cfg_init( opt_sso, CFGF_NONE );
+				if( g_cfg == NULL ) {
+					ssod_punt( -1 );
+				}
+				if( cfg_parse( g_cfg, argv[1] ) != 0 ) {
+					ssod_punt( -1 );
+				}
+				if( ssod_verifypeer( sock_remote ) == TT_YES ) {
+					write( sock_remote, g_username, strnlen( g_username, sizeof(g_username) ) );
+					write( sock_remote, "\n", 1 );
+					write( sock_remote, g_password, strnlen( g_password, sizeof(g_password) ) );
+					write( sock_remote, "\n", 1 );
+				}
+				close( sock_remote );
+				close( sock_local );
+				ssod_punt( 0 );
 				break;
-				case PEER_UNKNOWN:
-					syslog( LOG_CRIT, "ssod: rejected unknown connection, terminating" );
-					unlink( TT_FILENAME__SSOD_SOCKET );
-					close( sock_remote );
-					close( sock_local );
-					ssod_punt(-6);
-				break;
-				default:
-					syslog( LOG_CRIT, "ssod: error while accepting connection, skipping" );
-			}
-			close( sock_remote );
-		} else {
-			syslog( LOG_INFO, "ssod: accept() failed" );
-			unlink( TT_FILENAME__SSOD_SOCKET );
+			default:
+				fprintf( stderr, "SSOD: internal error\n" );
+				close( sock_remote );
+				close( sock_local );
+				ssod_punt( -1 );
 		}
+		close( sock_remote );
 	}
-	return TT_ERR;
+	fprintf( stderr, "SSOD: internal error\n" );
+	ssod_punt( -1 );
 }
 
