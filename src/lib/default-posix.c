@@ -142,26 +142,20 @@ int default__posix_exists(const char* filename, tt_status_t* status) {
 
 __attribute__ ((visibility ("hidden")))
 int default__posix_delete(const char* filename, tt_status_t* status) {
-        struct stat	st;
-
 	TT_TRACE( "library/plugin", "%s(filename=%d,status=%p)", __FUNCTION__, filename, status );
 	if( filename == NULL || filename[0] == '\0' || status == NULL ) {
         	TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-       	if( stat( filename, &st ) < 0 ) {
-		if( errno != ENOENT ) {
-			TT_LOG_ERROR( "plugin/default", "stat() failed for '%s' in %s()", filename, __FUNCTION__ );
-			return TT_ERR;
+	if( unlink( filename ) < 0 ) {
+		if( errno == ENOENT ) {
+			*status = TT_NO;
+			return TT_OK;
 		}
-		*status = TT_NO;
-	} else {
-		if( unlink( filename ) < 0 ) {
-			TT_LOG_ERROR( "plugin/default", "unlink() failed for '%s' in %s()", filename, __FUNCTION__ );
-			return TT_ERR;
-		}
-		*status = TT_YES;
+		TT_LOG_ERROR( "plugin/default", "unlink() failed for '%s' in %s()", filename, __FUNCTION__ );
+		return TT_ERR;
 	}
+	*status = TT_YES;
 	return TT_OK;
 }
 
