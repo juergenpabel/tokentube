@@ -32,17 +32,17 @@ int default__api__pba_install_pre(const char* type, const char* path) {
 	}
 	snprintf( filename, sizeof(filename)-1, "%s/etc/tokentube", path );
 	if( libtokentube_util_posix_mkdir( filename ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "library->posix_mkdir('%s') failed in __FUNCTION__()", filename );
+		TT_LOG_ERROR( "plugin/default", "library->posix_mkdir('%s') failed in %s()", filename, __FUNCTION__ );
 		return TT_ERR;
 	}
 	snprintf( filename, sizeof(filename)-1, "%s/usr/lib/tokentube/plugins.d", path );
 	if( libtokentube_util_posix_mkdir( filename ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "library->posix_mkdir('%s') failed in __FUNCTION__()", filename );
+		TT_LOG_ERROR( "plugin/default", "library->posix_mkdir('%s') failed in %s()", filename, __FUNCTION__ );
 		return TT_ERR;
 	}
 	snprintf( filename, sizeof(filename)-1, "%s/etc/tokentube/conf.d", path );
 	if( libtokentube_util_posix_mkdir( filename ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "library->posix_mkdir('%s') failed in __FUNCTION__()", filename );
+		TT_LOG_ERROR( "plugin/default", "library->posix_mkdir('%s') failed in %s()", filename, __FUNCTION__ );
 		return TT_ERR;
 	}
 	snprintf( filename, sizeof(filename)-1, "%s%s", path, TT_FILENAME__BOOT_CONF );

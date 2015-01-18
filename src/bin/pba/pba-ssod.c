@@ -3,9 +3,9 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <signal.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <confuse.h>
@@ -14,8 +14,6 @@
 
 
 int pba_ssod_start(const char* executable, const char* config, const char* sockname) {
-	int	status = 0;
-
 	if( access( sockname, F_OK ) == 0 ) {
 		return TT_OK;
 	}
@@ -27,15 +25,11 @@ int pba_ssod_start(const char* executable, const char* config, const char* sockn
 			fprintf( stderr, "pba: fork() failed in %s()\n", __FUNCTION__ );
 			return TT_ERR;
 		case 0:
-			execl( executable, "ssod", config, NULL );
+			execl( executable, executable, config, NULL );
 			fprintf( stderr, "pba: execl() failed for '%s' in %s()\n", executable, __FUNCTION__ );
 			exit(-1);
 		default:
-			wait( &status );
-			if( WIFEXITED( status ) != 0 ) {
-				fprintf( stderr, "pba: ssod failed\n" );
-				return TT_ERR;
-			}
+			sleep( 1 );
 	}
 	return TT_OK;
 }
@@ -52,9 +46,11 @@ int pba_ssod_stop(const char* sockname) {
 	strncpy( sa.sun_path, sockname, sizeof(sa.sun_path)-1 );
 	sock = socket( AF_UNIX, SOCK_STREAM, 0 );
 	if( sock < 0 ) {
+		fprintf( stderr, "pba: socket() failed in %s()\n", __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( connect( sock, (struct sockaddr*)&sa, sizeof(sa.sun_family) + strnlen( sa.sun_path, sizeof(sa.sun_path) ) ) != 0 ) {
+		fprintf( stderr, "pba: connect() failed in %s()\n", __FUNCTION__ );
 		close( sock );
 		return TT_ERR;
 	}
@@ -71,9 +67,11 @@ int pba_ssod_credentials(const char* sockname, const char* username, const char*
 	strncpy( sa.sun_path, sockname, sizeof(sa.sun_path)-1 );
 	sock = socket( AF_UNIX, SOCK_STREAM, 0 );
 	if( sock < 0 ) {
+		fprintf( stderr, "pba: socket() failed in %s()\n", __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( connect(sock, (struct sockaddr*)&sa, sizeof(sa.sun_family) + strnlen( sa.sun_path, sizeof(sa.sun_path) ) ) != 0 ) {
+		fprintf( stderr, "pba: connect() failed in %s()\n", __FUNCTION__ );
 		close( sock );
 		return TT_ERR;
 	}

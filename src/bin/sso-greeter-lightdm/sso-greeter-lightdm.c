@@ -12,6 +12,25 @@
 #include <lightdm.h>
 #include <tokentube/defines.h>
 
+#define SSOD_SOCKET	TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR "/" TT_FILENAME__SSOD_SOCKET
+
+
+static cfg_opt_t opt_sso_greeter[] = {
+	CFG_STR("original-greeter", "unity-greeter", CFGF_NONE),
+	CFG_END()
+};
+
+static cfg_opt_t opt_sso_ssod[] = {
+	CFG_STR("executable", NULL, CFGF_NONE),
+	CFG_STR("socket", SSOD_SOCKET, CFGF_NONE),
+	CFG_END()
+};
+
+static cfg_opt_t opt_sso[] = {
+	CFG_SEC("ssod", opt_sso_ssod, CFGF_NONE),
+	CFG_END()
+};
+
 
 static GMainLoop *g_mainloop = NULL;
 static LightDMGreeter *g_greeter = NULL;
@@ -30,23 +49,21 @@ static void greeter_log(int level, const char* message) {
 
 
 static void exec_original_greeter(int argc, char* argv[]) {
-	char *original_greeter = NULL;
-	cfg_t* cfg = NULL;
-	cfg_opt_t opt_sso[] = {
-		CFG_STR("original-greeter", "unity-greeter", CFGF_NONE),
-		CFG_END()
-	};
+	char*	original_greeter = NULL;
+	cfg_t*	cfg = NULL;
 
 	(void)argc;
 	greeter_log( LOG_INFO, "executing original greeter..." );
-        cfg = cfg_init( opt_sso, CFGF_NONE );
-        if( cfg_parse( cfg, "/etc/tokentube/sso/lightdm-greeter.conf" ) == 0 ) {
-		original_greeter = cfg_getstr( cfg, "original-greeter" );
-		execvp( original_greeter, argv );
-		execv( "/usr/sbin/unity-greeter", argv );
+        cfg = cfg_init( opt_sso_greeter, CFGF_NONE );
+        if( cfg_parse( cfg, "/etc/tokentube/sso/lightdm-greeter.conf" ) != 0 ) {
+		greeter_log( LOG_ERR, "failed to start original greeter, terminating." );
+		exit(-1);
 	}
-	greeter_log( LOG_ERR, "failed to start original greeter, terminating." );
-	exit(-1);
+	original_greeter = cfg_getstr( cfg, "original-greeter" );
+	if( original_greeter != NULL ) {
+		execvp( original_greeter, argv );
+	}
+	execv( "/usr/sbin/unity-greeter", argv );
 }
 
 
@@ -74,52 +91,62 @@ static void auth_complete_cb(LightDMGreeter *greeter) {
 
 
 int main(int argc, char* argv[]) {
-	size_t	i;
-	int	sock;
-	struct sockaddr_un sa = {0};
+	struct sockaddr_un	sa = {0};
+	cfg_t*			cfg;
+	size_t			i;
+	int			sock;
 
-	if( fcntl( 0, F_SETFL, O_NONBLOCK ) < 0 ) {
-		greeter_log( LOG_INFO, "switching to non-blocking mode failed, continuing in blocking-mode" );
+	cfg = cfg_init( opt_sso, CFGF_NONE );
+	if( cfg == NULL ) {
+		greeter_log( LOG_ERR, "cfg_init() failed" );
+		exit( -1 );
 	}
+	if( cfg_parse( cfg, "/boot/tokentube/sso.conf" ) != 0 ) {
+		greeter_log( LOG_ERR, "cfg_parse() failed for '/boot/tokentube/sso.conf'" );
+		exit( -1 );
+	}
+
 	sa.sun_family = AF_UNIX;
-	strncpy( sa.sun_path, TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR "/" TT_FILENAME__SSOD_SOCKET, sizeof(sa.sun_path)-1 );
+	strncpy( sa.sun_path, cfg_getstr( cfg, "ssod|socket" ), sizeof(sa.sun_path)-1 );
 	sock = socket( AF_UNIX, SOCK_STREAM, 0 );
-	if( sock >= 0 ) {
-		if( connect(sock, (struct sockaddr*)&sa, sizeof(sa.sun_family)+strlen(sa.sun_path)) == 0 ) {
-			for( i=0; i<sizeof(g_username)-1; i++ ) {
-				if( read(sock, &g_username[i], 1) == 1 ) {
-					if( g_username[i] == '\n' ) {
-						g_username[i] = '\0';
-						greeter_log( LOG_INFO, "received username from ssod" );
-						break;
-					}
-				} else {
-					greeter_log( LOG_ALERT, "unexpected end-of-stream for username from ssod" );
-					break;
-				}
-			}
-			for( i=0; i<sizeof(g_password)-1; i++ ) {
-				if( read(sock, &g_password[i], 1) == 1 ) {
-					if( g_password[i] == '\n' ) {
-						g_password[i] = '\0';
-						greeter_log( LOG_INFO, "received password from ssod" );
-						break;
-					}
-				} else {
-					greeter_log( LOG_ALERT, "unexpected end-of-stream for password from ssod" );
-					break;
-				}
-			}
-		} else {
-			greeter_log( LOG_INFO, "no ssod socket, executing original greeter" );
-			close( sock );
-			exec_original_greeter( argc, argv );
-		}
-		close( sock );
-	} else {
-		greeter_log( LOG_INFO, "socket() failed" );
+	if( sock < 0 ) {
+		greeter_log( LOG_INFO, "socket() failed for" );
+		greeter_log( LOG_INFO, sa.sun_path );
+		cfg_free( cfg );
 		exec_original_greeter( argc, argv );
 	}
+	if( connect(sock, (struct sockaddr*)&sa, sizeof(sa.sun_family)+strlen(sa.sun_path)) < 0 ) {
+		greeter_log( LOG_INFO, "no ssod socket, executing original greeter" );
+		cfg_free( cfg );
+		close( sock );
+		exec_original_greeter( argc, argv );
+	}
+	cfg_free( cfg );
+	cfg = NULL;
+
+	for( i=0; i<sizeof(g_username)-1; i++ ) {
+		if( read(sock, &g_username[i], 1) != 1 ) {
+			greeter_log( LOG_ALERT, "unexpected end-of-stream for username from ssod" );
+			exit( -1 );
+		}
+		if( g_username[i] == '\n' ) {
+			g_username[i] = '\0';
+			greeter_log( LOG_INFO, "received username from ssod" );
+			break;
+		}
+	}
+	for( i=0; i<sizeof(g_password)-1; i++ ) {
+		if( read(sock, &g_password[i], 1) != 1 ) {
+			greeter_log( LOG_ALERT, "unexpected end-of-stream for password from ssod" );
+			exit( -1 );
+		}
+		if( g_password[i] == '\n' ) {
+			g_password[i] = '\0';
+			greeter_log( LOG_INFO, "received password from ssod" );
+			break;
+		}
+	}
+	close( sock );
 
 	greeter_log( LOG_DEBUG, "starting lightdm communication" );
 	gtk_init( &argc, &argv );
@@ -136,11 +163,10 @@ int main(int argc, char* argv[]) {
 	memset( g_username, '\0', sizeof(g_username) );
 	memset( g_password, '\0', sizeof(g_password) );
 
-	if( g_result ) {
-		greeter_log( LOG_INFO, "completed login procedure, exiting" );
-	} else {
+	if( g_result != TT_OK ) {
 		exec_original_greeter( argc, argv );
 	}
+	greeter_log( LOG_INFO, "completed login procedure, exiting" );
 	return 0;
 }
 

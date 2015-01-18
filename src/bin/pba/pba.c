@@ -8,10 +8,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <getopt.h>
-#include <syslog.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <confuse.h>
 #include <tokentube.h>
 #include <tokentube/plugin.h>
@@ -26,7 +24,6 @@ static int   		conf_ssod = TT_YES;
 
 
 static const struct option long_options[] = {
-        { "dry-run",     no_argument, 0, 'd' },
         { "boot-device", required_argument, 0, 'b' },
         { "config",      required_argument, 0, 'c' },
         { "ssod",        required_argument, 0, 's' },
@@ -40,14 +37,7 @@ static const struct option long_options[] = {
 static cfg_opt_t opt_pba[] = {
 	CFG_STR("prompt_username", "Username:", CFGF_NONE),
 	CFG_STR("prompt_password", "Password:", CFGF_NONE),
-	CFG_STR("default_username", "", CFGF_NONE),
-	CFG_END()
-};
-
-static cfg_opt_t opt_sso_greeters[] = {
-	CFG_STR("listing", NULL, CFGF_NONE),
-	CFG_INT("uid-min", 0, CFGF_NONE),
-	CFG_INT("uid-max", INT_MAX, CFGF_NONE),
+	CFG_STR("default_username", NULL, CFGF_NONE),
 	CFG_END()
 };
 
@@ -59,7 +49,6 @@ static cfg_opt_t opt_sso_ssod[] = {
 
 static cfg_opt_t opt_sso[] = {
 	CFG_SEC("ssod", opt_sso_ssod, CFGF_NONE),
-	CFG_SEC("greeters", opt_sso_greeters, CFGF_NONE),
 	CFG_END()
 };
 
@@ -95,20 +84,18 @@ int main (int argc, char *argv[]) {
 				printf("\n");
   				exit(0);
  			case 'u':
-				username = strndup(optarg, TT_USERNAME_CHAR_MAX+1);
-				username_size = strnlen(username, TT_USERNAME_CHAR_MAX);
+				username = strndup( optarg, TT_USERNAME_CHAR_MAX+1 );
+				username_size = strnlen( username, TT_USERNAME_CHAR_MAX );
                         break;
  			case 'p':
-				password = strndup(optarg, TT_PASSWORD_CHAR_MAX+1);
-				password_size = strnlen(password, TT_PASSWORD_CHAR_MAX);
+				password = strndup( optarg, TT_PASSWORD_CHAR_MAX+1 );
+				password_size = strnlen( password, TT_PASSWORD_CHAR_MAX );
                         break;
  			case 'c':
 				configuration = strndup( optarg, FILENAME_MAX+1 );
                         break;
  			case 'b':
 				strncpy( bootdevice, optarg, sizeof(bootdevice)-1 );
-                        break;
- 			case 'd':
                         break;
  			case 'v':
 				verbose++;
@@ -138,6 +125,10 @@ int main (int argc, char *argv[]) {
 	if( pba_initialize( &g_library, bootdevice, configuration ) != TT_OK ) {
 		fprintf( stderr, "TokenTube[pba]: pba_initialize() failed in %s()", __FUNCTION__ );
 		exit(-1);
+	}
+	if( configuration != NULL ) {
+		free( configuration );
+		configuration = NULL;
 	}
 
 	if( g_library.api.storage.luks_load != NULL ) {
@@ -173,10 +164,12 @@ int main (int argc, char *argv[]) {
 		mkdir( TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR, S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH );
 		if( username == NULL ) {
 			username = cfg_getstr( cfg, "default_username" );
-			username_size = strlen(username);
+			if( username != NULL ) {
+				username = strndup( username, TT_USERNAME_CHAR_MAX+1 );
+				username_size = strnlen( username, TT_USERNAME_CHAR_MAX );
+			}
 		}
 	}
-	cfg_free( cfg );
 
 	if( username == NULL || password == NULL ) {
 		if( pba_plymouth(conf_userprompt, conf_passprompt, &username, &username_size, &password, &password_size) != TT_OK ) {
@@ -186,13 +179,8 @@ int main (int argc, char *argv[]) {
 		}
 	}
 
-	if( ( username == NULL || username[0] == '\0' ) && password != NULL ) {
-		g_library.api.runtime.debug( TT_DEBUG__VERBOSITY1, "pba", "no username given, returning password in %s()", __FUNCTION__ );
-		write( STDOUT_FILENO, password, password_size );
-	}
-
 	if( username == NULL && password == NULL ) {
-		if( pba_otp( &g_library, username, key, &key_size ) != TT_OK ) {
+		if( pba_otp( &g_library, "helpdesk", key, &key_size ) != TT_OK ) {
 			g_library.api.runtime.log( TT_LOG__ERROR, "pba", "pba_otp() returned error in %s()", __FUNCTION__ );
 			tt_finalize();
 			exit(-1);
@@ -200,7 +188,12 @@ int main (int argc, char *argv[]) {
 		write( STDOUT_FILENO, key, key_size );
 	}
 
-	if( username != NULL && password != NULL ) {
+	if( ( username == NULL || username[0] == '\0' ) && password != NULL ) {
+		g_library.api.runtime.debug( TT_DEBUG__VERBOSITY1, "pba", "no username given, returning password in %s()", __FUNCTION__ );
+		write( STDOUT_FILENO, password, password_size );
+	}
+
+	if( ( username != NULL && username[0] != '\0' ) && password != NULL ) {
 		if( pba_user_loadkey( &g_library, username, username_size, password, password_size, key, &key_size ) != TT_OK ) {
 			g_library.api.runtime.log( TT_LOG__ERROR, "pba", "pba_user_loadkey() failed in %s()", __FUNCTION__ );
 			memset( password, '\0', password_size );
@@ -210,7 +203,9 @@ int main (int argc, char *argv[]) {
 			exit(-1);
 		}
 		if( conf_ssod == TT_YES ) {
+			buffer_size = sizeof(buffer);
 			if( g_library.api.storage.file_load( TT_FILE__CONFIG_PBA, "/boot/tokentube/sso.conf", buffer, &buffer_size ) == TT_OK ) {
+				cfg_free( cfg );
 				cfg = cfg_init( opt_sso, CFGF_NONE );
 				if( cfg == NULL ) {
 					g_library.api.runtime.log( TT_LOG__ERROR, "pba", "cfg_init() failed in %s()", __FUNCTION__ );
@@ -220,23 +215,34 @@ int main (int argc, char *argv[]) {
 					cfg_free( cfg );
 					cfg = NULL;
 				}
-				if( access( SSO_CONFIG, F_OK ) != 0 ) {
-					fd = open( SSO_CONFIG, O_CREAT|O_WRONLY );
+				configuration = strdup( "/tmp/boot_tokentube_sso.conf.XXXXXX" );
+				if( cfg != NULL && configuration != NULL ) {
+					fd = mkstemp( configuration );
 					if( fd >= 0 ) {
 						if( write( fd, buffer, buffer_size ) != (ssize_t)buffer_size ) {
-							unlink( SSO_CONFIG );
+							g_library.api.runtime.log( TT_LOG__ERROR, "pba", "write() failed in %s()", __FUNCTION__ );
+							unlink( configuration );
 						}
 						close( fd );
+						if( pba_ssod_start( cfg_getstr( cfg, "ssod|executable" ), configuration, cfg_getstr( cfg, "ssod|socket" ) ) == TT_OK ) {
+							pba_ssod_credentials( cfg_getstr( cfg, "ssod|socket" ), username, password );
+						} else {
+							g_library.api.runtime.log( TT_LOG__ERROR, "pba", "pba_ssod_start() failed in %s()", __FUNCTION__ );
+						}
+						unlink( configuration );
+					} else {
+						g_library.api.runtime.log( TT_LOG__ERROR, "pba", "mkstemp() failed in %s()", __FUNCTION__ );
 					}
+					free( configuration );
+					configuration = NULL;
+					cfg_free( cfg );
+					cfg = NULL;
 				}
-				if( pba_ssod_start( SSO_CONFIG, cfg_getstr( cfg, "ssod|executable" ), cfg_getstr( cfg, "ssod|socket" ) ) == TT_OK ) {
-					pba_ssod_credentials( cfg_getstr( cfg, "ssod|socket" ), username, password );
-				}
-				cfg_free( cfg );
 			}
 		}
 		write( STDOUT_FILENO, key, key_size );
 	}
+
 	memset( key, '\0', sizeof(key) );
 	if( username != NULL ) {
 		memset( username, '\0', username_size );

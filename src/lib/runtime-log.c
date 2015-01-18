@@ -41,12 +41,12 @@ int libtokentube_log_initialize() {
 	size_t		i;
 
 	openlog( NULL, LOG_PID|LOG_CONS, LOG_USER );
-	if( getuid() != geteuid() ) {
-		fprintf( stderr, "WARNING: IGNORING TT_LOG_LEVEL DUE TO setuid-exec in %s()", __FUNCTION__ );
-		return TT_OK;
-	}
 	env_log_level = getenv( "TT_LOG_LEVEL" );
 	if( env_log_level != NULL ) {
+		if( getuid() != geteuid() ) {
+			fprintf( stderr, "WARNING: ignoring TT_LOG_LEVEL due to setuid in %s()", __FUNCTION__ );
+			return TT_OK;
+		}
 		g_env_log_level = atoi( env_log_level );
 		if( g_env_log_level <= TT_LOG__UNDEFINED ) {
 			for( i=0; i<sizeof(g_levels)/sizeof(g_levels[0]); i++ ) {

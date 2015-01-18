@@ -1,4 +1,3 @@
-#define SSO_CONFIG	"/boot/tokentube/sso.conf"
 #define SSOD_EXECUTABLE	"/lib/tokentube/ssod"
 #define SSOD_SOCKET	TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR "/" TT_FILENAME__SSOD_SOCKET
 

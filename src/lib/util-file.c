@@ -20,7 +20,7 @@ int libtokentube_util_posix_mkdir(const char* path) {
 	}
 	strncpy( data, path, sizeof(data)-1 );
 	for( pos=0; data[pos] != '\0'; pos++ ) {
-		if( data[pos] == '/' ) {
+		if( data[pos] == '/' && pos > 0 ) {
 			data[pos] = '\0';
 			if( mkdir( data, 0700 ) < 0 && errno != EEXIST ) {
 				TT_LOG_ERROR( "library/util", "mkdir() failed for '%s' in %s()", data, __FUNCTION__ );

@@ -17,11 +17,15 @@ int pba_initialize(tt_library_t* api, const char* bootdevice, const char* config
 	if( bootdevice != NULL && bootdevice[0] != '\0' ) {
 		setenv( "TT_RUNTIME_BOOTDEVICE", bootdevice, 1 );
 	} else {
+		signal( SIGCHLD, SIG_IGN );
 		signal( SIGPIPE, SIG_IGN );
 		mkdir( "/boot",           S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH );
 		mkdir( "/boot/tokentube", S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH );
 		mkdir( "/etc",            S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH );
 		mkdir( "/etc/tokentube",  S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH );
+		mkdir( "/dev",            S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH );
+		mkdir( "/dev/.initramfs", S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH );
+		mkdir( "/tmp",            S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH );
 	}
 	if( tt_initialize( TT_VERSION ) != TT_OK ) {
 		return( TT_ERR );

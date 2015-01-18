@@ -32,14 +32,22 @@ int libtokentube_library_configure() {
 	g_library_api.runtime.conf_read_int = libtokentube_conf_read_int;
 	g_library_api.runtime.conf_read_str = libtokentube_conf_read_str;
 	g_library_api.crypto.random = libtokentube_crypto_random;
-	g_library_api.crypto.encrypt = libtokentube_crypto_encrypt;
-	g_library_api.crypto.decrypt = libtokentube_crypto_decrypt;
-	g_library_api.crypto.hash = libtokentube_crypto_hash;
-	g_library_api.crypto.kdf = libtokentube_crypto_kdf;
+//TODO	if( /*TODO*/ ) {
+		g_library_api.crypto.encrypt = libtokentube_crypto_encrypt;
+		g_library_api.crypto.decrypt = libtokentube_crypto_decrypt;
+		g_library_api.crypto.hash = libtokentube_crypto_hash;
+		g_library_api.crypto.kdf = libtokentube_crypto_kdf;
+//TODO	} else {
+//TODO		g_library_api.crypto.encrypt = error_crypto_encrypt;
+//TODO		g_library_api.crypto.decrypt = error_crypto_decrypt;
+//TODO		g_library_api.crypto.hash = error_crypto_hash;
+//TODO		g_library_api.crypto.kdf = error_crypto_kdf;
+//TODO	}
 	g_library_api.storage.file_load = libtokentube_plugin__file_load;
 	g_library_api.storage.file_save = libtokentube_plugin__file_save;
 	g_library_api.storage.file_exists = libtokentube_plugin__file_exists;
 	g_library_api.storage.file_delete = libtokentube_plugin__file_delete;
+	g_library_api.storage.luks_load = libtokentube_plugin__luks_load;
 	g_library_api.user.create = libtokentube_plugin__user_create;
 	g_library_api.user.update = libtokentube_plugin__user_update;
 	g_library_api.user.delete = libtokentube_plugin__user_delete;
@@ -47,13 +55,21 @@ int libtokentube_library_configure() {
 	g_library_api.user.execute_verify = libtokentube_plugin__user_execute_verify;
 	g_library_api.user.execute_load = libtokentube_plugin__user_execute_load;
 	g_library_api.user.execute_autoenrollment = libtokentube_plugin__user_execute_autoenrollment;
-	g_library_api.otp.create = libtokentube_plugin__otp_create;
-	g_library_api.otp.delete = libtokentube_plugin__otp_delete;
-	g_library_api.otp.exists = libtokentube_plugin__otp_exists;
-	g_library_api.otp.execute_challenge = libtokentube_plugin__otp_execute_challenge;
-	g_library_api.otp.execute_response = libtokentube_plugin__otp_execute_response;
-	g_library_api.otp.execute_apply = libtokentube_plugin__otp_execute_apply;
-	g_library_api.storage.luks_load = libtokentube_plugin__luks_load;
+//TODO	if( /*TODO:crypto &&*/ g_crypto_otp_bits != TT_UNINITIALIZED ) {
+		g_library_api.otp.create = libtokentube_plugin__otp_create;
+		g_library_api.otp.delete = libtokentube_plugin__otp_delete;
+		g_library_api.otp.exists = libtokentube_plugin__otp_exists;
+		g_library_api.otp.execute_challenge = libtokentube_plugin__otp_execute_challenge;
+		g_library_api.otp.execute_response = libtokentube_plugin__otp_execute_response;
+		g_library_api.otp.execute_apply = libtokentube_plugin__otp_execute_apply;
+//TODO	} else {
+//TODO		g_library_api.otp.create = error_otp_create;
+//TODO		g_library_api.otp.delete = error_otp_delete;
+//TODO		g_library_api.otp.exists = error_otp_exists;
+//TODO		g_library_api.otp.execute_challenge = error_otp_execute_challenge;
+//TODO		g_library_api.otp.execute_response = error_otp_execute_response;
+//TODO		g_library_api.otp.execute_apply = error_otp_execute_apply;
+//TODO	}
 	return TT_OK;
 }
 

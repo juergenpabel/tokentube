@@ -30,7 +30,7 @@ int default__api__otp_create(const char* identifier) {
 		return TT_ERR;
 	}
 	if( g_crypto_otp_bits == TT_UNINITIALIZED ) {
-		TT_LOG_ERROR( "plugin/default", "otp|bits unconfigured in __FUNCTION__()" );
+		TT_LOG_ERROR( "plugin/default", "otp|bits unconfigured in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( libtokentube_plugin__otp_exists( identifier, &status ) != TT_OK ) {
