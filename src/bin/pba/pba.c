@@ -217,6 +217,7 @@ int main (int argc, char *argv[]) {
 				}
 				configuration = strdup( "/tmp/boot_tokentube_sso.conf.XXXXXX" );
 				if( cfg != NULL && configuration != NULL ) {
+					umask( 077 );
 					fd = mkstemp( configuration );
 					if( fd >= 0 ) {
 						if( write( fd, buffer, buffer_size ) != (ssize_t)buffer_size ) {

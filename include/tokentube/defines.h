@@ -37,7 +37,7 @@
 
 #define TT_FILENAME__SSOD_INITRAMFS_DIR	"/dev/.initramfs"
 #define TT_FILENAME__SSOD_TOKENTUBE_DIR	"tokentube"
-#define TT_FILENAME__SSOD_SOCKET	"ssod_socket"
+#define TT_FILENAME__SSOD_SOCKET	"ssod.socket"
 
 
 #endif /* __TT_LIBRARY_DEFINES_H__ */

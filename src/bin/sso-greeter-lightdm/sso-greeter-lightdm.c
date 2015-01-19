@@ -64,6 +64,7 @@ static void exec_original_greeter(int argc, char* argv[]) {
 		execvp( original_greeter, argv );
 	}
 	execv( "/usr/sbin/unity-greeter", argv );
+	exit( -1 );
 }
 
 
