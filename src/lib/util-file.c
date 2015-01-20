@@ -61,15 +61,16 @@ int libtokentube_util_posix_copy(const char* src, const char* dst) {
 		return TT_ERR;
 	}
 	fchown( fd_dst, st.st_uid, st.st_gid );
-	do {
-		bytes = read( fd_src, data, sizeof(data) );
+	bytes = read( fd_src, data, sizeof(data) );
+	while( bytes > 0 ) {
 		if( write( fd_dst, data, bytes ) != bytes ) {
 			TT_LOG_ERROR( "library/util", "write() failed for %zd bytes in %s()", bytes, __FUNCTION__ );
 			close( fd_src );
 			close( fd_dst );
 			return TT_ERR;
 		}
-	} while( bytes > 0 );
+		bytes = read( fd_src, data, sizeof(data) );
+	}
 	close( fd_src );
 	close( fd_dst );
 	return TT_OK;

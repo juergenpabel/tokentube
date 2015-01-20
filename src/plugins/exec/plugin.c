@@ -93,6 +93,7 @@ static int exec__exec( cfg_t* cfg, const char* event, const char* identifier ) {
 	switch( pid ) {
 		case -1:
 			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/exec", "failed to create new process" );
+			close( fd );
 			break;
 		case 0:
 			g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY4, "plugin/exec", "fork()ed as child in exec__exec()" );
