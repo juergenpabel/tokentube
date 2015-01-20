@@ -161,7 +161,12 @@ int main (int argc, char *argv[]) {
 	conf_passprompt = cfg_getstr( cfg, "prompt_password" );
 
 	if( access( TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR , F_OK ) == -1 && errno == ENOENT ) {
-		mkdir( TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR, S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH );
+		if( mkdir( TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR, S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH ) < 0 ) {
+			g_library.api.runtime.log( TT_LOG__ERROR, "pba", "mkdir() failed for socket-dir" );
+			cfg_free( cfg );
+			tt_finalize();
+			exit(-1);
+		}
 		if( username == NULL ) {
 			username = cfg_getstr( cfg, "default_username" );
 			if( username != NULL ) {

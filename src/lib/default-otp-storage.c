@@ -20,8 +20,8 @@ static cfg_opt_t opt[] = {
 
 __attribute__ ((visibility ("hidden")))
 int default__impl__otp_load(const char* identifier, tt_otp_t* otp) {
-	char    buffer[DEFAULT__FILESIZE_MAX+1] = { 0 };
-	size_t	buffer_size = sizeof(buffer);
+	char    data[DEFAULT__FILESIZE_MAX] = { 0 };
+	size_t	data_size = sizeof(data);
 	cfg_t*  cfg = NULL;
 
 	TT_TRACE( "plugin/default", "%s(identifier='%s',otp=%p)", __FUNCTION__, identifier, otp );
@@ -29,7 +29,7 @@ int default__impl__otp_load(const char* identifier, tt_otp_t* otp) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_plugin__file_load( TT_FILE__OTP, identifier, buffer, &buffer_size ) != TT_OK ) {
+	if( libtokentube_plugin__file_load( TT_FILE__OTP, identifier, data, &data_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__file_load() failed for identifier='%s' in %s", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -38,7 +38,7 @@ int default__impl__otp_load(const char* identifier, tt_otp_t* otp) {
 		TT_LOG_ERROR( "plugin/default", "cfg_init() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( cfg_parse_buf( cfg, buffer ) != 0 ) {
+	if( cfg_parse_buf( cfg, data ) != 0 ) {
 		TT_LOG_ERROR( "plugin/default", "parse error for identifier='%s' in %s()", identifier, __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;
@@ -58,8 +58,8 @@ int default__impl__otp_load(const char* identifier, tt_otp_t* otp) {
 
 __attribute__ ((visibility ("hidden")))
 int default__impl__otp_save(const char* identifier, tt_otp_t* otp) {
-	char    buffer[DEFAULT__FILESIZE_MAX+1] = { 0 };
-	size_t  buffer_size = sizeof(buffer);
+	char    data[DEFAULT__FILESIZE_MAX] = { 0 };
+	size_t  data_size = sizeof(data);
 	cfg_t*	cfg = NULL;
 
 	TT_TRACE( "plugin/default", "%s(identifier='%s',otp=%p)", __FUNCTION__, identifier, otp );
@@ -72,24 +72,24 @@ int default__impl__otp_save(const char* identifier, tt_otp_t* otp) {
 		TT_LOG_ERROR( "plugin/default", "cfg_init() failed in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
-	snprintf( buffer, sizeof(buffer), "plugin/default (%d.%d.%d)", TT_VERSION_MAJOR, TT_VERSION_MINOR, TT_VERSION_PATCH );
-	cfg_setstr( cfg, "api", buffer );
+	snprintf( data, sizeof(data), "plugin/default (%d.%d.%d)", TT_VERSION_MAJOR, TT_VERSION_MINOR, TT_VERSION_PATCH );
+	cfg_setstr( cfg, "api", data );
 	cfg_setstr( cfg, "otp|hash", otp->hash );
 	cfg_setint( cfg, "otp|bits", otp->bits );
-	if( libtokentube_util_base64_encode( otp->data, otp->data_len, buffer, &buffer_size ) != TT_OK ) {
+	if( libtokentube_util_base64_encode( otp->data, otp->data_len, data, &data_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_util_base64_encode() failed for otp|data in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;
 	}
-	cfg_setstr( cfg, "otp|data", buffer );
-	buffer_size = sizeof(buffer);
-	if( libtokentube_cfg_print( cfg, buffer, &buffer_size ) != TT_OK ) {
+	cfg_setstr( cfg, "otp|data", data );
+	data_size = sizeof(data);
+	if( libtokentube_cfg_print( cfg, data, &data_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_cfg_print() failed in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;
 	}
 	cfg_free( cfg );
-	if( libtokentube_plugin__file_save( TT_FILE__OTP, identifier, buffer, strnlen(buffer, sizeof(buffer)-1) ) != TT_OK ) {
+	if( libtokentube_plugin__file_save( TT_FILE__OTP, identifier, data, strnlen(data, sizeof(data)-1) ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__file_save() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}

@@ -24,17 +24,19 @@ int default__posix_load(const char* filename, char* buffer, size_t* buffer_size)
         	TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( stat( filename, &st ) < 0 ) {
-       		TT_LOG_ERROR( "plugin/default", "stat() failed for '%s' in %s()", filename, __FUNCTION__ );
+	fd = open( filename, O_RDONLY );
+	if( fd < 0 ) {
+       		TT_LOG_ERROR( "plugin/default", "open() failed for '%s' in %s()", filename, __FUNCTION__ );
+		return TT_ERR;
+	}
+	if( fstat( fd, &st ) < 0 ) {
+       		TT_LOG_ERROR( "plugin/default", "fstat() failed for '%s' in %s()", filename, __FUNCTION__ );
+		close(fd);
 		return TT_ERR;
 	}
 	if( st.st_size > (int)*buffer_size ) {
        		TT_LOG_ERROR( "plugin/default", "insufficient buffer provided in %s()", __FUNCTION__ );
-		return TT_ERR;
-	}
-	fd = open( filename, O_RDONLY );
-	if( fd < 0 ) {
-       		TT_LOG_ERROR( "plugin/default", "open() failed for '%s' in %s()", filename, __FUNCTION__ );
+		close(fd);
 		return TT_ERR;
 	}
 	if( read( fd, buffer, *buffer_size ) < st.st_size ) {

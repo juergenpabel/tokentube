@@ -11,7 +11,7 @@
 
 __attribute__ ((visibility ("hidden")))
 int libtokentube_util_posix_mkdir(const char* path) {
-	char		data[FILENAME_MAX+1] = { 0 };
+	char		data[FILENAME_MAX] = { 0 };
 	size_t		pos = 0;
 
 	if( path == NULL ) {
@@ -39,8 +39,8 @@ int libtokentube_util_posix_mkdir(const char* path) {
 
 __attribute__ ((visibility ("hidden")))
 int libtokentube_util_posix_copy(const char* src, const char* dst) {
-	char		buffer[4096];
-	size_t		bytes;
+	char		data[DEFAULT__FILESIZE_MAX];
+	ssize_t		bytes;
 	struct stat	st;
 	int		fd_src, fd_dst;
 
@@ -62,8 +62,8 @@ int libtokentube_util_posix_copy(const char* src, const char* dst) {
 	}
 	fchown( fd_dst, st.st_uid, st.st_gid );
 	do {
-		bytes = read( fd_src, buffer, sizeof(buffer) );
-		if( write( fd_dst, buffer, bytes ) != (ssize_t)bytes ) {
+		bytes = read( fd_src, data, sizeof(data) );
+		if( write( fd_dst, data, bytes ) != bytes ) {
 			TT_LOG_ERROR( "library/util", "write() failed for %zd bytes in %s()", bytes, __FUNCTION__ );
 			close( fd_src );
 			close( fd_dst );

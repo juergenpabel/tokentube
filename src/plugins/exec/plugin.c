@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -53,8 +54,9 @@ static cfg_opt_t opt_exec[] = {
 static int exec__exec( cfg_t* cfg, const char* event, const char* identifier ) {
         cfg_t*		section = NULL;
 	char*		exec = NULL;
+	char* const	argv[2] = { (char*)identifier, NULL };
 	struct stat	st;
-	int		pid = 0;
+	int		fd, pid = 0;
 	int		result = TT_ERR;
 
 	section = cfg_getsec( cfg, "events" );
@@ -72,12 +74,19 @@ static int exec__exec( cfg_t* cfg, const char* event, const char* identifier ) {
 		g_self.library.api.runtime.log( TT_LOG__WARN, "plugin/exec", "no executable configured for event '%s'", event );
 		return TT_ERR;
 	}
-	if( stat( exec, &st ) != 0 ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/exec", "configured executable ('%s') not found for event '%s'", exec, event );
+	fd = open( exec, O_RDONLY );
+	if( fd < 0 ) {
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/exec", "open() failed for '%s' for event '%s'", exec, event );
+		return TT_ERR;
+	}
+	if( fstat( fd, &st ) < 0 ) {
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/exec", "fstat() failed for '%s' for event '%s'", exec, event );
+		close( fd );
 		return TT_ERR;
 	}
 	if( (st.st_mode & S_IEXEC) == 0 ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/exec", "configured executable ('%s') not executable for event '%s'", exec, event );
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/exec", "file ('%s') not executable for event '%s'", exec, event );
+		close( fd );
 		return TT_ERR;
 	}
 	pid = fork();
@@ -88,18 +97,22 @@ static int exec__exec( cfg_t* cfg, const char* event, const char* identifier ) {
 		case 0:
 			g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY4, "plugin/exec", "fork()ed as child in exec__exec()" );
 			if( cfg_getbool( section, "detach" ) == cfg_true ) {
-				g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY4, "plugin/exec", "detaching as child from parent in exec__exec()" );
-				close(0);
-				close(1);
-				close(2);
+				g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY4, "plugin/exec", "detaching from parent in %s()", __FUNCTION__ );
+				close( 2 );
+				close( 1 );
+				close( 0 );
 				setsid();
 			}
 			g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY3, "plugin/exec", "executing '%s' as child in exec__exec()", exec );
+			fexecve( fd, argv, NULL );
+			close( fd );
+			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/exec", "fexecve(%s) failed in exec__exec()", exec );
 			execl( exec, identifier, NULL );
-			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/exec", "execl(%s) failed after fork() in exec__exec()", exec );
-			exit(-1);
+			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/exec", "execl(%s) failed in exec__exec()", exec );
+			exit( -1 );
 		default:
 			g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY3, "plugin/exec", "fork()ed as parent in exec__exec()" );
+			close( fd );
 			if( cfg_getbool( section, "detach" ) == cfg_false ) {
 				g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY3, "plugin/exec", "waiting on child (pid=%d) in exec__exec()...", pid );
 				waitpid( pid, NULL, 0 );

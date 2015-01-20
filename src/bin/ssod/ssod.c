@@ -16,6 +16,7 @@
 #include <sys/prctl.h>
 #include <fcntl.h>
 #include <dirent.h>
+#include <libgen.h>
 #include <limits.h>
 #include <confuse.h>
 #include <tokentube.h>
@@ -63,7 +64,6 @@ static void ssod_punt(int code) {
 	memset( g_username, '\0', sizeof(g_username) );
 	memset( g_password, '\0', sizeof(g_password) );
 	if( g_cfg != NULL ) {
-		unlink( cfg_getstr( g_cfg, "ssod|socket" ) );
 		cfg_free( g_cfg );
 	}
 	closelog();
@@ -123,6 +123,7 @@ int main(int argc, char* argv[]) {
 	ssod_peer_t		state = PEER_UNKNOWN;
 	int			i, fd[2], sock_local, sock_remote;
 	struct sockaddr_un	sa = {0};
+	struct stat		st1, st2;
 	pid_t			other;
 
 	if( argc != 2 ) {
@@ -134,16 +135,10 @@ int main(int argc, char* argv[]) {
 		for( i=getdtablesize(); i>0; i-- ) {
 			close( i-1 );
 		}
-		open( "/dev/null", O_RDWR );
-		dup2( 0, 1 );
-		dup2( 0, 2 );
+		(void)open( "/dev/null", O_RDWR );
+		(void)dup2( 0, 1 );
+		(void)dup2( 0, 2 );
 		umask( 077 );
-		if( chdir( TT_FILENAME__SSOD_INITRAMFS_DIR ) < 0 ) {
-			ssod_punt( __LINE__);
-		}
-		if( chdir( TT_FILENAME__SSOD_TOKENTUBE_DIR ) < 0 ) {
-			ssod_punt( __LINE__ );
-		}
 		prctl( PR_SET_DUMPABLE, 0 );
 		mlockall( MCL_CURRENT|MCL_FUTURE );
 		setsid();
@@ -186,12 +181,12 @@ int main(int argc, char* argv[]) {
 	if( access( cfg_getstr( g_cfg, "ssod|socket" ), F_OK ) == 0 ) {
 		ssod_punt( __LINE__ );
 	}
+	sa.sun_family = AF_UNIX;
+	strncpy( sa.sun_path, cfg_getstr( g_cfg, "ssod|socket" ), sizeof(sa.sun_path)-1 );
 	sock_local = socket( AF_UNIX, SOCK_STREAM, 0 );
 	if( sock_local < 0 ) {
 		ssod_punt( __LINE__ );
 	}
-	sa.sun_family = AF_UNIX;
-	strncpy( sa.sun_path, cfg_getstr( g_cfg, "ssod|socket" ), sizeof(sa.sun_path)-1 );
 	if( bind( sock_local, (struct sockaddr*)&sa, sizeof(sa.sun_family) + strnlen(sa.sun_path, sizeof(sa.sun_path) ) ) < 0 ) {
 		ssod_punt( __LINE__ );
 	}
@@ -199,6 +194,9 @@ int main(int argc, char* argv[]) {
 		ssod_punt( __LINE__ );
 	}
 	if( listen( sock_local, 1 ) < 0 ) {
+		ssod_punt( __LINE__ );
+	}
+	if( chdir( dirname( cfg_getstr( g_cfg, "ssod|socket" ) ) ) < 0 ) {
 		ssod_punt( __LINE__ );
 	}
 	setgid( cfg_getint( g_cfg, "ssod|gid" ) );
@@ -236,7 +234,15 @@ int main(int argc, char* argv[]) {
 				break;
 			case PEER_GREETER:
 				if( getuid() == cfg_getint( g_cfg, "ssod|uid" ) && getgid() == cfg_getint( g_cfg, "ssod|gid" ) ) {
-					chdir( "../../.." );
+					do {
+						if( stat( ".", &st1 ) < 0 ) {
+							ssod_punt( __LINE__ );
+						}
+						chdir( ".." );
+						if( stat( ".", &st2 ) < 0 ) {
+							ssod_punt( __LINE__ );
+						}
+					} while( st1.st_dev != st2.st_dev || st1.st_ino != st2.st_ino );
 					chroot( "." );
 					chdir( TT_FILENAME__SSOD_INITRAMFS_DIR );
 					chdir( TT_FILENAME__SSOD_TOKENTUBE_DIR );
@@ -262,6 +268,7 @@ int main(int argc, char* argv[]) {
 			default:
 				close( sock_remote );
 				close( sock_local );
+				unlink( cfg_getstr( g_cfg, "ssod|socket" ) );
 				ssod_punt( __LINE__ );
 		}
 		close( sock_remote );
