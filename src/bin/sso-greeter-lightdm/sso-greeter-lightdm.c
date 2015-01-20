@@ -42,9 +42,8 @@ static gboolean g_result = FALSE;
 
 
 static void greeter_log(int level, const char* message) {
-	fprintf( stderr, message, NULL );
-	fprintf( stderr, "\n" );
-	syslog( level, "greeter/lightdm: %s", message );
+	fprintf( stderr, "tokentube[greeter/lightdm]: %s (username='%s')\n", message, g_username );
+	syslog( level, "greeter/lightdm: %s (username='%s')", message, g_username );
 }
 
 
@@ -53,6 +52,7 @@ static void exec_original_greeter(int argc, char* argv[]) {
 	cfg_t*	cfg = NULL;
 
 	(void)argc;
+	memset( g_password, '\0', sizeof(g_password) );
 	greeter_log( LOG_INFO, "executing original greeter..." );
         cfg = cfg_init( opt_sso_greeter, CFGF_NONE );
         if( cfg_parse( cfg, "/etc/tokentube/sso/lightdm-greeter.conf" ) != 0 ) {
@@ -152,22 +152,23 @@ int main(int argc, char* argv[]) {
 	greeter_log( LOG_DEBUG, "starting lightdm communication" );
 	gtk_init( &argc, &argv );
 	g_greeter = lightdm_greeter_new();
-	if( g_greeter != NULL) {
-		g_signal_connect( g_greeter, "show-prompt", G_CALLBACK(show_prompt_cb), NULL );
-		g_signal_connect( g_greeter, "authentication-complete", G_CALLBACK(auth_complete_cb), NULL );
-		if( lightdm_greeter_connect_sync( g_greeter, NULL ) ) {
-			lightdm_greeter_authenticate( g_greeter, g_username );
-			g_mainloop = g_main_loop_new( NULL, FALSE );
-			g_main_loop_run( g_mainloop );
-		}
-	}
-	memset( g_username, '\0', sizeof(g_username) );
-	memset( g_password, '\0', sizeof(g_password) );
-
-	if( g_result != TT_OK ) {
+	if( g_greeter == NULL) {
+		greeter_log( LOG_INFO, "internal error: lightdm_greeter_new() failed" );
 		exec_original_greeter( argc, argv );
 	}
-	greeter_log( LOG_INFO, "completed login procedure, exiting" );
+	g_signal_connect( g_greeter, "show-prompt", G_CALLBACK(show_prompt_cb), NULL );
+	g_signal_connect( g_greeter, "authentication-complete", G_CALLBACK(auth_complete_cb), NULL );
+	if( lightdm_greeter_connect_sync( g_greeter, NULL ) ) {
+		lightdm_greeter_authenticate( g_greeter, g_username );
+		g_mainloop = g_main_loop_new( NULL, FALSE );
+		g_main_loop_run( g_mainloop );
+	}
+	memset( g_password, '\0', sizeof(g_password) );
+	if( g_result != TT_OK ) {
+		greeter_log( LOG_INFO, "login failed" );
+		exec_original_greeter( argc, argv );
+	}
+	greeter_log( LOG_INFO, "completed login procedure" );
 	return 0;
 }
 
