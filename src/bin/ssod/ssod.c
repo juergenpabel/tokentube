@@ -4,7 +4,10 @@
 #include <unistd.h>
 #include <string.h>
 #include <syslog.h>
+#include <sys/ptrace.h>
+#include <signal.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/signal.h>
 #include <sys/socket.h>
@@ -38,6 +41,8 @@ static cfg_opt_t opt_sso_greeters[] = {
 static cfg_opt_t opt_sso_ssod[] = {
 	CFG_STR("executable", NULL, CFGF_NONE),
 	CFG_STR("socket", SSOD_SOCKET, CFGF_NONE),
+	CFG_INT("uid", 0, CFGF_NONE),
+	CFG_INT("gid", 0, CFGF_NONE),
 	CFG_END()
 };
 
@@ -54,10 +59,7 @@ static char	g_password[TT_PASSWORD_CHAR_MAX+1] = {0};
 static cfg_t*	g_cfg = NULL;
 
 
-static void ssod_punt(int code, int line) {
-	if( code != 0 ) {
-		syslog( LOG_ERR, "SSOD: exiting with code=%d from ssod.c:%d\n", code, line );
-	}
+static void ssod_punt(int code) {
 	memset( g_username, '\0', sizeof(g_username) );
 	memset( g_password, '\0', sizeof(g_password) );
 	if( g_cfg != NULL ) {
@@ -65,7 +67,11 @@ static void ssod_punt(int code, int line) {
 		cfg_free( g_cfg );
 	}
 	closelog();
-	exit( code );
+	if( code > 0 && code != SIGCHLD ) {
+		syslog( LOG_ERR, "SSOD: exiting from ssod.c:%d\n", code );
+		exit( -1 );
+	}
+	exit( 0 );
 }
 
 
@@ -115,24 +121,15 @@ static int ssod_verifypeer(int sock) {
 
 int main(int argc, char* argv[]) {
 	ssod_peer_t		state = PEER_UNKNOWN;
-	int			i, sock_local, sock_remote;
+	int			i, fd[2], sock_local, sock_remote;
 	struct sockaddr_un	sa = {0};
+	pid_t			other;
 
 	if( argc != 2 ) {
 		fprintf( stderr, "usage: ssod <CONFIG_FILE>\n" );
 		exit( -1 );
 	}
 	openlog( NULL, LOG_PID|LOG_CONS, LOG_USER );
-	g_cfg = cfg_init( opt_sso, CFGF_NONE );
-	if( g_cfg == NULL ) {
-		ssod_punt( -1, __LINE__ );
-	}
-	if( cfg_parse( g_cfg, argv[1] ) != 0 ) {
-		ssod_punt( -1, __LINE__ );
-	}
-	if( access( cfg_getstr( g_cfg, "ssod|socket" ), F_OK ) == 0 ) {
-		ssod_punt( -1, __LINE__ );
-	}
 	if( getuid() == 0 && geteuid() == 0 ) {
 		for( i=getdtablesize(); i>0; i-- ) {
 			close( i-1 );
@@ -142,35 +139,75 @@ int main(int argc, char* argv[]) {
 		dup2( 0, 2 );
 		umask( 077 );
 		if( chdir( TT_FILENAME__SSOD_INITRAMFS_DIR ) < 0 ) {
-			ssod_punt( -1, __LINE__);
+			ssod_punt( __LINE__);
 		}
 		if( chdir( TT_FILENAME__SSOD_TOKENTUBE_DIR ) < 0 ) {
-			ssod_punt( -3, __LINE__ );
+			ssod_punt( __LINE__ );
 		}
 		prctl( PR_SET_DUMPABLE, 0 );
 		mlockall( MCL_CURRENT|MCL_FUTURE );
 		setsid();
 	}
+	signal( SIGCHLD, ssod_punt );
+	if( pipe( fd ) < 0 ) {
+		ssod_punt( __LINE__ );
+	}
+	other = fork();
+	switch( other ) {
+		case -1:
+			ssod_punt( __LINE__ );
+		case 0:
+			other = getppid();
+			close( fd[1] );
+			while( read( fd[0], &fd[1], sizeof(fd[1]) ) != 0 ) { sleep(1); };
+			close( fd[0] );
+			break;
+		default:
+			close( fd[0] );
+			if( prctl(PR_SET_PTRACER, other, 0, 0, 0 ) < 0 ) {
+				ssod_punt( __LINE__ );
+			}
+			close( fd[1] );
+	}
+	if( ptrace(PTRACE_SEIZE, other, NULL, NULL ) < 0 ) {
+		ssod_punt( __LINE__ );
+	}
+	if( other != getppid() ) {
+		waitpid( other, &i, 0 );
+		ssod_punt( 0 );
+	}
+	g_cfg = cfg_init( opt_sso, CFGF_NONE );
+	if( g_cfg == NULL ) {
+		ssod_punt( __LINE__ );
+	}
+	if( cfg_parse( g_cfg, argv[1] ) != 0 ) {
+		ssod_punt( __LINE__ );
+	}
+	if( access( cfg_getstr( g_cfg, "ssod|socket" ), F_OK ) == 0 ) {
+		ssod_punt( __LINE__ );
+	}
 	sock_local = socket( AF_UNIX, SOCK_STREAM, 0 );
 	if( sock_local < 0 ) {
-		ssod_punt( -1, __LINE__ );
+		ssod_punt( __LINE__ );
 	}
 	sa.sun_family = AF_UNIX;
 	strncpy( sa.sun_path, cfg_getstr( g_cfg, "ssod|socket" ), sizeof(sa.sun_path)-1 );
 	if( bind( sock_local, (struct sockaddr*)&sa, sizeof(sa.sun_family) + strnlen(sa.sun_path, sizeof(sa.sun_path) ) ) < 0 ) {
-		ssod_punt( -1, __LINE__ );
+		ssod_punt( __LINE__ );
 	}
 	if( chmod( cfg_getstr( g_cfg, "ssod|socket" ), S_IWUSR|S_IRUSR|S_IWGRP|S_IRGRP|S_IWOTH|S_IROTH ) < 0 ) {
-		ssod_punt( -1, __LINE__ );
+		ssod_punt( __LINE__ );
 	}
 	if( listen( sock_local, 1 ) < 0 ) {
-		ssod_punt( -1, __LINE__ );
+		ssod_punt( __LINE__ );
 	}
+	setgid( cfg_getint( g_cfg, "ssod|gid" ) );
+	setuid( cfg_getint( g_cfg, "ssod|uid" ) );
 	state = PEER_PBA;
 	for(;;) {
 		sock_remote = accept( sock_local, NULL, NULL );
 		if( sock_remote < 0 ) {
-			ssod_punt( -1, __LINE__ );
+			ssod_punt( __LINE__ );
 		}
 		switch( state ) {
 			case PEER_PBA:
@@ -184,8 +221,9 @@ int main(int argc, char* argv[]) {
 					}
 				}
 				if( strnlen( g_username, sizeof(g_username) ) == 0 ) {
-					ssod_punt( 0, __LINE__ );
+					break;
 				}
+				memset( g_password, '\0', sizeof(g_password) );
 				for( i=0; i<(int)sizeof(g_password)-1; i++ ) {
 					if( read( sock_remote, &g_password[i], 1) == 1) {
 						if( g_password[i] == '\n' ) {
@@ -197,7 +235,7 @@ int main(int argc, char* argv[]) {
 				state = PEER_GREETER;
 				break;
 			case PEER_GREETER:
-				if( getuid() == 0 && geteuid() == 0 ) {
+				if( getuid() == cfg_getint( g_cfg, "ssod|uid" ) && getgid() == cfg_getint( g_cfg, "ssod|gid" ) ) {
 					chdir( "../../.." );
 					chroot( "." );
 					chdir( TT_FILENAME__SSOD_INITRAMFS_DIR );
@@ -205,10 +243,10 @@ int main(int argc, char* argv[]) {
 					cfg_free( g_cfg );
 					g_cfg = cfg_init( opt_sso, CFGF_NONE );
 					if( g_cfg == NULL ) {
-						ssod_punt( -1, __LINE__ );
+						ssod_punt( __LINE__ );
 					}
 					if( cfg_parse( g_cfg, "/etc/tokentube/sso.conf" ) != 0 ) {
-						ssod_punt( -1, __LINE__ );
+						ssod_punt( __LINE__ );
 					}
 				}
 				if( ssod_verifypeer( sock_remote ) == TT_YES ) {
@@ -219,16 +257,16 @@ int main(int argc, char* argv[]) {
 				}
 				close( sock_remote );
 				close( sock_local );
-				ssod_punt( 0, __LINE__ );
+				ssod_punt( 0 );
 				break;
 			default:
 				close( sock_remote );
 				close( sock_local );
-				ssod_punt( -1, __LINE__ );
+				ssod_punt( __LINE__ );
 		}
 		close( sock_remote );
 	}
-	ssod_punt( -1, __LINE__ );
+	ssod_punt( __LINE__ );
 	exit( -1 );
 }
 
