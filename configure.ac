@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.60)
-AC_INIT(tokentube, 1.0.0, tokentube-devel@sourceforge.net)
+AC_INIT(tokentube, 1.0.2, tokentube-devel@sourceforge.net)
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 # AC_CONFIG_MACRO_DIR([m4])
