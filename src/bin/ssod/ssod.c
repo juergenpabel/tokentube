@@ -42,8 +42,6 @@ static cfg_opt_t opt_sso_greeters[] = {
 static cfg_opt_t opt_sso_ssod[] = {
 	CFG_STR("executable", NULL, CFGF_NONE),
 	CFG_STR("socket", SSOD_SOCKET, CFGF_NONE),
-	CFG_INT("uid", 0, CFGF_NONE),
-	CFG_INT("gid", 0, CFGF_NONE),
 	CFG_END()
 };
 
@@ -199,8 +197,6 @@ int main(int argc, char* argv[]) {
 	if( chdir( dirname( cfg_getstr( g_cfg, "ssod|socket" ) ) ) < 0 ) {
 		ssod_punt( __LINE__ );
 	}
-	setgid( cfg_getint( g_cfg, "ssod|gid" ) );
-	setuid( cfg_getint( g_cfg, "ssod|uid" ) );
 	state = PEER_PBA;
 	for(;;) {
 		sock_remote = accept( sock_local, NULL, NULL );
@@ -233,7 +229,7 @@ int main(int argc, char* argv[]) {
 				state = PEER_GREETER;
 				break;
 			case PEER_GREETER:
-				if( getuid() == cfg_getint( g_cfg, "ssod|uid" ) && getgid() == cfg_getint( g_cfg, "ssod|gid" ) ) {
+				if( getuid() == 0 && geteuid() == 0 ) {
 					do {
 						if( stat( ".", &st1 ) < 0 ) {
 							ssod_punt( __LINE__ );
@@ -244,8 +240,9 @@ int main(int argc, char* argv[]) {
 						}
 					} while( st1.st_dev != st2.st_dev || st1.st_ino != st2.st_ino );
 					chroot( "." );
-					chdir( TT_FILENAME__SSOD_INITRAMFS_DIR );
-					chdir( TT_FILENAME__SSOD_TOKENTUBE_DIR );
+					if( chdir( dirname( cfg_getstr( g_cfg, "ssod|socket" ) ) ) < 0 ) {
+						ssod_punt( __LINE__ );
+					}
 					cfg_free( g_cfg );
 					g_cfg = cfg_init( opt_sso, CFGF_NONE );
 					if( g_cfg == NULL ) {
