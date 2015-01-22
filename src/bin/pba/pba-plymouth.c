@@ -13,10 +13,10 @@ typedef struct {
 	ply_event_loop_t	*loop;
 	ply_boot_client_t	*client;
 
-	char**			user;
-	size_t*			user_len;
-	char**			pass;
-	size_t*			pass_len;
+	char*			user;
+	size_t*			user_size;
+	char*			pass;
+	size_t*			pass_size;
 } state_t;
 
 
@@ -38,53 +38,40 @@ static void on_username(void *user_data, const char *answer, ply_boot_client_t *
 	state_t* state = (state_t*)user_data;
 
 	(void)client; /* unused */
-	if( answer != NULL && answer[0] != ('\100'^'C') ) {
-		*(state->user_len) = strlen( answer );
-		*(state->user) = malloc( *(state->user_len)+1 );
-		if( *(state->user) != NULL ) {
-			strncpy( *(state->user), answer, *(state->user_len) );
-		} else {
-			exit(-1);
-		}
-	} else {
-		ply_event_loop_exit( ((state_t*)state)->loop, TT_ERR );
+	if( answer == NULL || answer[0] == ('\100'^'C') ) {
+		ply_event_loop_exit( state->loop, TT_ERR );
 	}
+	strncpy( state->user, answer, *(state->user_size) );
 }
 
 
 static void on_password(void *user_data, const char *answer, ply_boot_client_t *client) {
 	state_t* state = (state_t*)user_data;
-	int result = TT_ERR;
 
 	(void)client; /* unused */
-	if( answer != NULL && answer[0] != ('\100'^'C') ) {
-		*(state->pass_len) = strlen( answer );
-		*(state->pass) = malloc( *(state->pass_len)+1 );
-		if( *(state->pass) != NULL ) {
-			strncpy( *(state->pass), answer, *(state->pass_len) );
-			result = TT_OK;
-		} else {
-			exit(-1);
-		}
+	if( answer == NULL || answer[0] == ('\100'^'C') ) {
+		ply_event_loop_exit( state->loop, TT_ERR );
         }
-	ply_event_loop_exit( ((state_t*)state)->loop, result );
+	strncpy( state->pass, answer, *(state->pass_size) );
+	ply_event_loop_exit( state->loop, TT_OK );
 }
 
-int pba_plymouth(const char* prompt_user, const char* prompt_pass, char** user, size_t* user_len, char** pass, size_t* pass_len) {
+
+int pba_plymouth(const char* prompt_user, const char* prompt_pass, char* user, size_t* user_size, char* pass, size_t* pass_size) {
 	state_t state;
 	int result = TT_ERR;
 
 	state.user = user;
-	state.user_len = user_len;
+	state.user_size = user_size;
 	state.pass = pass;
-	state.pass_len = pass_len;
+	state.pass_size = pass_size;
 
 	state.loop = ply_event_loop_new();
 	state.client = ply_boot_client_new();
 	if( ply_boot_client_connect( state.client, on_failure, &state ) ) {
 		ply_boot_client_attach_to_event_loop( state.client, state.loop );
 		ply_boot_client_ping_daemon( state.client, on_ping, on_failure, &state );
-		if( *state.user == NULL ) {
+		if( state.user[0] == '\0' ) {
 			ply_boot_client_ask_daemon_question( state.client, prompt_user, on_username, on_failure, &state );
 		}
 		ply_boot_client_ask_daemon_for_password( state.client, prompt_pass, on_password, on_failure, &state );

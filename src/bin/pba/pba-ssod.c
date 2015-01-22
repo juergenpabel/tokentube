@@ -13,7 +13,10 @@
 #include "pba.h"
 
 
-int pba_ssod_start(const char* executable, const char* config, const char* sockname) {
+int pba_sso_start(const char* executable, const char* config, const char* sockname) {
+	if( executable == NULL || config == NULL || sockname == NULL ) {
+		return TT_ERR;
+	}
 	if( access( sockname, F_OK ) == 0 ) {
 		return TT_OK;
 	}
@@ -35,11 +38,14 @@ int pba_ssod_start(const char* executable, const char* config, const char* sockn
 }
 
 
-int pba_ssod_stop(const char* sockname) {
+int pba_sso_stop(const char* sockname) {
 	struct sockaddr_un	sa = {0};
 	int			sock;
 
-	if( access( TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR "/" TT_FILENAME__SSOD_SOCKET, F_OK ) < 0 ) {
+	if( sockname == NULL ) {
+		return TT_ERR;
+	}
+	if( access( sockname, F_OK ) < 0 ) {
 		return TT_OK;
 	}
 	sa.sun_family = AF_UNIX;
@@ -59,10 +65,13 @@ int pba_ssod_stop(const char* sockname) {
 }
 
 
-int pba_ssod_credentials(const char* sockname, const char* username, const char* password) {
+int pba_sso_credentials(const char* sockname, const char* username, const char* password) {
 	struct sockaddr_un	sa = {0};
 	int			sock;
 
+	if( sockname == NULL || username == NULL || password == NULL ) {
+		return TT_ERR;
+	}
 	sa.sun_family = AF_UNIX;
 	strncpy( sa.sun_path, sockname, sizeof(sa.sun_path)-1 );
 	sock = socket( AF_UNIX, SOCK_STREAM, 0 );

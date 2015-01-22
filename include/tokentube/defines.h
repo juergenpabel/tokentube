@@ -35,10 +35,6 @@
 #define TT_FILENAME__TOKENTUBE_CONF	"/etc/tokentube/tokentube.conf"
 #define TT_FILENAME__BOOT_CONF		"/etc/tokentube/boot.conf"
 
-#define TT_FILENAME__SSOD_INITRAMFS_DIR	"/dev/.initramfs"
-#define TT_FILENAME__SSOD_TOKENTUBE_DIR	"tokentube"
-#define TT_FILENAME__SSOD_SOCKET	"ssod.socket"
-
 
 #endif /* __TT_LIBRARY_DEFINES_H__ */
 

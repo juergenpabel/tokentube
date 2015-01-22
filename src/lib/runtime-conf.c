@@ -111,11 +111,10 @@ int libtokentube_conf_configure(const char* filename) {
 	size_t	buffer_size = sizeof(buffer);
 	int	err = TT_OK;
 
-	if( filename != NULL ) {
-		g_configuration_filename = strndup( filename, FILENAME_MAX+1 );
-	} else {
-		g_configuration_filename = strndup( TT_FILENAME__TOKENTUBE_CONF, FILENAME_MAX+1 );
+	if( filename == NULL || filename[0] == '\0' ) {
+		filename = TT_FILENAME__TOKENTUBE_CONF;
 	}
+	g_configuration_filename = strndup( filename, FILENAME_MAX+1 );
 	if( libtokentube_plugin__file_load( TT_FILE__CONFIG_STANDARD, g_configuration_filename, buffer, &buffer_size ) != TT_OK ) {
 		TT_LOG_FATAL( "library/runtime", "could not load configuration file '%s'", g_configuration_filename );
 		return TT_ERR;

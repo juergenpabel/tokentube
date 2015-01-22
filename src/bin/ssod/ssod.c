@@ -22,8 +22,7 @@
 #include <tokentube.h>
 
 
-#define SSOD_SOCKET		TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR "/" TT_FILENAME__SSOD_SOCKET
-
+#define PBA_FILENAME__ETC_SSOD_CONF	"/etc/tokentube/sso/ssod.conf"
 
 typedef enum {
         PEER_UNKNOWN = 0,
@@ -41,7 +40,7 @@ static cfg_opt_t opt_sso_greeters[] = {
 
 static cfg_opt_t opt_sso_ssod[] = {
 	CFG_STR("executable", NULL, CFGF_NONE),
-	CFG_STR("socket", SSOD_SOCKET, CFGF_NONE),
+	CFG_STR("socket", NULL, CFGF_NONE),
 	CFG_END()
 };
 
@@ -248,7 +247,7 @@ int main(int argc, char* argv[]) {
 					if( g_cfg == NULL ) {
 						ssod_punt( __LINE__ );
 					}
-					if( cfg_parse( g_cfg, "/etc/tokentube/sso.conf" ) != 0 ) {
+					if( cfg_parse( g_cfg, PBA_FILENAME__ETC_SSOD_CONF ) != 0 ) {
 						ssod_punt( __LINE__ );
 					}
 				}

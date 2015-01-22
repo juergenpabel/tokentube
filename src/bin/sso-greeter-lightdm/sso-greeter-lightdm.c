@@ -12,8 +12,6 @@
 #include <lightdm.h>
 #include <tokentube/defines.h>
 
-#define SSOD_SOCKET	TT_FILENAME__SSOD_INITRAMFS_DIR "/" TT_FILENAME__SSOD_TOKENTUBE_DIR "/" TT_FILENAME__SSOD_SOCKET
-
 
 static cfg_opt_t opt_sso_greeter[] = {
 	CFG_STR("original-greeter", "unity-greeter", CFGF_NONE),
@@ -21,8 +19,8 @@ static cfg_opt_t opt_sso_greeter[] = {
 };
 
 static cfg_opt_t opt_sso_ssod[] = {
-	CFG_STR("executable", NULL, CFGF_NONE),
-	CFG_STR("socket", SSOD_SOCKET, CFGF_NONE),
+	CFG_STR("executable", "", CFGF_NONE),
+	CFG_STR("socket", "", CFGF_NONE),
 	CFG_END()
 };
 
@@ -102,8 +100,8 @@ int main(int argc, char* argv[]) {
 		greeter_log( LOG_ERR, "cfg_init() failed" );
 		exit( -1 );
 	}
-	if( cfg_parse( cfg, "/boot/tokentube/sso.conf" ) != 0 ) {
-		greeter_log( LOG_ERR, "cfg_parse() failed for '/boot/tokentube/sso.conf'" );
+	if( cfg_parse( cfg, "/boot/tokentube/pba/sso.conf" ) != 0 ) {
+		greeter_log( LOG_ERR, "cfg_parse() failed for '/boot/tokentube/pba/sso.conf'" );
 		exit( -1 );
 	}
 
