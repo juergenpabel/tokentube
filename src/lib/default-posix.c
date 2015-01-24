@@ -16,36 +16,59 @@
 
 __attribute__ ((visibility ("hidden")))
 int default__posix_load(const char* filename, char* buffer, size_t* buffer_size) {
-        struct stat	st;
-	int		fd = -1;
+        struct stat	st = {0};
+	struct dirent*	entry = NULL;
+	DIR*		dir = NULL;
+	int		pos = 0, fd = -1;
 
 	TT_TRACE( "library/plugin", "%s(filename=%d,buffer=%p,buffer_size='%p')", __FUNCTION__, filename, buffer, buffer_size );
 	if( filename == NULL || filename[0] == '\0' || buffer == NULL || buffer_size == NULL || *buffer_size == 0 ) {
-        	TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	fd = open( filename, O_RDONLY );
 	if( fd < 0 ) {
-       		TT_LOG_ERROR( "plugin/default", "open() failed for '%s' in %s()", filename, __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "open() failed for '%s' in %s()", filename, __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( fstat( fd, &st ) < 0 ) {
-       		TT_LOG_ERROR( "plugin/default", "fstat() failed for '%s' in %s()", filename, __FUNCTION__ );
-		close(fd);
+		TT_LOG_ERROR( "plugin/default", "fstat() failed for '%s' in %s()", filename, __FUNCTION__ );
+		close( fd );
 		return TT_ERR;
 	}
-	if( st.st_size > (int)*buffer_size ) {
-       		TT_LOG_ERROR( "plugin/default", "insufficient buffer provided in %s()", __FUNCTION__ );
-		close(fd);
-		return TT_ERR;
+	switch( st.st_mode & S_IFMT ) {
+		case S_IFDIR:
+			dir = fdopendir( fd );
+			if( dir == NULL ) {
+				TT_LOG_ERROR( "plugin/default", "fdopendir() failed for '%s' in %s()", filename, __FUNCTION__ );
+				close( fd );
+				return TT_ERR;
+			}
+			entry = readdir( dir );
+			while( entry != NULL ) {
+				pos += snprintf( buffer+pos, sizeof(buffer)-pos, "%s/%s\n", filename, entry->d_name );
+				entry = readdir( dir );
+			}
+			closedir( dir );
+			break;
+		case S_IFREG:
+			if( st.st_size > (ssize_t)*buffer_size ) {
+				TT_LOG_ERROR( "plugin/default", "insufficient buffer provided in %s()", __FUNCTION__ );
+				close( fd );
+				return TT_ERR;
+			}
+			if( read( fd, buffer, *buffer_size ) < st.st_size ) {
+				TT_LOG_ERROR( "plugin/default", "read() failed for '%s' in %s()", filename, __FUNCTION__ );
+				close( fd );
+				return TT_ERR;
+			}
+			close( fd );
+			*buffer_size = st.st_size;
+			break;
+		default:
+			TT_LOG_ERROR( "plugin/default", "fdopendir() failed for '%s' in %s()", filename, __FUNCTION__ );
+			close( fd );
 	}
-	if( read( fd, buffer, *buffer_size ) < st.st_size ) {
-       		TT_LOG_ERROR( "plugin/default", "read() failed for '%s' in %s()", filename, __FUNCTION__ );
-		close(fd);
-		return TT_ERR;
-	}
-	close(fd);
-	*buffer_size = st.st_size;
 	return TT_OK;
 }
 
@@ -100,22 +123,22 @@ int default__posix_save(const char* filename, const char* buffer, const size_t b
 	if( fchown( fd, owner->pw_uid, group->gr_gid ) < 0 ) {
        		TT_LOG_ERROR( "plugin/default", "fchown() failed for '%s' in %s()", filename, __FUNCTION__ );
 		unlink( filename );
-		close(fd);
+		close( fd );
 		return TT_ERR;
 	}
 	if( fchmod( fd, mode ) < 0 ) {
        		TT_LOG_ERROR( "plugin/default", "fchmod() failed for '%s' in %s()", filename, __FUNCTION__ );
 		unlink( filename );
-		close(fd);
+		close( fd );
 		return TT_ERR;
 	}
-	if( write( fd, buffer, buffer_size ) < (int)buffer_size ) {
+	if( write( fd, buffer, buffer_size ) < (ssize_t)buffer_size ) {
 		TT_LOG_ERROR( "plugin/default", "write() failed for '%s' in %s()", filename, __FUNCTION__ );
 		unlink( filename );
-		close(fd);
+		close( fd );
 		return TT_ERR;
 	}
-	close(fd);
+	close( fd );
 	return TT_OK;
 }
 

@@ -1,11 +1,4 @@
-#define PBA_FILENAME__BOOT_SSO_CONF	"/boot/tokentube/pba/sso.conf"
-#define PBA_FILENAME__ETC_SSOD_CONF	"/etc/tokentube/sso/ssod.conf"
-
-
 int pba_initialize(tt_library_t*, const char*, const char*);
-
-int pba_ext2_readfile(const char*, const char*, char*, size_t*);
-int pba_ext2_writefile(const char*, const char*, char*, size_t*);
 
 int pba_user_loadkey(tt_library_t* api, const char*, size_t, const char*, size_t, char*, size_t*);
 

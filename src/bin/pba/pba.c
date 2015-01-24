@@ -9,6 +9,7 @@
 #include <string.h>
 #include <libgen.h>
 #include <getopt.h>
+#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <confuse.h>
@@ -39,8 +40,8 @@ static const struct option long_options[] = {
 
 
 static cfg_opt_t opt_pba_splash[] = {
-	CFG_STR("message", NULL, CFGF_NONE),
 	CFG_STR("background-image", NULL, CFGF_NONE),
+	CFG_STR("message", NULL, CFGF_NONE),
 	CFG_INT("duration", 0, CFGF_NONE),
 	CFG_BOOL("confirm", 0, CFGF_NONE),
 	CFG_END()
@@ -73,7 +74,7 @@ static cfg_opt_t opt_pba_otp[] = {
 };
 
 static cfg_opt_t opt_pba[] = {
-	CFG_FUNC("include", pba_cfg_include),
+	CFG_FUNC("include-dir", pba_cfg_include),
 	CFG_SEC("splash", opt_pba_splash, CFGF_NONE),
 	CFG_SEC("user", opt_pba_user, CFGF_NONE),
 	CFG_SEC("otp", opt_pba_otp, CFGF_NONE),
@@ -82,10 +83,38 @@ static cfg_opt_t opt_pba[] = {
 
 
 int pba_cfg_include(cfg_t* cfg, cfg_opt_t* opt, int argc, const char** argv) {
-(void)opt;
-(void)argc;
-(void)argv;
-	return cfg_parse_buf( cfg, "TODO" );
+	char		buffer[TT_CONFIG_MAX+1] = { 0 };
+	size_t		buffer_size = sizeof(buffer);
+	size_t		buffer_pos = 0;
+	char		listing[FILENAME_MAX+1] = { 0 };
+	size_t		listing_size = sizeof(listing);
+	char*		filename = NULL;
+	char*		eol = NULL;
+
+	if( cfg == NULL || opt == NULL || argc <= 0 || argv == NULL ) {
+		return 1;
+	}
+	if( g_library.api.storage.file_load( TT_FILE__CONFIG_PBA, argv[0], listing, &listing_size ) != TT_OK ) {
+		return 1;
+	}
+	filename = listing;
+	do {
+		eol = strchr( filename, '\n' );
+		if( eol != NULL ) {
+			*eol = '\0';
+			eol++;
+		}
+		buffer_pos = strnlen( buffer, sizeof(buffer) );
+		buffer_size = sizeof(buffer) - buffer_pos;
+		if( g_library.api.storage.file_load( TT_FILE__CONFIG_PBA, filename, buffer+buffer_pos, &buffer_size ) != TT_OK ) {
+			return 1;
+		}
+		filename = eol;
+	} while( filename != NULL && filename[0] != '\0' );
+	if( cfg_parse_buf( cfg, buffer ) != CFG_SUCCESS ) {
+		return 1;
+	}
+	return CFG_SUCCESS;
 }
 
 
@@ -145,7 +174,6 @@ int main (int argc, char *argv[]) {
 			break;
   		}
 	}
-
 	if( verbose ) {
 		if( verbose >= 3 ) {
 			setenv( "TT_LOG_LEVEL", "debug", 0 );
@@ -157,12 +185,10 @@ int main (int argc, char *argv[]) {
 		setenv( "TT_LOG_TARGET", "FILE", 0 );
 		setenv( "TT_LOG_TARGET_FILE", "/proc/self/fd/2", 0 );
 	}
- 
 	if( pba_initialize( &g_library, bootdevice, configuration ) != TT_OK ) {
 		fprintf( stderr, "TokenTube[pba]: pba_initialize() failed in %s()", __FUNCTION__ );
 		exit(-1);
 	}
-
 	if( g_library.api.storage.luks_load != NULL ) {
 		if( g_library.api.storage.luks_load( key, &key_size ) == TT_OK ) {
 			write( STDOUT_FILENO, key, key_size );
@@ -171,7 +197,6 @@ int main (int argc, char *argv[]) {
 			exit(0);
 		}
 	}
-
 	if( g_library.api.storage.file_load( TT_FILE__CONFIG_PBA, "/boot/tokentube/pba.conf", buffer, &buffer_size ) != TT_OK ) {
 		g_library.api.runtime.log( TT_LOG__ERROR, "pba", "API:storage.file_load() failed for [boot]/tokentube/pba.conf" );
 		exit(-1);
@@ -210,7 +235,6 @@ int main (int argc, char *argv[]) {
 			username_size = strnlen( username, sizeof(username) );
 		}
 	}
-
 	if( username[0] == '\0' || password[0] == '\0' ) {
 		if( pba_plymouth( g_conf_user_userprompt, g_conf_user_passprompt, username, &username_size, password, &password_size ) != TT_OK ) {
 			g_library.api.runtime.log( TT_LOG__ERROR, "pba", "pba_plymouth() returned TT_ERR" );
@@ -218,7 +242,6 @@ int main (int argc, char *argv[]) {
 			exit(-1);
 		}
 	}
-
 	if( username[0] == '\0' && password[0] == '\0' ) {
 		if( pba_otp( &g_library, g_conf_otp_identifier, key, &key_size ) != TT_OK ) {
 			g_library.api.runtime.log( TT_LOG__ERROR, "pba", "pba_otp() returned error in %s()", __FUNCTION__ );
@@ -227,12 +250,10 @@ int main (int argc, char *argv[]) {
 		}
 		write( STDOUT_FILENO, key, key_size );
 	}
-
 	if( ( username == NULL || username[0] == '\0' ) && password != NULL ) {
 		g_library.api.runtime.debug( TT_DEBUG__VERBOSITY1, "pba", "no username given, returning password in %s()", __FUNCTION__ );
 		write( STDOUT_FILENO, password, password_size );
 	}
-
 	if( ( username != NULL && username[0] != '\0' ) && password != NULL ) {
 		if( pba_user_loadkey( &g_library, username, username_size, password, password_size, key, &key_size ) != TT_OK ) {
 			g_library.api.runtime.log( TT_LOG__ERROR, "pba", "pba_user_loadkey() failed in %s()", __FUNCTION__ );
@@ -241,9 +262,13 @@ int main (int argc, char *argv[]) {
 			exit(-1);
 		}
 		if( g_conf_user_sso == TT_YES ) {
-			snprintf( buffer, sizeof(buffer), " ssod {\n\texecutable='%s'\n\tsocket='%s'\n}\n", g_conf_user_sso_exec, g_conf_user_sso_socket );
+			buffer_size = 0;
+			buffer_size += snprintf( buffer+buffer_size, sizeof(buffer)-buffer_size, "ssod {\n" );
+			buffer_size += snprintf( buffer+buffer_size, sizeof(buffer)-buffer_size, "  executable = '%s'\n", g_conf_user_sso_exec );
+			buffer_size += snprintf( buffer+buffer_size, sizeof(buffer)-buffer_size, "  socket = '%s'\n", g_conf_user_sso_socket );
+			buffer_size += snprintf( buffer+buffer_size, sizeof(buffer)-buffer_size, "}\n" );
 			memset( configuration, '\0', sizeof(configuration) );
-			strncpy( configuration, "/tmp/sso-XXXXXX.conf", sizeof(configuration)-1 );
+			strncpy( configuration, "/tmp/sso.conf-XXXXXX", sizeof(configuration)-1 );
 			if( configuration[0] != '\0' ) {
 				umask( 077 );
 				fd = mkstemp( configuration );
@@ -266,7 +291,6 @@ int main (int argc, char *argv[]) {
 		}
 		write( STDOUT_FILENO, key, key_size );
 	}
-
 	memset( key, '\0', sizeof(key) );
 	memset( password, '\0', sizeof(password) );
 	cfg_free( cfg );

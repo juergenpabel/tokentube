@@ -22,7 +22,7 @@ int default__api__otp_create(const char* identifier) {
 	size_t		hash_len = 0;
 	size_t		key_len = 0;
 	tt_otp_t	otp = {0};
-	int		i=0;
+	size_t		i=0;
 
 	TT_TRACE( "library/plugin", "%s(identifier='%s')", __FUNCTION__, identifier );
 	if( identifier == NULL || identifier[0] == '\0' ) {
@@ -48,7 +48,7 @@ int default__api__otp_create(const char* identifier) {
 		return TT_ERR;
 	}
 	hash_len = gcry_md_get_algo_dlen( gcry_md_map_name( libtokentube_crypto_get_hash() ) );
-	if( g_crypto_otp_bits/8 > (int)hash_len ) {
+	if( (size_t)g_crypto_otp_bits/8 > hash_len ) {
 		TT_LOG_ERROR( "plugin/default", "crypto|hash='%s' does not have enough bits in %s()", libtokentube_crypto_get_hash(), __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -63,10 +63,10 @@ int default__api__otp_create(const char* identifier) {
 	}
 	memcpy( hash_cur, hash_tmp, g_crypto_otp_bits/8 );
 	memset( hash_tmp, '\0', key_len );
-	for( i=0; i<g_crypto_otp_bits/8; i++ ) {
+	for( i=0; i<(size_t)g_crypto_otp_bits/8; i++ ) {
 		hash_tmp[i] = key[i] ^ hash_cur[i];
 	}
-	for( i=0; i<(int)key_len; i++ ) {
+	for( i=0; i<key_len; i++ ) {
 		otp.data[i] = key[i] ^ hash_tmp[i%(g_crypto_otp_bits/8)];
 	}
 	otp.data_len = key_len;

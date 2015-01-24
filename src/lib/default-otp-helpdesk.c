@@ -108,7 +108,7 @@ int default__api__otp_execute_challenge( const char* identifier, char* challenge
 	char		bytes[2+TT_OTP_BITS_MAX/8] = { 0 };
 	tt_otp_t	otp = {0};
 	int		crc = 0;
-	int		i = 0;
+	size_t		i = 0;
 
 	TT_TRACE( "plugin/default", "%s(identifier='%s')", __FUNCTION__, identifier );
 	if( identifier == NULL || challenge == NULL || challenge_size == NULL || *challenge_size == 0 ) {
@@ -130,7 +130,7 @@ int default__api__otp_execute_challenge( const char* identifier, char* challenge
 	}
 	bytes[0] = (crc >> 0) & 0xff;
 	bytes[1] = (crc >> 8) & 0xff;
-	for( i=0; i<(int)otp.bits/8; i++ ) {
+	for( i=0; i<otp.bits/8; i++ ) {
 		bytes[2+i] = random() & 0xff;
 	}
 	if( libtokentube_util_base32_encode( bytes, 2+otp.bits/8, challenge, challenge_size ) != TT_OK ) {
@@ -296,7 +296,8 @@ int default__api__otp_execute_apply(const char* identifier, const char* challeng
 	char		hash[TT_DIGEST_BITS_MAX/8] = {0};
 	size_t		hash_size = sizeof(hash);
 	char		xor[TT_OTP_BITS_MAX/8] = {0};
-	int		i, crc = 0;
+	size_t		i = 0;
+	int		crc = 0;
 	tt_otp_t	otp = {0};
 
 	TT_TRACE( "plugin/default", "%s(identifier='%s',challenge='%s',response='%s')", __FUNCTION__, identifier, challenge, response );
@@ -327,7 +328,7 @@ int default__api__otp_execute_apply(const char* identifier, const char* challeng
 		TT_LOG_ERROR( "plugin/default", "hash_size > sizeof(hash) for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
-	for( i=0; i<(int)otp.data_len; i++ ) {
+	for( i=0; i<otp.data_len; i++ ) {
 		key[i] = challenge_raw[2+i%(otp.bits/8)] ^ response_raw[2+i%(otp.bits/8)] ^ otp.data[i];
 	}
 	if( libtokentube_crypto_hash( otp.data, otp.bits/8, hash, &hash_size ) != TT_OK ) {
@@ -342,10 +343,10 @@ int default__api__otp_execute_apply(const char* identifier, const char* challeng
 		TT_LOG_ERROR( "plugin/default", "crc(response_raw)[%x%x] != hash(data)[%x%x] in %s()", ((crc >> 0) & 0xff), ((crc >> 8) & 0xff), response_raw[0] & 0xff, response_raw[1] & 0xff, __FUNCTION__ );
 		return TT_ERR;
 	}
-	for( i=0; i<(int)otp.bits/8; i++ ) {
+	for( i=0; i<otp.bits/8; i++ ) {
 		xor[i] = key[i] ^ hash[i];
 	}
-	for( i=0; i<(int)otp.data_len; i++ ) {
+	for( i=0; i<otp.data_len; i++ ) {
 		otp.data[i] = key[i] ^ xor[i%(otp.bits/8)];
 	}
 	*key_size = otp.data_len;

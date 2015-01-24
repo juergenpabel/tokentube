@@ -182,7 +182,7 @@ int helpdesk__api__file_save(tt_file_t file, const char* identifier, const char*
 				g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "helpdesk__impl__send failed in helpdesk__api__file_save()" );
 			}
 		} else {
-			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_data_read() failed at position %d in helpdesk__api__file_save()", (int)offset );
+			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_data_read() failed at position %lu in helpdesk__api__file_save()", (unsigned long)offset );
 		}
 	} else {
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "malloc() failed in helpdesk__api__file_save()" );

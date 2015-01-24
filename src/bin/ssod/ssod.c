@@ -72,7 +72,7 @@ static void ssod_punt(int code) {
 }
 
 
-static int ssod_verifypeer(int sock) {
+static int ssod_verify_greeter(int sock) {
 	char		filename[FILENAME_MAX+1] = {0};
 	char		greeter[FILENAME_MAX+1] = {0};
 	char		peer[FILENAME_MAX+1] = {0};
@@ -88,16 +88,19 @@ static int ssod_verifypeer(int sock) {
 	if( usercred.uid < cfg_getint( g_cfg, "greeters|uid-min" ) || usercred.uid > cfg_getint( g_cfg, "greeters|uid-max" ) ) {
 		return TT_NO;
 	}
-	snprintf( filename, sizeof(filename), "/proc/%d/exe", (int)usercred.pid );
-	if( realpath( filename, peer ) == NULL ) {
-		return TT_ERR;
-	}
 	path = cfg_getstr( g_cfg, "greeters|listing" );
 	if( path == NULL ) {
-		return TT_YES;
+		if( usercred.uid == getuid() ) {
+			return TT_YES;
+		}
+		return TT_ERR;
 	}
 	dir = opendir( path );
 	if( dir == NULL ) {
+		return TT_ERR;
+	}
+	snprintf( filename, sizeof(filename), "/proc/%ld/exe", (long)usercred.pid );
+	if( realpath( filename, peer ) == NULL ) {
 		return TT_ERR;
 	}
 	entry = readdir( dir );
@@ -118,9 +121,10 @@ static int ssod_verifypeer(int sock) {
 
 int main(int argc, char* argv[]) {
 	ssod_peer_t		state = PEER_UNKNOWN;
-	int			i, fd[2], sock_local, sock_remote;
+	int			fd[2], sock_local, sock_remote;
 	struct sockaddr_un	sa = {0};
 	struct stat		st1, st2;
+	size_t			i;
 	pid_t			other;
 
 	if( argc != 2 ) {
@@ -165,7 +169,7 @@ int main(int argc, char* argv[]) {
 		ssod_punt( __LINE__ );
 	}
 	if( other != getppid() ) {
-		waitpid( other, &i, 0 );
+		waitpid( other, NULL, 0 );
 		ssod_punt( 0 );
 	}
 	g_cfg = cfg_init( opt_sso, CFGF_NONE );
@@ -204,8 +208,9 @@ int main(int argc, char* argv[]) {
 		}
 		switch( state ) {
 			case PEER_PBA:
+				cfg_setstr( g_cfg, "greeters|listing", NULL );
 				memset( g_username, '\0', sizeof(g_username) );
-				for( i=0; i<(int)sizeof(g_username)-1; i++ ) {
+				for( i=0; i<sizeof(g_username)-1; i++ ) {
 					if( read( sock_remote, &g_username[i], 1) == 1) {
 						if( g_username[i] == '\n' ) {
 							g_username[i] = '\0';
@@ -213,19 +218,19 @@ int main(int argc, char* argv[]) {
 						}
 					}
 				}
-				if( strnlen( g_username, sizeof(g_username) ) == 0 ) {
-					break;
-				}
-				memset( g_password, '\0', sizeof(g_password) );
-				for( i=0; i<(int)sizeof(g_password)-1; i++ ) {
-					if( read( sock_remote, &g_password[i], 1) == 1) {
-						if( g_password[i] == '\n' ) {
-							g_password[i] = '\0';
-							break;
+				if( strnlen( g_username, sizeof(g_username) ) > 0 ) {
+					memset( g_password, '\0', sizeof(g_password) );
+					for( i=0; i<sizeof(g_password)-1; i++ ) {
+						if( read( sock_remote, &g_password[i], 1) == 1) {
+							if( g_password[i] == '\n' ) {
+								g_password[i] = '\0';
+								break;
+							}
 						}
 					}
+					state = PEER_GREETER;
 				}
-				state = PEER_GREETER;
+				close( sock_remote );
 				break;
 			case PEER_GREETER:
 				if( getuid() == 0 && geteuid() == 0 ) {
@@ -245,13 +250,15 @@ int main(int argc, char* argv[]) {
 					cfg_free( g_cfg );
 					g_cfg = cfg_init( opt_sso, CFGF_NONE );
 					if( g_cfg == NULL ) {
+						unlink( sa.sun_path );
 						ssod_punt( __LINE__ );
 					}
 					if( cfg_parse( g_cfg, PBA_FILENAME__ETC_SSOD_CONF ) != 0 ) {
+						unlink( sa.sun_path );
 						ssod_punt( __LINE__ );
 					}
 				}
-				if( ssod_verifypeer( sock_remote ) == TT_YES ) {
+				if( ssod_verify_greeter( sock_remote ) == TT_YES ) {
 					write( sock_remote, g_username, strnlen( g_username, sizeof(g_username) ) );
 					write( sock_remote, "\n", 1 );
 					write( sock_remote, g_password, strnlen( g_password, sizeof(g_password) ) );
@@ -259,15 +266,15 @@ int main(int argc, char* argv[]) {
 				}
 				close( sock_remote );
 				close( sock_local );
+				unlink( sa.sun_path );
 				ssod_punt( 0 );
 				break;
 			default:
 				close( sock_remote );
 				close( sock_local );
-				unlink( cfg_getstr( g_cfg, "ssod|socket" ) );
+				unlink( sa.sun_path );
 				ssod_punt( __LINE__ );
 		}
-		close( sock_remote );
 	}
 	ssod_punt( __LINE__ );
 	exit( -1 );

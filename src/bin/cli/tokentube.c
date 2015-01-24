@@ -71,13 +71,13 @@ int main(int argc, char* argv[]) {
 	char challenge[TT_OTP_TEXT_MAX+1] = {0};
 	char response[TT_OTP_TEXT_MAX+1] = {0};
 	char username[TT_USERNAME_CHAR_MAX+1] = {0};
-	size_t cr_len = 0;
+	size_t i, cr_len = 0;
 	int  action = 0;
 	unsigned int quiet = 0;
 	unsigned int verbose = 0;
 	unsigned int debug = 0;
 	char debuglevel[] = "0";
-	int  i=0, c=0, err=0;
+	int  c=0, err=0;
 	tt_status_t status = TT_STATUS__UNDEFINED;
 
 	opterr = 0;
@@ -387,7 +387,7 @@ int main(int argc, char* argv[]) {
 			}
 			key_len = sizeof(key);
 			if( library.api.otp.execute_apply( identifier, challenge, response, key, &key_len ) == TT_OK ) {
-				for( i=0; i<(int)key_len; i++ ) {
+				for( i=0; i<key_len; i++ ) {
 					printf( "%hhX ", key[i] );
 				}
 				printf( "\n" );

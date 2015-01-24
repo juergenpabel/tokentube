@@ -17,14 +17,40 @@
 #include "libtokentube.h"
 
 
+typedef struct {
+	const char*	path;
+	char*		buffer;
+	size_t*		buffer_size;
+} default_ext2_dir_t;
+
+
+static int default__ext2fs_dir_iter(struct ext2_dir_entry* de, int offset, int blocksize, char* buffer, void* priv_data) {
+	default_ext2_dir_t*	data = (default_ext2_dir_t*)priv_data;
+	size_t			buffer_offset = 0;
+
+	(void)offset;
+	(void)blocksize;
+	(void)buffer;
+	if( de->name[0] == '.' ) {
+		return 0;
+	}
+	buffer_offset = strnlen( data->buffer, *data->buffer_size );
+	snprintf( data->buffer+buffer_offset, *data->buffer_size-buffer_offset, "/boot/%s/%.*s\n", data->path, de->name_len&0xff, de->name );
+	return 0;
+}
+
+
 __attribute__ ((visibility ("hidden")))
 int default__ext2fs_load(const char* filename, char* buffer, size_t* buffer_size) {
-	char		device[FILENAME_MAX+1] = {0};
-	ext2_filsys	e2fs;
-	ext2_ino_t	e2dir;
-	ext2_ino_t	e2file;
-	ext2_file_t	target_file;
-	const char*	next;
+	char			device[FILENAME_MAX+1] = {0};
+	ext2_filsys		e2fs;
+	ext2_ino_t		e2dir;
+	ext2_ino_t		e2file;
+	ext2_file_t		target_file;
+	struct ext2_inode	inode;
+	default_ext2_dir_t	dir_data;
+	const char*		name;
+	const char*		next;
 
 	TT_TRACE( "plugin/default", "%s(filename='%s',buffer=%p,buffer_size=%p)", __FUNCTION__, filename, buffer, buffer_size );
 	if( filename == NULL || buffer == NULL || buffer_size == NULL || *buffer_size == 0 ) {
@@ -45,15 +71,16 @@ int default__ext2fs_load(const char* filename, char* buffer, size_t* buffer_size
 
 	TT_DEBUG2( "plugin/default", "invoking ext2fs_lookup() for '%s'", filename );
 	e2dir = EXT2_ROOT_INO;
-	next = strchr( filename, '/' );
+	name = filename;
+	next = strchr( name, '/' );
 	while( next != NULL ) {
-		switch( ext2fs_lookup( e2fs, e2dir, filename, next-filename, NULL, &e2dir ) ) {
+		switch( ext2fs_lookup( e2fs, e2dir, name, next-name, NULL, &e2dir ) ) {
 			case 0:
-				filename = next+1;
-				next = strchr( filename, '/' );
+				name = next+1;
+				next = strchr( name, '/' );
 				break;
 			case EXT2_ET_FILE_NOT_FOUND:
-				TT_DEBUG2( "plugin/default", "directory '%s' not found on EXT2 filesystem '%s'", filename, device );
+				TT_DEBUG2( "plugin/default", "directory '%s' not found on EXT2 filesystem '%.*s'", name-filename, filename, device );
 				ext2fs_close( e2fs );
 				return TT_ERR;
 			default:
@@ -62,23 +89,45 @@ int default__ext2fs_load(const char* filename, char* buffer, size_t* buffer_size
 				return TT_ERR;
 		}
 	}
-	if( ext2fs_lookup( e2fs, e2dir, filename, strnlen(filename, FILENAME_MAX), NULL, &e2file ) == EXT2_ET_FILE_NOT_FOUND ) {
+	if( ext2fs_lookup( e2fs, e2dir, name, strnlen(name, FILENAME_MAX), NULL, &e2file ) == EXT2_ET_FILE_NOT_FOUND ) {
 		TT_DEBUG2( "plugin/default", "file '%s' not found on EXT2 filesystem '%s'", filename, device );
 		ext2fs_close( e2fs );
 		return TT_ERR;
 	}
-	if( ext2fs_file_open( e2fs, e2file, 0, &target_file ) != 0 ) {
-		TT_LOG_ERROR( "plugin/default", "failed to load '%s' from EXT2 filesystem ('%s')", filename, device );
+	if( ext2fs_read_inode( e2fs, e2file, &inode ) != 0) {
+		TT_DEBUG2( "plugin/default", "file '%s' failed to load inode on EXT2 filesystem '%s'", filename, device );
 		ext2fs_close( e2fs );
 		return TT_ERR;
 	}
-	if( ext2fs_file_read( target_file, buffer, *buffer_size, (unsigned int*)buffer_size ) != 0 ) {
-		TT_LOG_ERROR( "plugin/default", "failed to load '%s' from EXT2 filesystem ('%s')", filename, device );
-		ext2fs_file_close( target_file );
-		ext2fs_close( e2fs );
-		return TT_ERR;
+	switch( inode.i_mode & LINUX_S_IFMT ) {
+		case LINUX_S_IFREG:
+			if( ext2fs_file_open( e2fs, e2file, 0, &target_file ) != 0 ) {
+				TT_LOG_ERROR( "plugin/default", "failed to open '%s' on EXT2 filesystem ('%s')", filename, device );
+				ext2fs_close( e2fs );
+				return TT_ERR;
+			}
+			if( ext2fs_file_read( target_file, buffer, *buffer_size, (unsigned int*)buffer_size ) != 0 ) {
+				TT_LOG_ERROR( "plugin/default", "failed to read '%s' on EXT2 filesystem ('%s')", filename, device );
+				ext2fs_file_close( target_file );
+				ext2fs_close( e2fs );
+				return TT_ERR;
+			}
+			ext2fs_file_close( target_file );
+			break;
+		case LINUX_S_IFDIR:
+			dir_data.path = filename;
+			dir_data.buffer = buffer;
+			dir_data.buffer_size = buffer_size;
+			if( ext2fs_dir_iterate( e2fs, e2file, 0, NULL, default__ext2fs_dir_iter, &dir_data ) != 0 ) {
+				TT_LOG_ERROR( "plugin/default", "failed to iterate dir '%s' on EXT2 filesystem ('%s')", filename, device );
+				ext2fs_close( e2fs );
+				return TT_ERR;
+			}
+			*buffer_size = strnlen( buffer, *buffer_size );
+			break;
+		default:
+			TT_DEBUG2( "plugin/default", "file '%s' not a regular file or directory on EXT2 filesystem '%s'", filename, device );
 	}
-	ext2fs_file_close( target_file );
 	ext2fs_close( e2fs );
 	return TT_OK;
 }

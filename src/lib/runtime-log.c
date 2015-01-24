@@ -21,8 +21,8 @@ typedef struct lq {
 
 
 static int		g_env_log_fd = TT_UNINITIALIZED;
-static tt_loglevel_t	g_env_log_level = TT_UNINITIALIZED;
-static tt_loglevel_t	g_conf_log_level = TT_UNINITIALIZED;
+static tt_loglevel_t	g_env_log_level = TT_LOG__UNDEFINED;
+static tt_loglevel_t	g_conf_log_level = TT_LOG__UNDEFINED;
 
 
 static log_queue* g_syslog_queue = NULL;
@@ -113,7 +113,7 @@ int libtokentube_log_configure() {
 			}
 		}
 	}
-	if( (int)g_conf_log_level == TT_UNINITIALIZED ) {
+	if( g_conf_log_level == TT_LOG__UNDEFINED ) {
 		TT_LOG_INFO( "library/runtime", "no syslog filter configured for libtokentube_log()" );
 		g_conf_log_level = TT_LOG__INFO;
 	}

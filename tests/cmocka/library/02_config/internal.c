@@ -10,8 +10,7 @@
 #include <tokentube/library.h>
 
 
-int     g_library_functions;
-int	g_debug_level = TT_UNINITIALIZED;
+tt_debuglevel_t	g_debug_level = TT_DEBUG__UNDEFINED;
 
 
 char* libtokentube_name2oid(char* name) {

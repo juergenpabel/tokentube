@@ -66,7 +66,7 @@ int default__api__pba_install_pre(const char* type, const char* path) {
 		close( fd );
 		return TT_ERR;
 	}
-	if( write( fd, filename, filename_size ) < (int)filename_size ) {
+	if( write( fd, filename, filename_size ) < (ssize_t)filename_size ) {
 		TT_LOG_ERROR( "plugin/default", "write() failed in %s()", __FUNCTION__ );
 		close( fd );
 		return TT_ERR;

@@ -45,7 +45,7 @@ int libtokentube_debug_configure() {
 		if( conf_level > 9 ) {
 			conf_level = 9;
 		}
-		g_debug_level = conf_level;
+		g_debug_level = (tt_debuglevel_t)conf_level;
 	}
 	return TT_OK;
 }

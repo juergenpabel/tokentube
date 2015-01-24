@@ -91,7 +91,7 @@ int test__impl__posix_save(const char* filename, const char* buffer, const size_
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "open() failed for '%s' in %s()", filename, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( write( fd, buffer, buffer_size ) != (int)buffer_size ) {
+	if( write( fd, buffer, buffer_size ) != (ssize_t)buffer_size ) {
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "write() failed for '%s' in %s()", filename, __FUNCTION__ );
 		close( fd );
 		return TT_ERR;
