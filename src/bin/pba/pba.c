@@ -22,9 +22,9 @@
 static tt_library_t	g_library;
 static char* 		g_conf_user_userprompt = NULL;
 static char*		g_conf_user_passprompt = NULL;
-static int   		g_conf_user_sso = TT_YES;
-static char*		g_conf_user_sso_exec = NULL;
-static char*		g_conf_user_sso_socket = NULL;
+static int   		g_conf_sso = TT_YES;
+static char*		g_conf_sso_exec = NULL;
+static char*		g_conf_sso_socket = NULL;
 static char*		g_conf_otp_identifier = NULL;
 
 
@@ -47,14 +47,13 @@ static cfg_opt_t opt_pba_splash[] = {
 	CFG_END()
 };
 
-static cfg_opt_t opt_pba_user_sso[] = {
+static cfg_opt_t opt_pba_sso[] = {
 	CFG_STR("executable", NULL, CFGF_NONE),
 	CFG_STR("socket", NULL, CFGF_NONE),
 	CFG_END()
 };
 
 static cfg_opt_t opt_pba_user[] = {
-	CFG_SEC("sso", opt_pba_user_sso, CFGF_NONE),
 	CFG_STR("title", NULL, CFGF_NONE),
 	CFG_STR("background-image", NULL, CFGF_NONE),
 	CFG_STR("prompt-username", "Username:", CFGF_NONE),
@@ -77,6 +76,7 @@ static cfg_opt_t opt_pba[] = {
 	CFG_FUNC("include-dir", pba_cfg_include),
 	CFG_SEC("splash", opt_pba_splash, CFGF_NONE),
 	CFG_SEC("user", opt_pba_user, CFGF_NONE),
+	CFG_SEC("sso", opt_pba_sso, CFGF_NONE),
 	CFG_SEC("otp", opt_pba_otp, CFGF_NONE),
 	CFG_END()
 };
@@ -126,9 +126,9 @@ int main (int argc, char *argv[]) {
 	size_t	key_size = sizeof(key);
 	char	configuration[FILENAME_MAX+1] = { 0 };
 	char	username[TT_USERNAME_CHAR_MAX+1] = {0};
-	size_t	username_size = 0;
+	size_t	username_size = sizeof(username);
 	char	password[TT_PASSWORD_CHAR_MAX+1] = {0};
-	size_t	password_size = 0;
+	size_t	password_size = sizeof(password);
 	cfg_t*	cfg = NULL;
 	int	fd, verbose = 0;
 	char	c;
@@ -167,7 +167,7 @@ int main (int argc, char *argv[]) {
                         break;
  			case 's':
 				if( strncmp( "no", optarg, 3) == 0) {
-					g_conf_user_sso = TT_NO;
+					g_conf_sso = TT_NO;
 				}
                         break;
 			default:
@@ -216,14 +216,14 @@ int main (int argc, char *argv[]) {
 	}
 	g_conf_user_userprompt = cfg_getstr( cfg, "user|prompt-username" );
 	g_conf_user_passprompt = cfg_getstr( cfg, "user|prompt-password" );
-	g_conf_user_sso_exec   = cfg_getstr( cfg, "user|sso|executable" );
-	g_conf_user_sso_socket = cfg_getstr( cfg, "user|sso|socket" );
 	g_conf_otp_identifier  = cfg_getstr( cfg, "otp|default-identifier" );
-	if( g_conf_user_sso_socket == NULL ) {
-		g_conf_user_sso_socket = "/dev/.initramfs/tokentube/sso.socket";
+	g_conf_sso_exec = cfg_getstr( cfg, "sso|executable" );
+	g_conf_sso_socket = cfg_getstr( cfg, "sso|socket" );
+	if( g_conf_sso_socket == NULL ) {
+		g_conf_sso_socket = "/dev/.initramfs/tokentube/sso.socket";
 	}
-	if( access( g_conf_user_sso_socket, F_OK ) == -1 && errno == ENOENT ) {
-		strncpy( buffer, g_conf_user_sso_socket, sizeof(buffer)-1 );
+	if( access( g_conf_sso_socket, F_OK ) == -1 && errno == ENOENT ) {
+		strncpy( buffer, g_conf_sso_socket, sizeof(buffer)-1 );
 		if( g_library.api.util.posix_mkdir( dirname( buffer ) ) < 0 ) {
 			g_library.api.runtime.log( TT_LOG__ERROR, "pba", "API:util.posix_mkdir() failed for '%s'", configuration );
 			cfg_free( cfg );
@@ -231,8 +231,10 @@ int main (int argc, char *argv[]) {
 			exit(-1);
 		}
 		if( username[0] == '\0' ) {
-			strncpy( username, cfg_getstr( cfg, "user|default-username" ), sizeof(username)-1 );
-			username_size = strnlen( username, sizeof(username) );
+			if( cfg_getstr( cfg, "user|default-username" ) != NULL ) {
+				strncpy( username, cfg_getstr( cfg, "user|default-username" ), sizeof(username)-1 );
+				username_size = strnlen( username, sizeof(username) );
+			}
 		}
 	}
 	if( username[0] == '\0' || password[0] == '\0' ) {
@@ -243,6 +245,7 @@ int main (int argc, char *argv[]) {
 		}
 	}
 	if( username[0] == '\0' && password[0] == '\0' ) {
+		key_size = sizeof(key);
 		if( pba_otp( &g_library, g_conf_otp_identifier, key, &key_size ) != TT_OK ) {
 			g_library.api.runtime.log( TT_LOG__ERROR, "pba", "pba_otp() returned error in %s()", __FUNCTION__ );
 			tt_finalize();
@@ -250,22 +253,23 @@ int main (int argc, char *argv[]) {
 		}
 		write( STDOUT_FILENO, key, key_size );
 	}
-	if( ( username == NULL || username[0] == '\0' ) && password != NULL ) {
+	if( username[0] == '\0' && password[0] != '\0' ) {
 		g_library.api.runtime.debug( TT_DEBUG__VERBOSITY1, "pba", "no username given, returning password in %s()", __FUNCTION__ );
 		write( STDOUT_FILENO, password, password_size );
 	}
-	if( ( username != NULL && username[0] != '\0' ) && password != NULL ) {
+	if( username[0] != '\0' && password[0] != '\0' ) {
+		key_size = sizeof(key);
 		if( pba_user_loadkey( &g_library, username, username_size, password, password_size, key, &key_size ) != TT_OK ) {
 			g_library.api.runtime.log( TT_LOG__ERROR, "pba", "pba_user_loadkey() failed in %s()", __FUNCTION__ );
 			memset( password, '\0', password_size );
 			tt_finalize();
 			exit(-1);
 		}
-		if( g_conf_user_sso == TT_YES ) {
+		if( g_conf_sso == TT_YES ) {
 			buffer_size = 0;
 			buffer_size += snprintf( buffer+buffer_size, sizeof(buffer)-buffer_size, "ssod {\n" );
-			buffer_size += snprintf( buffer+buffer_size, sizeof(buffer)-buffer_size, "  executable = '%s'\n", g_conf_user_sso_exec );
-			buffer_size += snprintf( buffer+buffer_size, sizeof(buffer)-buffer_size, "  socket = '%s'\n", g_conf_user_sso_socket );
+			buffer_size += snprintf( buffer+buffer_size, sizeof(buffer)-buffer_size, "  executable = '%s'\n", g_conf_sso_exec );
+			buffer_size += snprintf( buffer+buffer_size, sizeof(buffer)-buffer_size, "  socket = '%s'\n", g_conf_sso_socket );
 			buffer_size += snprintf( buffer+buffer_size, sizeof(buffer)-buffer_size, "}\n" );
 			memset( configuration, '\0', sizeof(configuration) );
 			strncpy( configuration, "/tmp/sso.conf-XXXXXX", sizeof(configuration)-1 );
@@ -278,8 +282,8 @@ int main (int argc, char *argv[]) {
 						unlink( configuration );
 					}
 					close( fd );
-					if( pba_sso_start( g_conf_user_sso_exec, configuration, g_conf_user_sso_socket ) == TT_OK ) {
-						pba_sso_credentials( g_conf_user_sso_socket, username, password );
+					if( pba_sso_start( g_conf_sso_exec, configuration, g_conf_sso_socket ) == TT_OK ) {
+						pba_sso_credentials( g_conf_sso_socket, username, password );
 					} else {
 						g_library.api.runtime.log( TT_LOG__ERROR, "pba", "pba_sso_start() failed in %s()", __FUNCTION__ );
 					}

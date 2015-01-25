@@ -42,6 +42,7 @@ static void on_username(void *user_data, const char *answer, ply_boot_client_t *
 		ply_event_loop_exit( state->loop, TT_ERR );
 	}
 	strncpy( state->user, answer, *(state->user_size) );
+	*(state->user_size) = strnlen( state->user, *(state->user_size) );
 }
 
 
@@ -53,6 +54,7 @@ static void on_password(void *user_data, const char *answer, ply_boot_client_t *
 		ply_event_loop_exit( state->loop, TT_ERR );
         }
 	strncpy( state->pass, answer, *(state->pass_size) );
+	*(state->pass_size) = strnlen( state->pass, *(state->pass_size) );
 	ply_event_loop_exit( state->loop, TT_OK );
 }
 

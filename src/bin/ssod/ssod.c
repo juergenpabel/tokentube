@@ -22,7 +22,7 @@
 #include <tokentube.h>
 
 
-#define PBA_FILENAME__ETC_SSOD_CONF	"/etc/tokentube/sso/ssod.conf"
+#define SSOD_FILENAME__ETC_SSOD_CONF	"/etc/tokentube/sso/ssod.conf"
 
 typedef enum {
         PEER_UNKNOWN = 0,
@@ -45,7 +45,6 @@ static cfg_opt_t opt_sso_ssod[] = {
 };
 
 static cfg_opt_t opt_sso[] = {
-	CFG_FUNC("include", cfg_include),
 	CFG_SEC("ssod", opt_sso_ssod, CFGF_NONE),
 	CFG_SEC("greeters", opt_sso_greeters, CFGF_NONE),
 	CFG_END()
@@ -253,7 +252,7 @@ int main(int argc, char* argv[]) {
 						unlink( sa.sun_path );
 						ssod_punt( __LINE__ );
 					}
-					if( cfg_parse( g_cfg, PBA_FILENAME__ETC_SSOD_CONF ) != 0 ) {
+					if( cfg_parse( g_cfg, SSOD_FILENAME__ETC_SSOD_CONF ) != 0 ) {
 						unlink( sa.sun_path );
 						ssod_punt( __LINE__ );
 					}
