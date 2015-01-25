@@ -62,13 +62,12 @@ int default__posix_load(const char* filename, char* buffer, size_t* buffer_size)
 				close( fd );
 				return TT_ERR;
 			}
-			close( fd );
 			*buffer_size = st.st_size;
 			break;
 		default:
 			TT_LOG_ERROR( "plugin/default", "fdopendir() failed for '%s' in %s()", filename, __FUNCTION__ );
-			close( fd );
 	}
+	close( fd );
 	return TT_OK;
 }
 

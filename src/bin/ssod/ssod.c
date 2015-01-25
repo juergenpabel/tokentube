@@ -100,6 +100,7 @@ static int ssod_verify_greeter(int sock) {
 	}
 	snprintf( filename, sizeof(filename), "/proc/%ld/exe", (long)usercred.pid );
 	if( realpath( filename, peer ) == NULL ) {
+		closedir( dir );
 		return TT_ERR;
 	}
 	entry = readdir( dir );

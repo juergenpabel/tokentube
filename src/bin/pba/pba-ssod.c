@@ -95,9 +95,13 @@ int pba_sso_credentials(const char* sockname, const char* username, const char* 
 		return TT_ERR;
 	}
 	if( getsockopt( sock, SOL_SOCKET, SO_PEERCRED, &usercred, &uclen ) < 0 ) {
+		fprintf( stderr, "pba: getsockopt() failed for '%s' in %s()\n", sa.sun_path, __FUNCTION__ );
+		close( sock );
 		return TT_ERR;
 	}
 	if( usercred.uid != getuid() ) {
+		fprintf( stderr, "pba: connection from another uid (%ld instead of %ld) in %s()\n", (long)usercred.uid, (long)getuid(), __FUNCTION__ );
+		close( sock );
 		return TT_NO;
 	}
 	write( sock, username, strnlen( username, TT_USERNAME_CHAR_MAX ) );

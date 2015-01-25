@@ -78,21 +78,21 @@ int default__api__user_update(const char* username, const char* old_password, co
 		}
 		if( libtokentube_crypto_encrypt( user.luks_data, user.luks_data_len, new_password, strlen(new_password), username, strlen(username) ) != TT_OK ) {
 			TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_encrypt() failed in %s()", __FUNCTION__ );
-			memset( &user, '0', sizeof(user) );
+			memset( &user, '\0', sizeof(user) );
 			return TT_ERR;
 		}
 		if( default__impl__user_verifier_set( username, new_password, &user ) != TT_OK ) {
 			TT_LOG_ERROR( "plugin/default", "default__impl__user_verifier_set() failed in %s()", __FUNCTION__ );
-			memset( &user, '0', sizeof(user) );
+			memset( &user, '\0', sizeof(user) );
 			return TT_ERR;
 		}
 		if( default__impl__user_storage_save( username, &user ) != TT_OK ) {
 			TT_LOG_ERROR( "plugin/default", "default__impl__user_save() failed in %s()", __FUNCTION__ );
-			memset( &user, '0', sizeof(user) );
+			memset( &user, '\0', sizeof(user) );
 			return TT_ERR;
 		}
 	}
-	memset( &user, '0', sizeof(user) );
+	memset( &user, '\0', sizeof(user) );
 	return TT_OK;
 }
 
@@ -180,7 +180,7 @@ int default__api__user_execute_load(const char* username, const char* password, 
 	}
 	memcpy( key, user.luks_data, user.luks_data_len );
 	*key_size = user.luks_data_len;
-	memset( &user, '0', sizeof(user) );
+	memset( &user, '\0', sizeof(user) );
 	return TT_OK;
 }
 
