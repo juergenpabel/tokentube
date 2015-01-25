@@ -11,6 +11,7 @@
 #include <syslog.h>
 #include <lightdm.h>
 #include <tokentube/defines.h>
+#include <tokentube/enums.h>
 
 #define	GREETER_FILENAME__ETC_GREETER_CONF "/etc/tokentube/sso/greeter-lightdm.conf"
 
@@ -35,33 +36,34 @@ static cfg_opt_t opt_greeter[] = {
 
 
 static GMainLoop*	g_mainloop = NULL;
-static LightDMGreeter*	g_greeter = NULL;
+static LightDMGreeter*	g_lightdm_greeter = NULL;
+static char*		g_original_greeter = NULL;
 static char		g_username[TT_USERNAME_CHAR_MAX+1] = {0};
 static char		g_password[TT_PASSWORD_CHAR_MAX+1] = {0};
-static gboolean		g_result = FALSE;
+static tt_status_t	g_status = TT_STATUS__UNDEFINED;
 
 
 static void greeter_log(int level, const char* message) {
-	fprintf( stderr, "tokentube[greeter/lightdm]: %s (username='%s')\n", message, g_username );
-	syslog( level, "greeter/lightdm: %s (username='%s')", message, g_username );
+	if( level < 0 || message == NULL ) {
+		return;
+	}
+	if( g_username[0] != '\0' ) {
+		fprintf( stderr, "tokentube[greeter/lightdm]: %s (username='%s')\n", message, g_username );
+		syslog( level, "greeter/lightdm: %s (username='%s')", message, g_username );
+	} else {
+		fprintf( stderr, "tokentube[greeter/lightdm]: %s)\n", message );
+		syslog( level, "greeter/lightdm: %s", message );
+	}
 }
 
 
 static void exec_original_greeter(int argc, char* argv[]) {
-	char*	original_greeter = NULL;
-	cfg_t*	cfg = NULL;
-
 	(void)argc;
+
 	memset( g_password, '\0', sizeof(g_password) );
 	greeter_log( LOG_INFO, "executing original greeter..." );
-	cfg = cfg_init( opt_greeter, CFGF_NONE );
-	if( cfg_parse( cfg, GREETER_FILENAME__ETC_GREETER_CONF ) != 0 ) {
-		greeter_log( LOG_ERR, "failed to load config for original greeter, terminating." );
-		exit(-1);
-	}
-	original_greeter = cfg_getstr( cfg, "greeter|original-greeter" );
-	if( original_greeter != NULL ) {
-		execvp( original_greeter, argv );
+	if( g_original_greeter != NULL ) {
+		execvp( g_original_greeter, argv );
 	}
 	execv( "/usr/sbin/unity-greeter", argv );
 	exit( -1 );
@@ -76,16 +78,18 @@ static void show_prompt_cb(LightDMGreeter *greeter, const gchar *text, LightDMPr
 
 
 static void auth_complete_cb(LightDMGreeter *greeter) {
-	if( lightdm_greeter_get_is_authenticated(greeter) ) {
-		greeter_log(LOG_INFO, "login successful");
-		if( lightdm_greeter_start_session_sync( greeter, NULL, NULL ) ) {
-			g_result = TRUE;
-		} else {
-			greeter_log(LOG_INFO, "start session failed, terminating...");
-		}
-	} else {
+	g_status = TT_STATUS__NO;
+	if( lightdm_greeter_get_is_authenticated(greeter) == FALSE ) {
 		greeter_log(LOG_INFO, "login failed, terminating...");
+		g_main_loop_quit( g_mainloop );
 	}
+	greeter_log( LOG_INFO, "login successful" );
+	if( lightdm_greeter_start_session_sync( greeter, NULL, NULL ) == FALSE ) {
+		greeter_log( LOG_INFO, "start session failed, terminating..." );
+		g_main_loop_quit( g_mainloop );
+	}
+	greeter_log( LOG_INFO, "session started" );
+	g_status = TT_STATUS__YES;
 	g_main_loop_quit( g_mainloop );
 }
 
@@ -105,7 +109,7 @@ int main(int argc, char* argv[]) {
 		greeter_log( LOG_ERR, "cfg_parse() failed for '" GREETER_FILENAME__ETC_GREETER_CONF "'" );
 		exit( -1 );
 	}
-
+	g_original_greeter = cfg_getstr( cfg, "greeter|original-greeter" );
 	sa.sun_family = AF_UNIX;
 	strncpy( sa.sun_path, cfg_getstr( cfg, "sso|socket" ), sizeof(sa.sun_path)-1 );
 	sock = socket( AF_UNIX, SOCK_STREAM, 0 );
@@ -150,22 +154,24 @@ int main(int argc, char* argv[]) {
 
 	greeter_log( LOG_DEBUG, "starting lightdm communication" );
 	gtk_init( &argc, &argv );
-	g_greeter = lightdm_greeter_new();
-	if( g_greeter == NULL) {
+	g_lightdm_greeter = lightdm_greeter_new();
+	if( g_lightdm_greeter == NULL) {
 		greeter_log( LOG_INFO, "internal error: lightdm_greeter_new() failed" );
 		exec_original_greeter( argc, argv );
+		exit( -1 );
 	}
-	g_signal_connect( g_greeter, "show-prompt", G_CALLBACK(show_prompt_cb), NULL );
-	g_signal_connect( g_greeter, "authentication-complete", G_CALLBACK(auth_complete_cb), NULL );
-	if( lightdm_greeter_connect_sync( g_greeter, NULL ) ) {
-		lightdm_greeter_authenticate( g_greeter, g_username );
+	g_signal_connect( g_lightdm_greeter, "show-prompt", G_CALLBACK(show_prompt_cb), NULL );
+	g_signal_connect( g_lightdm_greeter, "authentication-complete", G_CALLBACK(auth_complete_cb), NULL );
+	if( lightdm_greeter_connect_sync( g_lightdm_greeter, NULL ) ) {
+		lightdm_greeter_authenticate( g_lightdm_greeter, g_username );
 		g_mainloop = g_main_loop_new( NULL, FALSE );
 		g_main_loop_run( g_mainloop );
 	}
 	memset( g_password, '\0', sizeof(g_password) );
-	if( g_result != TT_OK ) {
+	if( g_status != TT_STATUS__YES ) {
 		greeter_log( LOG_INFO, "login failed" );
 		exec_original_greeter( argc, argv );
+		exit( -1 );
 	}
 	greeter_log( LOG_INFO, "completed login procedure" );
 	return 0;
