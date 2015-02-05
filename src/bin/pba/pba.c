@@ -29,13 +29,14 @@ static char*		g_conf_otp_identifier = NULL;
 
 
 static const struct option long_options[] = {
-        { "boot-device", required_argument, 0, 'b' },
-        { "config",      required_argument, 0, 'c' },
-        { "sso",        required_argument, 0, 's' },
-        { "username",    required_argument, 0, 'u' },
-        { "password",    required_argument, 0, 'p' },
-        { "verbose",     no_argument,       0, 'v' },
-        { 0, 0, 0, 0 }
+	{ "fallback",    required_argument, 0, 'x' },
+	{ "boot-device", required_argument, 0, 'b' },
+	{ "config",      required_argument, 0, 'c' },
+	{ "sso",         required_argument, 0, 's' },
+	{ "username",    required_argument, 0, 'u' },
+	{ "password",    required_argument, 0, 'p' },
+	{ "verbose",     no_argument,       0, 'v' },
+	{ 0, 0, 0, 0 }
 };
 
 
@@ -119,28 +120,30 @@ int pba_cfg_include(cfg_t* cfg, cfg_opt_t* opt, int argc, const char** argv) {
 
 
 int main (int argc, char *argv[]) {
-	char	bootdevice[FILENAME_MAX+1] = { 0 };
-	char	buffer[TT_CONFIG_MAX+1] = { 0 };
-	size_t	buffer_size = sizeof(buffer);
-	char	key[TT_KEY_BITS_MAX/8] = { 0 };
-	size_t	key_size = sizeof(key);
-	char	configuration[FILENAME_MAX+1] = { 0 };
-	char	username[TT_USERNAME_CHAR_MAX+1] = {0};
-	size_t	username_size = sizeof(username);
-	char	password[TT_PASSWORD_CHAR_MAX+1] = {0};
-	size_t	password_size = sizeof(password);
-	cfg_t*	cfg = NULL;
-	int	fd, verbose = 0;
-	char	c;
+	char		bootdevice[FILENAME_MAX+1] = { 0 };
+	char		fallback[FILENAME_MAX+1] = { 0 };
+	char		buffer[TT_CONFIG_MAX+1] = { 0 };
+	size_t		buffer_size = sizeof(buffer);
+	char		key[TT_KEY_BITS_MAX/8] = { 0 };
+	size_t		key_size = sizeof(key);
+	char		configuration[FILENAME_MAX+1] = { 0 };
+	char		username[TT_USERNAME_CHAR_MAX+1] = {0};
+	size_t		username_size = sizeof(username);
+	char		password[TT_PASSWORD_CHAR_MAX+1] = {0};
+	size_t		password_size = sizeof(password);
+	cfg_t*		cfg = NULL;
+	int		fd, verbose = 0;
+	char		c;
 
-        opterr = 0;
-        while((c = getopt_long(argc, argv, "b:d:c:u:p:vh", long_options, NULL)) != -1) {
-                switch(c) {
+	opterr = 0;
+	while((c = getopt_long(argc, argv, "f:b:d:c:u:p:vh", long_options, NULL)) != -1) {
+		switch(c) {
  			case 'h':
 				printf("Usage: pba <parameter>\n");
 				printf("\n");
 				printf("       -c|--config      CONFIGURATION_FILENAME\n");
 				printf("       -b|--bootdevice  BOOT_DEVICE\n");
+				printf("       -x|--fallback    FALLBACK_EXECUTABLE\n");
 				printf("\n");
 				printf("Parameter:\n");
 				printf("       -u|--user        USERNAME\n");
@@ -148,30 +151,33 @@ int main (int argc, char *argv[]) {
 				printf("       -s|--sso         [yes|no]\n");
 				printf("\n");
   				exit(0);
+ 			case 'x':
+				strncpy( fallback, optarg, sizeof(fallback)-1 );
+				break;
  			case 'u':
 				strncpy( username, optarg, sizeof(username)-1 );
 				username_size = strnlen( username, sizeof(username) );
-                        break;
+				break;
  			case 'p':
 				strncpy( password, optarg, sizeof(password)-1 );
 				password_size = strnlen( password, sizeof(password) );
-                        break;
+				break;
  			case 'c':
 				strncpy( configuration, optarg, sizeof(configuration)-1 );
-                        break;
+				break;
  			case 'b':
 				strncpy( bootdevice, optarg, sizeof(bootdevice)-1 );
-                        break;
+				break;
  			case 'v':
 				verbose++;
-                        break;
+				break;
  			case 's':
 				if( strncmp( "no", optarg, 3) == 0) {
 					g_conf_sso = TT_NO;
 				}
-                        break;
+				break;
 			default:
-			break;
+				break;
   		}
 	}
 	if( verbose ) {
@@ -185,8 +191,22 @@ int main (int argc, char *argv[]) {
 		setenv( "TT_LOG_TARGET", "FILE", 0 );
 		setenv( "TT_LOG_TARGET_FILE", "/proc/self/fd/2", 0 );
 	}
+	if( fallback[0] == '\0' ) {
+		if( readlink( "/proc/self/exe", fallback, sizeof(fallback)-1 ) > 0 ) {
+			strncat( fallback, ".fallback", sizeof(fallback)-strlen( fallback )-1 );
+			if( access( fallback, X_OK ) < 0 ) {
+				fallback[0] = '\0';
+			}
+		}
+	}
 	if( pba_initialize( &g_library, bootdevice, configuration ) != TT_OK ) {
-		fprintf( stderr, "TokenTube[pba]: pba_initialize() failed in %s()", __FUNCTION__ );
+		fprintf( stderr, "TokenTube[pba]: initialization failed\n");
+		if( fallback[0] != '\0' ) {
+			fprintf( stderr, "TokenTube[pba]: executing fallback ('%s')\n", fallback );
+			argv[0] = fallback;
+			execv( fallback, argv );
+		}
+		fprintf( stderr, "TokenTube[pba]: terminating\n");
 		exit(-1);
 	}
 	if( g_library.api.storage.luks_load != NULL ) {
@@ -199,6 +219,12 @@ int main (int argc, char *argv[]) {
 	}
 	if( g_library.api.storage.file_load( TT_FILE__CONFIG_PBA, "/boot/tokentube/pba.conf", buffer, &buffer_size ) != TT_OK ) {
 		g_library.api.runtime.log( TT_LOG__ERROR, "pba", "API:storage.file_load() failed for [boot]/tokentube/pba.conf" );
+		if( fallback[0] != '\0' ) {
+			fprintf( stderr, "TokenTube[pba]: executing fallback ('%s')\n", fallback );
+			argv[0] = fallback;
+			execv( fallback, argv );
+		}
+		fprintf( stderr, "TokenTube[pba]: terminating\n");
 		exit(-1);
 
 	}
@@ -206,12 +232,24 @@ int main (int argc, char *argv[]) {
 	if( cfg == NULL ) {
 		g_library.api.runtime.log( TT_LOG__ERROR, "pba", "cfg_init() failed in %s()", __FUNCTION__ );
 		tt_finalize();
+		if( fallback[0] != '\0' ) {
+			fprintf( stderr, "TokenTube[pba]: executing fallback ('%s')\n", fallback );
+			argv[0] = fallback;
+			execv( fallback, argv );
+		}
+		fprintf( stderr, "TokenTube[pba]: terminating\n");
 		exit(-1);
 	}
 	if( cfg_parse_buf( cfg, buffer ) != 0 ) {
 		g_library.api.runtime.log( TT_LOG__ERROR, "pba", "cfg_parse_buf() failed for [boot]/tokentube/pba.conf" );
 		cfg_free( cfg );
 		tt_finalize();
+		if( fallback[0] != '\0' ) {
+			fprintf( stderr, "TokenTube[pba]: executing fallback ('%s')\n", fallback );
+			argv[0] = fallback;
+			execv( fallback, argv );
+		}
+		fprintf( stderr, "TokenTube[pba]: terminating\n");
 		exit(-1);
 	}
 	g_conf_user_userprompt = cfg_getstr( cfg, "user|prompt-username" );
@@ -220,16 +258,17 @@ int main (int argc, char *argv[]) {
 	g_conf_sso_exec = cfg_getstr( cfg, "sso|executable" );
 	g_conf_sso_socket = cfg_getstr( cfg, "sso|socket" );
 	if( g_conf_sso_socket == NULL ) {
-		g_conf_sso_socket = "/dev/.initramfs/tokentube/sso.socket";
+		g_conf_sso_socket = "/dev/.initramfs/tokentube/pba/sso.socket";
 	}
-	if( access( g_conf_sso_socket, F_OK ) == -1 && errno == ENOENT ) {
-		strncpy( buffer, g_conf_sso_socket, sizeof(buffer)-1 );
-		if( g_library.api.util.posix_mkdir( dirname( buffer ) ) < 0 ) {
+	strncpy( buffer, g_conf_sso_socket, sizeof(buffer)-1 );
+	if( access( dirname( buffer ), F_OK ) == -1 && errno == ENOENT ) {
+		if( g_library.api.util.posix_mkdir( buffer ) < 0 ) {
 			g_library.api.runtime.log( TT_LOG__ERROR, "pba", "API:util.posix_mkdir() failed for '%s'", configuration );
 			cfg_free( cfg );
 			tt_finalize();
 			exit(-1);
 		}
+		chmod( buffer, S_IWUSR|S_IRUSR|S_IXUSR|S_IXGRP|S_IXOTH );
 		if( username[0] == '\0' ) {
 			if( cfg_getstr( cfg, "user|default-username" ) != NULL ) {
 				strncpy( username, cfg_getstr( cfg, "user|default-username" ), sizeof(username)-1 );
@@ -285,11 +324,9 @@ int main (int argc, char *argv[]) {
 					if( pba_sso_start( g_conf_sso_exec, configuration, g_conf_sso_socket ) == TT_OK ) {
 						pba_sso_credentials( g_conf_sso_socket, username, password );
 					} else {
-						g_library.api.runtime.log( TT_LOG__ERROR, "pba", "pba_sso_start() failed in %s()", __FUNCTION__ );
+						g_library.api.runtime.log( TT_LOG__ERROR, "pba", "failed to start sso-daemon" );
 					}
 					unlink( configuration );
-				} else {
-					g_library.api.runtime.log( TT_LOG__ERROR, "pba", "mkstemp() failed in %s()", __FUNCTION__ );
 				}
 			}
 		}

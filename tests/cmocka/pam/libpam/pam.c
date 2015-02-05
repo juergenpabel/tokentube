@@ -83,8 +83,6 @@ void pam_syslog(const pam_handle_t *pamh __attribute__((unused)), int priority _
         va_list args;
 
         va_start( args, fmt );
-//TODO	vprintf( fmt, args );
-//TODO	printf("\n");
         va_end( args );
 }
 
