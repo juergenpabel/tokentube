@@ -196,7 +196,7 @@ int default__api__otp_execute_response(const char* identifier, const char* chall
 		cfg_free( cfg );
 		return TT_ERR;
 	}
-	if( key_bytes_size*8 < TT_CIPHER_BITS_MIN || key_bytes_size*8 > TT_CIPHER_BITS_MAX ) {
+	if( key_bytes_size < TT_CIPHER_BITS_MIN/8 || key_bytes_size > TT_CIPHER_BITS_MAX/8 ) {
 		TT_LOG_ERROR( "plugin/default", "data too large for identifier '%s'", identifier );
 		cfg_free( cfg );
 		return TT_ERR;

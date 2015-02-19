@@ -10,8 +10,8 @@
 
 __attribute__ ((visibility ("hidden")))
 int libtokentube_util_device_find(dev_t device, char* buffer, size_t* buffer_size) {
+	char		filename[FILENAME_MAX+1] = {0};
 	struct dirent**	list = NULL;
-	char*		name = NULL;
 	struct stat	st;
 	int		i, entries;
 
@@ -19,36 +19,20 @@ int libtokentube_util_device_find(dev_t device, char* buffer, size_t* buffer_siz
 		TT_LOG_ERROR( "library/util", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	name = malloc( *buffer_size );
-	if( name == NULL ) {
-		TT_LOG_ERROR( "library/util", "malloc() failed in %s()", __FUNCTION__ );
-		return TT_ERR;
-	}
-	memset( name, '\0', *buffer_size );
+	memset( buffer, '\0', *buffer_size );
 	entries = scandir( "/dev/disk/by-uuid", &list, NULL, alphasort );
 	for( i=0; i<entries; i++ ) {
-		if( name != NULL ) {
-			snprintf( name, *buffer_size-1, "/dev/disk/by-uuid/%s", list[i]->d_name );
-			if( stat( name, &st ) < 0 ) {
-				TT_LOG_ERROR( "library/util", "stat() failed for '%s' in %s()", name, __FUNCTION__ );
-				free( name );
-				return TT_ERR;
-			}
+		snprintf( filename, sizeof(filename)-1, "/dev/disk/by-uuid/%s", list[i]->d_name );
+		if( stat( filename, &st ) == 0 ) {
 			if( st.st_rdev == device ) {
-				strncpy( buffer, name, *buffer_size );
-				*buffer_size = strnlen( buffer, *buffer_size );
-				free( name );
-				name = NULL;
+				strncpy( buffer, filename, *buffer_size );
 			}
 		}
 		free( list[i] );
 		list[i] = NULL;
 	}
-	if( name != NULL ) {
-		free( name );
-		*buffer_size = 0;
-	}
 	free( list );
+	*buffer_size = strnlen( buffer, *buffer_size );
 	return TT_OK;
 }
 

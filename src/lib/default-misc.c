@@ -19,7 +19,7 @@
 
 __attribute__ ((visibility ("hidden")))
 int default__identifier2uuid(const char* identifier, char* out, size_t out_size) {
-	char*	hash = NULL;
+	char	hash[TT_DIGEST_BITS_MAX/8] = {0};
 	size_t	hash_size = 0;
 
 	TT_TRACE( "library/plugin", "%s(identifier='%s',out=%p, out_size=%zd)", __FUNCTION__, identifier, out, out_size );
@@ -32,27 +32,23 @@ int default__identifier2uuid(const char* identifier, char* out, size_t out_size)
 		TT_LOG_ERROR( "plugin/default", "unsupported hash algorithm '%s' in %s()", libtokentube_crypto_get_hash(), __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( out_size < hash_size*2+1 ) {
-		TT_LOG_ERROR( "plugin/default", "buffer too small for hash algorithm '%s' in %s()", libtokentube_crypto_get_hash(), __FUNCTION__ );
+	if( hash_size > sizeof(hash) ) {
+		TT_LOG_ERROR( "plugin/default", "hash algorithm '%s' too many bits in %s()", libtokentube_crypto_get_hash(), __FUNCTION__ );
 		return TT_ERR;
 	}
-	hash = malloc(hash_size);
-	if( hash == NULL ) {
-		TT_LOG_ERROR( "plugin/default", "memory allocation of %d bytes failed in %s()", hash_size, __FUNCTION__ );
+	if( out_size < hash_size*2+1 ) {
+		TT_LOG_ERROR( "plugin/default", "buffer too small for hash algorithm '%s' in %s()", libtokentube_crypto_get_hash(), __FUNCTION__ );
 		return TT_ERR;
 	}
 	memset( out, '\0', out_size );
 	if( libtokentube_crypto_hash( identifier, strlen(identifier), hash, &hash_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
-		free( hash );
 		return TT_ERR;
 	}
 	if( libtokentube_util_hex_encode( hash, hash_size, out, &out_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
-		free( hash );
 		return TT_ERR;
 	}
-	free(hash);
 	return TT_OK;
 }
 

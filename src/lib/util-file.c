@@ -11,7 +11,7 @@
 
 __attribute__ ((visibility ("hidden")))
 int libtokentube_util_posix_mkdir(const char* path) {
-	char		data[FILENAME_MAX] = { 0 };
+	char		data[FILENAME_MAX+1] = { 0 };
 	size_t		pos = 0;
 
 	if( path == NULL ) {
