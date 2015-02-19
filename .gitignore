@@ -9,3 +9,13 @@ autom4te.cache
 .libs
 .deps
 .dirstamp
+config.h
+config.log
+config.status
+libtool
+src/bin/cli/tokentube
+src/bin/pba/pba
+src/bin/sso-greeter-lightdm/sso-greeter-lightdm
+src/bin/ssod/ssod
+stamp-h1
+tests/cmocka/**/**/test
