@@ -14,7 +14,7 @@ typedef struct {
 } tt_version_t;
 
 
-static inline tt_version_t tt_version_init() {
+static inline tt_version_t tt_version_init(void) {
 	tt_version_t result = {
 		(unsigned char)TT_VERSION_MAJOR, (unsigned char)TT_VERSION_MINOR, (unsigned char)TT_VERSION_PATCH
 	};

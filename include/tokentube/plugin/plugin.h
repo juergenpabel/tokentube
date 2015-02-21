@@ -4,9 +4,9 @@
 
 typedef struct {
 	tt_version_t	version;
-	/*[TT_OK|TT_ERR]*/ int (*initialize)();
+	/*[TT_OK|TT_ERR]*/ int (*initialize)(void);
 	/*[TT_OK|TT_ERR]*/ int (*configure)(const char* filename);
-	/*[TT_OK|TT_ERR]*/ int (*finalize)();
+	/*[TT_OK|TT_ERR]*/ int (*finalize)(void);
 } tt_plugin_meta_t;
 
 

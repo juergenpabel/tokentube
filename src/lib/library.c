@@ -66,6 +66,7 @@ int libtokentube_library_finalize() {
 
 
 int tt_discover(tt_library_t* library) {
+	library->version = TT_VERSION;
 	memcpy( &library->api, &g_library_api, sizeof(g_library_api) );
 	return TT_OK;
 }

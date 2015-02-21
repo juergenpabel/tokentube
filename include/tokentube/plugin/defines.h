@@ -4,7 +4,7 @@
 
 #define TT_PLUGIN_REGISTER( instance, f_init, f_conf, f_fini ) \
 	__attribute__ ((constructor)) \
-	static void tt_plugin_ctor() { \
+	static void tt_plugin_ctor(void) { \
 		memset( &instance, '\0', sizeof(instance) ); \
 		instance.meta.version = TT_VERSION; \
 		instance.meta.initialize = f_init; \
