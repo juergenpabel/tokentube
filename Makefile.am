@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = src/lib src/plugins src/pam src/bin/cli src/bin/pba src/bin/ssod src/bin/sso-greeter-lightdm
+SUBDIRS = src/lib src/plugins src/extensions src/pam src/bin/cli src/bin/pba src/bin/ssod src/bin/sso-greeter-lightdm
 
 include_basedir    = $(prefix)/usr/include
 include_librarydir = $(prefix)/usr/include/tokentube

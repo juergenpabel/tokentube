@@ -1,5 +1,8 @@
 AUTOMAKE_OPTIONS = foreign
 
-python:
-	./setup.py install ${@:2}
+all:
+	./setup.py build
+
+install:
+	./setup.py install --prefix=$(prefix)/usr/lib
 

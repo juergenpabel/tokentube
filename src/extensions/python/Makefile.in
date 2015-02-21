@@ -304,7 +304,6 @@ check-am: all-am
 check: check-am
 all-am: Makefile
 installdirs:
-install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -415,8 +414,11 @@ uninstall-am:
 	tags-am uninstall uninstall-am
 
 
-python:
-	./setup.py install ${@:2}
+all:
+	./setup.py build
+
+install:
+	./setup.py install --prefix=$(prefix)/usr/lib
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -9,6 +9,7 @@ autom4te.cache
 .libs
 .deps
 .dirstamp
+build
 config.h
 config.log
 config.status
