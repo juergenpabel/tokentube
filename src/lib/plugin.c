@@ -161,10 +161,12 @@ int libtokentube_plugin__finalize() {
 			free( module );
 		}
 	}
-	TT_DEBUG3( "library/plugin", "unloading plugin 'default'" );
-	default__finalize();
-	free( g_modules[MAX_PLUGINS]->plugin );
-	free( g_modules[MAX_PLUGINS] );
+	if( g_modules[MAX_PLUGINS] != NULL ) {
+		TT_DEBUG3( "library/plugin", "unloading plugin 'default'" );
+		default__finalize();
+		free( g_modules[MAX_PLUGINS]->plugin );
+		free( g_modules[MAX_PLUGINS] );
+	}
 	memset( g_modules, '\0', sizeof(g_modules) );
 	return TT_OK;
 }

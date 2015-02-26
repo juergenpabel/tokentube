@@ -10,6 +10,7 @@ autom4te.cache
 .deps
 .dirstamp
 build
+__pycache__
 config.h
 config.log
 config.status

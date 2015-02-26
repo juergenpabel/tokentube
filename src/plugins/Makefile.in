@@ -284,7 +284,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = exec helpdesk log lua syslog test
+SUBDIRS = exec helpdesk log lua python syslog test
 all: all-recursive
 
 .SUFFIXES:
