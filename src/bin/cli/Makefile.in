@@ -77,7 +77,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/extensions/python
+subdir = src/bin/cli
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -236,9 +236,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/extensions/python/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/bin/cli/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/extensions/python/Makefile
+	  $(AUTOMAKE) --foreign src/bin/cli/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -415,10 +415,13 @@ uninstall-am:
 
 
 all:
-	./setup.py build
+	echo build
 
 install:
-	./setup.py install --prefix=$(prefix)/usr
+	mkdir -p $(prefix)/usr/bin/
+	mkdir -p $(prefix)/usr/lib/python3/dist-packages/tokentube_cli
+	cp tokentube $(prefix)/usr/bin/
+	cp tokentube_cli/*.py $(prefix)/usr/lib/python3/dist-packages/tokentube_cli/
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

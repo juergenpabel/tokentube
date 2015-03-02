@@ -4,5 +4,5 @@ all:
 	./setup.py build
 
 install:
-	./setup.py install --prefix=$(prefix)/usr/lib
+	./setup.py install --prefix=$(prefix)/usr
 
