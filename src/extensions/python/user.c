@@ -159,6 +159,7 @@ PyObject* py_tt_user_execute_load(PyObject* self, PyObject *args) {
 	char*		py_username = NULL;
 	char*		py_password = NULL;
 	char*		py_key = NULL;
+	ssize_t		py_key_size = 0;
 	char		data[TT_KEY_BITS_MAX/8] = {0};
 	size_t		data_size = sizeof(data);
 
@@ -166,7 +167,7 @@ PyObject* py_tt_user_execute_load(PyObject* self, PyObject *args) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "sss", &py_username, &py_password, &py_key ) ) {
+	if( !PyArg_ParseTuple( args, "sss#", &py_username, &py_password, &py_key, &py_key_size ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
@@ -174,10 +175,12 @@ PyObject* py_tt_user_execute_load(PyObject* self, PyObject *args) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.user.execute_load failed" );
 		return NULL;
 	}
-	if( data_size == 0 ) {
+	if( data_size == 0 || data_size > py_key_size ) {
 		Py_RETURN_FALSE;
 	}
-//TODO:put challenge into python parameter
+	if( strncpy( py_key, data, data_size ) == NULL ) {
+		Py_RETURN_FALSE;
+	}
 	Py_RETURN_TRUE;
 }
 

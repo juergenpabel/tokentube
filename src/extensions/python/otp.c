@@ -109,7 +109,7 @@ PyObject* py_tt_otp_execute_challenge(PyObject* self, PyObject *args) {
 	if( data_size == 0 || data_size > py_challenge_size ) {
 		Py_RETURN_FALSE;
 	}
-	if( strncpy( py_challenge, data, py_challenge_size ) == NULL ) {
+	if( strncpy( py_challenge, data, data_size ) == NULL ) {
 		Py_RETURN_FALSE;
 	}
 	Py_RETURN_TRUE;
@@ -139,7 +139,7 @@ PyObject* py_tt_otp_execute_response(PyObject* self, PyObject *args) {
 	if( data_size == 0 || data_size > py_response_size ) {
 		Py_RETURN_FALSE;
 	}
-	if( strncpy( py_response, data, py_response_size ) == NULL ) {
+	if( strncpy( py_response, data, data_size ) == NULL ) {
 		Py_RETURN_FALSE;
 	}
 	Py_RETURN_TRUE;
@@ -170,7 +170,7 @@ PyObject* py_tt_otp_execute_apply(PyObject* self, PyObject *args) {
 	if( data_size == 0 || data_size > py_key_size ) {
 		Py_RETURN_FALSE;
 	}
-	if( strncpy( py_key, data, py_key_size ) == NULL ) {
+	if( strncpy( py_key, data, data_size ) == NULL ) {
 		Py_RETURN_FALSE;
 	}
 	Py_RETURN_TRUE;
