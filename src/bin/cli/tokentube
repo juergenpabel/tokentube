@@ -1,0 +1,38 @@
+#!/usr/bin/python3
+import os, sys, argparse, glob, tokentube, tokentube_cli
+
+
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--config',      '-c', action='store', help='Override configuration file')
+	parser.add_argument('--boot-device', '-b', action='store', help='Override boot device')
+	parser.add_argument('--verbose',     '-v', action='count', help='Be verbose (can be used multiple times) printing messages to stderr')
+	parser.add_argument('--debug',       '-d', action='count', help='Be debuggy (can be used multiple times) printing messages to stderr')
+	parser.add_argument('--quiet',       '-q', action='store_true', help='Be quiet - only errors are send to stderr (status in return code)')
+
+	cmdParser = parser.add_subparsers()
+	tokentube_cli.user.init( cmdParser )
+	tokentube_cli.otp.init( cmdParser )
+
+	args = parser.parse_args()
+	if args.boot_device:
+		os.environ["TT_RUNTIME_BOOTDEVICE"] = args.boot_device
+	if args.debug:
+		os.environ["TT_DEBUG_LEVEL"] = str( args.debug )
+	if args.verbose:
+		if args.verbose <= 1:
+			os.environ["TT_LOG_LEVEL"] = "fatal"
+		if args.verbose == 2:
+			os.environ["TT_LOG_LEVEL"] = "error"
+		if args.verbose == 3:
+			os.environ["TT_LOG_LEVEL"] = "warn"
+		if args.verbose >= 4:
+			os.environ["TT_LOG_LEVEL"] = "info"
+		os.environ["TT_LOG_TARGET"] = "FILE"
+		os.environ["TT_LOG_TARGET_FILE"] = "/proc/self/fd/2"
+
+	tokentube.initialize()
+	if args.config:
+		tokentube.configure( args.config )
+	exit( args.func( args ) )
+
