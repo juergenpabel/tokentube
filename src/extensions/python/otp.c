@@ -5,37 +5,37 @@
 
 
 PyObject* py_tt_otp_create(PyObject* self, PyObject *args) {
-	char*		identifier = NULL;
+	char*		py_identifier = NULL;
 
 	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "s", &identifier ) ) {
+	if( !PyArg_ParseTuple( args, "s", &py_identifier ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.otp.create( identifier ) != TT_OK ) {
+	if( g_library->api.otp.create( py_identifier ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.user.create failed" );
 		return NULL;
 	}
-	Py_RETURN_NONE;
+	Py_RETURN_TRUE;
 }
 
 
 PyObject* py_tt_otp_exists(PyObject* self, PyObject *args) {
-	char*		identifier = NULL;
+	char*		py_identifier = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
 	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "s", &identifier ) ) {
+	if( !PyArg_ParseTuple( args, "s", &py_identifier ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.otp.exists( identifier, &status ) != TT_OK ) {
+	if( g_library->api.otp.exists( py_identifier, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.exists failed" );
 		return NULL;
 	}
@@ -56,18 +56,18 @@ PyObject* py_tt_otp_exists(PyObject* self, PyObject *args) {
 
 
 PyObject* py_tt_otp_delete(PyObject* self, PyObject *args) {
-	char*		identifier = NULL;
+	char*		py_identifier = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
 	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "s", &identifier ) ) {
+	if( !PyArg_ParseTuple( args, "s", &py_identifier ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.otp.delete( identifier, &status ) != TT_OK ) {
+	if( g_library->api.otp.delete( py_identifier, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.delete failed" );
 		return NULL;
 	}
@@ -88,88 +88,91 @@ PyObject* py_tt_otp_delete(PyObject* self, PyObject *args) {
 
 
 PyObject* py_tt_otp_execute_challenge(PyObject* self, PyObject *args) {
-	char*		identifier = NULL;
-	char		challenge[TT_OTP_TEXT_MAX+1] = {0};
-	size_t		challenge_size = sizeof(challenge);
-	tt_status_t	status = TT_STATUS__UNDEFINED;
+	char*		py_identifier = NULL;
+	char*		py_challenge = NULL;
+	ssize_t		py_challenge_size = 0;
+	char		data[TT_OTP_TEXT_MAX+1] = {0};
+	size_t		data_size = sizeof(data);
 
 	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "s", &identifier ) ) {
+	if( !PyArg_ParseTuple( args, "ss#", &py_identifier, &py_challenge, &py_challenge_size ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.otp.execute_challenge( identifier, challenge, &challenge_size ) != TT_OK ) {
+	if( g_library->api.otp.execute_challenge( py_identifier, data, &data_size ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.execute_challenge failed" );
 		return NULL;
 	}
-	if( challenge_size == 0 ) {
-		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.execute_challenge return nothing" );
-		return NULL;
+	if( data_size == 0 || data_size > py_challenge_size ) {
+		Py_RETURN_FALSE;
 	}
-//TODO:put challenge into python return value
-	PyErr_SetString(PyExc_TypeError, "py_tt_otp_execute_challenge: internal error" );
-	return NULL;
+	if( strncpy( py_challenge, data, py_challenge_size ) == NULL ) {
+		Py_RETURN_FALSE;
+	}
+	Py_RETURN_TRUE;
 }
 
 
 PyObject* py_tt_otp_execute_response(PyObject* self, PyObject *args) {
-	char*		identifier = NULL;
-	char*		challenge = NULL;
-	char		response[TT_OTP_TEXT_MAX+1] = {0};
-	size_t		response_size = sizeof(response);
-	tt_status_t	status = TT_STATUS__UNDEFINED;
+	char*		py_identifier = NULL;
+	char*		py_challenge = NULL;
+	char*		py_response = NULL;
+	ssize_t		py_response_size = 0;
+	char		data[TT_OTP_TEXT_MAX+1] = {0};
+	size_t		data_size = sizeof(data);
 
 	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "ss", &identifier, &challenge ) ) {
+	if( !PyArg_ParseTuple( args, "sss#", &py_identifier, &py_challenge, &py_response, &py_response_size ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.otp.execute_response( identifier, challenge, response, &response_size ) != TT_OK ) {
+	if( g_library->api.otp.execute_response( py_identifier, py_challenge, data, &data_size ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.execute_response failed" );
 		return NULL;
 	}
-	if( response_size == 0 ) {
-		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.execute_response return nothing" );
-		return NULL;
+	if( data_size == 0 || data_size > py_response_size ) {
+		Py_RETURN_FALSE;
 	}
-//TODO:put response into python return value
-	PyErr_SetString(PyExc_TypeError, "py_tt_otp_execute_response: internal error" );
-	return NULL;
+	if( strncpy( py_response, data, py_response_size ) == NULL ) {
+		Py_RETURN_FALSE;
+	}
+	Py_RETURN_TRUE;
 }
 
 
 PyObject* py_tt_otp_execute_apply(PyObject* self, PyObject *args) {
-	char*		identifier = NULL;
-	char*		challenge = NULL;
-	char*		response = NULL;
-	char		key[TT_OTP_TEXT_MAX+1] = {0};
-	size_t		key_size = sizeof(key);
-	tt_status_t	status = TT_STATUS__UNDEFINED;
+	char*		py_identifier = NULL;
+	char*		py_challenge = NULL;
+	char*		py_response = NULL;
+	char*		py_key = NULL;
+	ssize_t		py_key_size = 0;
+	char		data[TT_OTP_TEXT_MAX+1] = {0};
+	size_t		data_size = sizeof(data);
 
 	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "sss", &identifier, &challenge, &response ) ) {
+	if( !PyArg_ParseTuple( args, "ssss#", &py_identifier, &py_challenge, &py_response, &py_key, &py_key_size ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.otp.execute_apply( identifier, challenge, response, key, &key_size ) != TT_OK ) {
+	if( g_library->api.otp.execute_apply( py_identifier, py_challenge, py_response, data, &data_size ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.execute_apply failed" );
 		return NULL;
 	}
-	if( key_size == 0 ) {
-		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.execute_apply return nothing" );
-		return NULL;
+	if( data_size == 0 || data_size > py_key_size ) {
+		Py_RETURN_FALSE;
 	}
-//TODO:put key into python return value
-	PyErr_SetString(PyExc_TypeError, "py_tt_otp_execute_apply: internal error" );
-	return NULL;
+	if( strncpy( py_key, data, py_key_size ) == NULL ) {
+		Py_RETURN_FALSE;
+	}
+	Py_RETURN_TRUE;
 }
 

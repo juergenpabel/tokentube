@@ -59,6 +59,12 @@ static PyMethodDef g_tokentube_funcs[] = {
 	{ "user_execute_verify", (PyCFunction)py_tt_user_execute_verify, METH_VARARGS, "user verify function" },
 	{ "user_execute_load", (PyCFunction)py_tt_user_execute_load, METH_VARARGS, "user load function" },
 	{ "user_execute_autoenrollment", (PyCFunction)py_tt_user_execute_autoenrollment, METH_VARARGS, "user autoenrollment function" },
+	{ "otp_create", (PyCFunction)py_tt_otp_create, METH_VARARGS, "otp create function" },
+	{ "otp_delete", (PyCFunction)py_tt_otp_delete, METH_VARARGS, "otp delete function" },
+	{ "otp_exists", (PyCFunction)py_tt_otp_exists, METH_VARARGS, "otp exists function" },
+	{ "otp_execute_challenge", (PyCFunction)py_tt_otp_execute_challenge, METH_VARARGS, "otp execute challenge function" },
+	{ "otp_execute_response", (PyCFunction)py_tt_otp_execute_response, METH_VARARGS, "otp execute response function" },
+	{ "otp_execute_apply", (PyCFunction)py_tt_otp_execute_apply, METH_VARARGS, "otp execute challenge function" },
 	{ NULL }
 };
 
@@ -69,12 +75,19 @@ static struct PyModuleDef g_tokentube_def = {
 
 
 PyMODINIT_FUNC PyInit_tokentube(void) {
+	PyObject* module = NULL;
+
 	g_library = malloc( sizeof(tt_library_t) );
 	if( g_library == NULL ) {
 		return NULL;
 	}
 	Py_AtExit( PyExit_tokentube );
-	return PyModule_Create( &g_tokentube_def );
+	module = PyModule_Create( &g_tokentube_def );
+	if( module == NULL ) {
+		return NULL;
+	}
+	PyModule_AddIntConstant( module, "TT_OTP_TEXT_MAX", TT_OTP_TEXT_MAX );
+	return module;
 }
 
 

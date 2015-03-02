@@ -5,40 +5,40 @@
 
 
 PyObject* py_tt_user_create(PyObject* self, PyObject *args) {
-	char*		username = NULL;
-	char*		password = NULL;
+	char*		py_username = NULL;
+	char*		py_password = NULL;
 
 	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "ss", &username, &password ) ) {
+	if( !PyArg_ParseTuple( args, "ss", &py_username, &py_password ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.user.create( username, password ) != TT_OK ) {
+	if( g_library->api.user.create( py_username, py_password ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.user.create failed" );
 		return NULL;
 	}
-	Py_RETURN_NONE;
+	Py_RETURN_TRUE;
 }
 
 
 PyObject* py_tt_user_update(PyObject* self, PyObject *args) {
-	char*		username = NULL;
-	char*		password_cur = NULL;
-	char*		password_new = NULL;
+	char*		py_username = NULL;
+	char*		py_password_cur = NULL;
+	char*		py_password_new = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
 	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "sss", &username, &password_cur, &password_new ) ) {
+	if( !PyArg_ParseTuple( args, "sss", &py_username, &py_password_cur, &py_password_new ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.user.update( username, password_cur, password_new, &status ) != TT_OK ) {
+	if( g_library->api.user.update( py_username, py_password_cur, py_password_new, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.user.update failed" );
 		return NULL;
 	}
@@ -59,18 +59,18 @@ PyObject* py_tt_user_update(PyObject* self, PyObject *args) {
 
 
 PyObject* py_tt_user_exists(PyObject* self, PyObject *args) {
-	char*		username = NULL;
+	char*		py_username = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
 	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "s", &username ) ) {
+	if( !PyArg_ParseTuple( args, "s", &py_username ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.user.exists( username, &status ) != TT_OK ) {
+	if( g_library->api.user.exists( py_username, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.user.exists failed" );
 		return NULL;
 	}
@@ -91,18 +91,18 @@ PyObject* py_tt_user_exists(PyObject* self, PyObject *args) {
 
 
 PyObject* py_tt_user_delete(PyObject* self, PyObject *args) {
-	char*		username = NULL;
+	char*		py_username = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
 	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "s", &username ) ) {
+	if( !PyArg_ParseTuple( args, "s", &py_username ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.user.delete( username, &status ) != TT_OK ) {
+	if( g_library->api.user.delete( py_username, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.user.delete failed" );
 		return NULL;
 	}
@@ -123,19 +123,19 @@ PyObject* py_tt_user_delete(PyObject* self, PyObject *args) {
 
 
 PyObject* py_tt_user_execute_verify(PyObject* self, PyObject *args) {
-	char*		username = NULL;
-	char*		password = NULL;
+	char*		py_username = NULL;
+	char*		py_password = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
 	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "ss", &username, &password ) ) {
+	if( !PyArg_ParseTuple( args, "ss", &py_username, &py_password ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.user.execute_verify( username, password, &status ) != TT_OK ) {
+	if( g_library->api.user.execute_verify( py_username, py_password, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.user.execute_verify failed" );
 		return NULL;
 	}
@@ -156,41 +156,46 @@ PyObject* py_tt_user_execute_verify(PyObject* self, PyObject *args) {
 
 
 PyObject* py_tt_user_execute_load(PyObject* self, PyObject *args) {
-	char*		username = NULL;
-	char*		password = NULL;
-	char*		key = NULL;
-	size_t*		key_size = NULL;
+	char*		py_username = NULL;
+	char*		py_password = NULL;
+	char*		py_key = NULL;
+	char		data[TT_KEY_BITS_MAX/8] = {0};
+	size_t		data_size = sizeof(data);
 
 	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "ss", &username, &password ) ) {
+	if( !PyArg_ParseTuple( args, "sss", &py_username, &py_password, &py_key ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.user.execute_load( username, password, key, key_size ) != TT_OK ) {
+	if( g_library->api.user.execute_load( py_username, py_password, data, &data_size ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.user.execute_load failed" );
 		return NULL;
 	}
-	Py_RETURN_NONE;
+	if( data_size == 0 ) {
+		Py_RETURN_FALSE;
+	}
+//TODO:put challenge into python parameter
+	Py_RETURN_TRUE;
 }
 
 
 PyObject* py_tt_user_execute_autoenrollment(PyObject* self, PyObject *args) {
-	char*		username = NULL;
-	char*		password = NULL;
+	char*		py_username = NULL;
+	char*		py_password = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
 	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "ss", &username, &password ) ) {
+	if( !PyArg_ParseTuple( args, "ss", &py_username, &py_password ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.user.execute_autoenrollment( username, password, &status ) != TT_OK ) {
+	if( g_library->api.user.execute_autoenrollment( py_username, py_password, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.user.execute_autoenrollment failed" );
 		return NULL;
 	}

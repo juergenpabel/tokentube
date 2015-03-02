@@ -12,4 +12,6 @@ extern PyObject* py_tt_otp_create(PyObject* self, PyObject *args);
 extern PyObject* py_tt_otp_exists(PyObject* self, PyObject *args);
 extern PyObject* py_tt_otp_delete(PyObject* self, PyObject *args);
 extern PyObject* py_tt_otp_execute_challenge(PyObject* self, PyObject *args);
+extern PyObject* py_tt_otp_execute_response(PyObject* self, PyObject *args);
+extern PyObject* py_tt_otp_execute_apply(PyObject* self, PyObject *args);
 
