@@ -4,7 +4,7 @@
 #include "extension.h"
 
 
-PyObject* py_tt_user_create(PyObject* self, PyObject *args) {
+PyObject* py_tt_user_create(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	char*		py_password = NULL;
 
@@ -24,7 +24,7 @@ PyObject* py_tt_user_create(PyObject* self, PyObject *args) {
 }
 
 
-PyObject* py_tt_user_update(PyObject* self, PyObject *args) {
+PyObject* py_tt_user_update(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	char*		py_password_cur = NULL;
 	char*		py_password_new = NULL;
@@ -58,7 +58,7 @@ PyObject* py_tt_user_update(PyObject* self, PyObject *args) {
 }
 
 
-PyObject* py_tt_user_exists(PyObject* self, PyObject *args) {
+PyObject* py_tt_user_exists(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
@@ -90,7 +90,7 @@ PyObject* py_tt_user_exists(PyObject* self, PyObject *args) {
 }
 
 
-PyObject* py_tt_user_delete(PyObject* self, PyObject *args) {
+PyObject* py_tt_user_delete(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
@@ -122,7 +122,7 @@ PyObject* py_tt_user_delete(PyObject* self, PyObject *args) {
 }
 
 
-PyObject* py_tt_user_execute_verify(PyObject* self, PyObject *args) {
+PyObject* py_tt_user_execute_verify(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	char*		py_password = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
@@ -155,7 +155,7 @@ PyObject* py_tt_user_execute_verify(PyObject* self, PyObject *args) {
 }
 
 
-PyObject* py_tt_user_execute_load(PyObject* self, PyObject *args) {
+PyObject* py_tt_user_execute_load(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	char*		py_password = NULL;
 	char*		py_key = NULL;
@@ -175,7 +175,7 @@ PyObject* py_tt_user_execute_load(PyObject* self, PyObject *args) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.user.execute_load failed" );
 		return NULL;
 	}
-	if( data_size == 0 || data_size > py_key_size ) {
+	if( data_size == 0 || data_size > (size_t)py_key_size ) {
 		Py_RETURN_FALSE;
 	}
 	if( strncpy( py_key, data, data_size ) == NULL ) {
@@ -185,7 +185,7 @@ PyObject* py_tt_user_execute_load(PyObject* self, PyObject *args) {
 }
 
 
-PyObject* py_tt_user_execute_autoenrollment(PyObject* self, PyObject *args) {
+PyObject* py_tt_user_execute_autoenrollment(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	char*		py_password = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;

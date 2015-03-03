@@ -10,7 +10,7 @@ static void PyExit_tokentube(void);
 tt_library_t*	g_library = NULL;
 
 
-static PyObject* py_tt_initialize(PyObject* self, PyObject *args) {
+static PyObject* py_tt_initialize(PyObject* self __attribute__((unused)), PyObject *args __attribute__((unused))) {
 	memset( g_library, '\0', sizeof(tt_library_t) );
 	if( tt_initialize( TT_VERSION ) == TT_ERR ) {
 		return NULL;
@@ -19,7 +19,7 @@ static PyObject* py_tt_initialize(PyObject* self, PyObject *args) {
 }
 
 
-static PyObject* py_tt_configure(PyObject* self, PyObject *args) {
+static PyObject* py_tt_configure(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*	filename = NULL;
 
 	if( !PyArg_ParseTuple( args, "|s", &filename ) ) {
@@ -39,7 +39,7 @@ g_library->version = TT_VERSION; //TODO:delete
 }
 
 
-static PyObject* py_tt_finalize(PyObject* self, PyObject *args) {
+static PyObject* py_tt_finalize(PyObject* self __attribute__((unused)), PyObject *args __attribute__((unused))) {
 	if( tt_finalize() == TT_ERR ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.finalize failed" );
 		return NULL;

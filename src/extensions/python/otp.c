@@ -4,7 +4,7 @@
 #include "extension.h"
 
 
-PyObject* py_tt_otp_create(PyObject* self, PyObject *args) {
+PyObject* py_tt_otp_create(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 
 	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
@@ -23,7 +23,7 @@ PyObject* py_tt_otp_create(PyObject* self, PyObject *args) {
 }
 
 
-PyObject* py_tt_otp_exists(PyObject* self, PyObject *args) {
+PyObject* py_tt_otp_exists(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
@@ -55,7 +55,7 @@ PyObject* py_tt_otp_exists(PyObject* self, PyObject *args) {
 }
 
 
-PyObject* py_tt_otp_delete(PyObject* self, PyObject *args) {
+PyObject* py_tt_otp_delete(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
@@ -87,7 +87,7 @@ PyObject* py_tt_otp_delete(PyObject* self, PyObject *args) {
 }
 
 
-PyObject* py_tt_otp_execute_challenge(PyObject* self, PyObject *args) {
+PyObject* py_tt_otp_execute_challenge(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 	char*		py_challenge = NULL;
 	ssize_t		py_challenge_size = 0;
@@ -106,7 +106,7 @@ PyObject* py_tt_otp_execute_challenge(PyObject* self, PyObject *args) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.execute_challenge failed" );
 		return NULL;
 	}
-	if( data_size == 0 || data_size > py_challenge_size ) {
+	if( data_size == 0 || data_size > (size_t)py_challenge_size ) {
 		Py_RETURN_FALSE;
 	}
 	if( strncpy( py_challenge, data, data_size ) == NULL ) {
@@ -116,7 +116,7 @@ PyObject* py_tt_otp_execute_challenge(PyObject* self, PyObject *args) {
 }
 
 
-PyObject* py_tt_otp_execute_response(PyObject* self, PyObject *args) {
+PyObject* py_tt_otp_execute_response(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 	char*		py_challenge = NULL;
 	char*		py_response = NULL;
@@ -136,7 +136,7 @@ PyObject* py_tt_otp_execute_response(PyObject* self, PyObject *args) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.execute_response failed" );
 		return NULL;
 	}
-	if( data_size == 0 || data_size > py_response_size ) {
+	if( data_size == 0 || data_size > (size_t)py_response_size ) {
 		Py_RETURN_FALSE;
 	}
 	if( strncpy( py_response, data, data_size ) == NULL ) {
@@ -146,7 +146,7 @@ PyObject* py_tt_otp_execute_response(PyObject* self, PyObject *args) {
 }
 
 
-PyObject* py_tt_otp_execute_apply(PyObject* self, PyObject *args) {
+PyObject* py_tt_otp_execute_apply(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 	char*		py_challenge = NULL;
 	char*		py_response = NULL;
@@ -167,7 +167,7 @@ PyObject* py_tt_otp_execute_apply(PyObject* self, PyObject *args) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.execute_apply failed" );
 		return NULL;
 	}
-	if( data_size == 0 || data_size > py_key_size ) {
+	if( data_size == 0 || data_size > (size_t)py_key_size ) {
 		Py_RETURN_FALSE;
 	}
 	if( strncpy( py_key, data, data_size ) == NULL ) {
