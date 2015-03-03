@@ -1,11 +1,7 @@
 AUTOMAKE_OPTIONS = foreign
 
-all:
-	echo build
+bin_SCRIPTS = tokentube
+bindir =  $(prefix)/usr/bin
 
-install:
-	mkdir -p $(prefix)/usr/bin/
-	mkdir -p $(prefix)/usr/lib/python3/dist-packages/tokentube_cli
-	cp tokentube $(prefix)/usr/bin/
-	cp tokentube_cli/*.py $(prefix)/usr/lib/python3/dist-packages/tokentube_cli/
-
+cli_PYTHON = tokentube_cli/__init__.py tokentube_cli/user.py tokentube_cli/otp.py
+clidir = $(pkgpythondir)/tokentube_cli
