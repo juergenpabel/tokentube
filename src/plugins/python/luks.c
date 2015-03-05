@@ -8,6 +8,7 @@
 #include "plugin.h"
 
 
+__attribute__ ((visibility ("hidden")))
 int python__luks_load(char* key, size_t* key_size) {
 	PyObject*	result = NULL;
 	char*		data = NULL;

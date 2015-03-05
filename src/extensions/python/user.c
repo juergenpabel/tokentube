@@ -4,6 +4,7 @@
 #include "extension.h"
 
 
+__attribute__ ((visibility ("hidden")))
 PyObject* py_tt_user_create(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	char*		py_password = NULL;
@@ -24,6 +25,7 @@ PyObject* py_tt_user_create(PyObject* self __attribute__((unused)), PyObject *ar
 }
 
 
+__attribute__ ((visibility ("hidden")))
 PyObject* py_tt_user_update(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	char*		py_password_cur = NULL;
@@ -58,6 +60,7 @@ PyObject* py_tt_user_update(PyObject* self __attribute__((unused)), PyObject *ar
 }
 
 
+__attribute__ ((visibility ("hidden")))
 PyObject* py_tt_user_exists(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
@@ -90,6 +93,7 @@ PyObject* py_tt_user_exists(PyObject* self __attribute__((unused)), PyObject *ar
 }
 
 
+__attribute__ ((visibility ("hidden")))
 PyObject* py_tt_user_delete(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
@@ -122,6 +126,7 @@ PyObject* py_tt_user_delete(PyObject* self __attribute__((unused)), PyObject *ar
 }
 
 
+__attribute__ ((visibility ("hidden")))
 PyObject* py_tt_user_execute_verify(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	char*		py_password = NULL;
@@ -155,6 +160,7 @@ PyObject* py_tt_user_execute_verify(PyObject* self __attribute__((unused)), PyOb
 }
 
 
+__attribute__ ((visibility ("hidden")))
 PyObject* py_tt_user_execute_load(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	char*		py_password = NULL;
@@ -185,6 +191,7 @@ PyObject* py_tt_user_execute_load(PyObject* self __attribute__((unused)), PyObje
 }
 
 
+__attribute__ ((visibility ("hidden")))
 PyObject* py_tt_user_execute_autoenrollment(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	char*		py_password = NULL;

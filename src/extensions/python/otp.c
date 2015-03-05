@@ -4,6 +4,7 @@
 #include "extension.h"
 
 
+__attribute__ ((visibility ("hidden")))
 PyObject* py_tt_otp_create(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 
@@ -23,6 +24,7 @@ PyObject* py_tt_otp_create(PyObject* self __attribute__((unused)), PyObject *arg
 }
 
 
+__attribute__ ((visibility ("hidden")))
 PyObject* py_tt_otp_exists(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
@@ -55,6 +57,7 @@ PyObject* py_tt_otp_exists(PyObject* self __attribute__((unused)), PyObject *arg
 }
 
 
+__attribute__ ((visibility ("hidden")))
 PyObject* py_tt_otp_delete(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
@@ -87,6 +90,7 @@ PyObject* py_tt_otp_delete(PyObject* self __attribute__((unused)), PyObject *arg
 }
 
 
+__attribute__ ((visibility ("hidden")))
 PyObject* py_tt_otp_execute_challenge(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 	char*		py_challenge = NULL;
@@ -116,6 +120,7 @@ PyObject* py_tt_otp_execute_challenge(PyObject* self __attribute__((unused)), Py
 }
 
 
+__attribute__ ((visibility ("hidden")))
 PyObject* py_tt_otp_execute_response(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 	char*		py_challenge = NULL;
@@ -146,6 +151,7 @@ PyObject* py_tt_otp_execute_response(PyObject* self __attribute__((unused)), PyO
 }
 
 
+__attribute__ ((visibility ("hidden")))
 PyObject* py_tt_otp_execute_apply(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 	char*		py_challenge = NULL;

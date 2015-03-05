@@ -7,6 +7,7 @@
 static void PyExit_tokentube(void);
 
 
+__attribute__ ((visibility ("hidden")))
 tt_library_t*	g_library = NULL;
 
 
