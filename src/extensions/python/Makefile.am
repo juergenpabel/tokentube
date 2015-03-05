@@ -2,6 +2,8 @@ AUTOMAKE_OPTIONS = foreign
 
 pyexec_LTLIBRARIES = tokentube.la
 
+override CFLAGS =
+override CPPFLAGS =
 override LDFLAGS =
 
 tokentube_la_SOURCES = extension.c user.c otp.c
