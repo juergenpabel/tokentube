@@ -10,10 +10,7 @@ if __name__ == '__main__':
 	parser.add_argument('--debug',       '-d', action='count', help='Be debuggy (can be used multiple times) printing messages to stderr')
 	parser.add_argument('--quiet',       '-q', action='store_true', help='Be quiet - only errors are send to stderr (status in return code)')
 
-	cmdParser = parser.add_subparsers()
-	tokentube_cli.user.init( cmdParser )
-	tokentube_cli.otp.init( cmdParser )
-
+	tokentube_cli.init( parser.add_subparsers() )
 	args = parser.parse_args()
 	if args.boot_device:
 		os.environ["TT_RUNTIME_BOOTDEVICE"] = args.boot_device
