@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = foreign
 
 lib_LTLIBRARIES = libtokentube.la
-libdir = $(prefix)/usr/lib
+libdir = $(prefix)/lib
 
 libtokentube_la_CFLAGS = -I../../include 
 libtokentube_la_LDFLAGS = -lext2fs -lscrypt -lgcrypt -lconfuse -ldl

@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = foreign
 
 lib_LTLIBRARIES = libtokentube-plugin-log.la
-libdir = $(prefix)/usr/lib/tokentube/plugins.d
+libdir = $(prefix)/lib/tokentube/plugins.d
 
 libtokentube_plugin_log_la_SOURCES = plugin.c
 libtokentube_plugin_log_la_CFLAGS = -I../../../include 

@@ -2,9 +2,9 @@ AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = src/lib src/plugins src/pam src/bin/cli src/bin/pba src/bin/ssod src/bin/sso-greeter-lightdm
 
-include_basedir    = $(prefix)/usr/include
-include_librarydir = $(prefix)/usr/include/tokentube
-include_plugindir  = $(prefix)/usr/include/tokentube/plugin
+include_basedir    = $(prefix)/include
+include_librarydir = $(prefix)/include/tokentube
+include_plugindir  = $(prefix)/include/tokentube/plugin
 
 include_base_HEADERS = include/tokentube.h
 include_library_HEADERS = include/tokentube/defines.h include/tokentube/enums.h include/tokentube/library.h include/tokentube/pba.h include/tokentube/version.h include/tokentube/plugin.h
