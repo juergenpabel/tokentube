@@ -3,7 +3,6 @@ AUTOMAKE_OPTIONS = foreign
 sbin_PROGRAMS = tokentube
 sbindir = $(prefix)/sbin
 
-tokentube_CFLAGS  = -I../../../include
-tokentube_LDFLAGS = -L../../lib -ltokentube -lgcrypt
-tokentube_SOURCES = tokentube.c
+cli_PYTHON = tokentube_cli/__init__.py tokentube_cli/user.py tokentube_cli/otp.py
+clidir = $(pyexecdir)/tokentube_cli
 
