@@ -8,7 +8,7 @@ __attribute__ ((visibility ("hidden")))
 PyObject* py_tt_otp_create(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 
-	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
+	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
@@ -29,7 +29,7 @@ PyObject* py_tt_otp_exists(PyObject* self __attribute__((unused)), PyObject *arg
 	char*		py_identifier = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
-	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
+	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
@@ -62,7 +62,7 @@ PyObject* py_tt_otp_delete(PyObject* self __attribute__((unused)), PyObject *arg
 	char*		py_identifier = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
-	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
+	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
@@ -98,7 +98,7 @@ PyObject* py_tt_otp_execute_challenge(PyObject* self __attribute__((unused)), Py
 	char		data[TT_OTP_TEXT_MAX+1] = {0};
 	size_t		data_size = sizeof(data);
 
-	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
+	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
@@ -129,7 +129,7 @@ PyObject* py_tt_otp_execute_response(PyObject* self __attribute__((unused)), PyO
 	char		data[TT_OTP_TEXT_MAX+1] = {0};
 	size_t		data_size = sizeof(data);
 
-	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
+	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
@@ -161,7 +161,7 @@ PyObject* py_tt_otp_execute_apply(PyObject* self __attribute__((unused)), PyObje
 	char		data[TT_OTP_TEXT_MAX+1] = {0};
 	size_t		data_size = sizeof(data);
 
-	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
+	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}

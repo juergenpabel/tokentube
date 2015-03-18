@@ -35,7 +35,11 @@ static PyObject* py_tt_configure(PyObject* self __attribute__((unused)), PyObjec
 		PyErr_SetString(PyExc_TypeError, "libtokentube.discovery failed" );
 		return NULL;
 	}
-g_library->version = TT_VERSION; //TODO:delete
+	if( g_library->version.major != TT_VERSION_MAJOR ) {
+		memset( g_library, '\0', sizeof(tt_library_t) );
+		PyErr_SetString(PyExc_TypeError, "incompatible version of libtokentube" );
+		return NULL;
+	}
 	Py_RETURN_NONE;
 }
 

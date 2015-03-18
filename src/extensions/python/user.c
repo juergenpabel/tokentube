@@ -9,7 +9,7 @@ PyObject* py_tt_user_create(PyObject* self __attribute__((unused)), PyObject *ar
 	char*		py_username = NULL;
 	char*		py_password = NULL;
 
-	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
+	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
@@ -32,7 +32,7 @@ PyObject* py_tt_user_update(PyObject* self __attribute__((unused)), PyObject *ar
 	char*		py_password_new = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
-	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
+	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
@@ -65,7 +65,7 @@ PyObject* py_tt_user_exists(PyObject* self __attribute__((unused)), PyObject *ar
 	char*		py_username = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
-	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
+	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
@@ -98,7 +98,7 @@ PyObject* py_tt_user_delete(PyObject* self __attribute__((unused)), PyObject *ar
 	char*		py_username = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
-	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
+	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
@@ -132,7 +132,7 @@ PyObject* py_tt_user_execute_verify(PyObject* self __attribute__((unused)), PyOb
 	char*		py_password = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
-	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
+	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
@@ -169,7 +169,7 @@ PyObject* py_tt_user_execute_load(PyObject* self __attribute__((unused)), PyObje
 	char		data[TT_KEY_BITS_MAX/8] = {0};
 	size_t		data_size = sizeof(data);
 
-	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
+	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
@@ -197,7 +197,7 @@ PyObject* py_tt_user_execute_autoenrollment(PyObject* self __attribute__((unused
 	char*		py_password = NULL;
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 
-	if( g_library == NULL || g_library->version.major != TT_VERSION_MAJOR ) {
+	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
