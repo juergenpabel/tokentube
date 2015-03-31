@@ -70,6 +70,7 @@ static PyMethodDef g_tokentube_funcs[] = {
 	{ "otp_execute_challenge", (PyCFunction)py_tt_otp_execute_challenge, METH_VARARGS, "otp execute challenge function" },
 	{ "otp_execute_response", (PyCFunction)py_tt_otp_execute_response, METH_VARARGS, "otp execute response function" },
 	{ "otp_execute_apply", (PyCFunction)py_tt_otp_execute_apply, METH_VARARGS, "otp execute challenge function" },
+	{ "runtime_install_pba", (PyCFunction)py_tt_runtime_install_pba, METH_VARARGS, "pba install function" },
 	{ NULL }
 };
 
