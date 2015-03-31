@@ -73,6 +73,7 @@ int tt_discover(tt_library_t* library) {
 	if( library->version.major == 0 && library->version.minor == 0 && library->version.patch == 0 ) {
 		library->version = TT_VERSION;
 	}
+	library->version = TT_VERSION;
 	memcpy( &library->api, &g_library_api, sizeof(g_library_api) );
 	return TT_OK;
 }
