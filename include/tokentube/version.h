@@ -4,7 +4,7 @@
 
 #define TT_VERSION_MAJOR	1
 #define TT_VERSION_MINOR	0
-#define TT_VERSION_PATCH	2
+#define TT_VERSION_PATCH	3
 
 
 typedef struct {
