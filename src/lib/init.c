@@ -39,11 +39,30 @@ int libtokentube_debug_finalize();
 extern char* __progname;
 
 
+typedef enum {
+	TT_STATE_UNDEFINED,
+	TT_STATE_UNINITIALIZED,
+	TT_STATE_INITIALIZED,
+	TT_STATE_CONFIGURED
+} tt_state;
+
+static tt_state	g_state = TT_STATE_UNINITIALIZED;
+
+
 int tt_initialize(tt_version_t version) {
 	int result = TT_OK;
 
+	if( g_state == TT_STATE_INITIALIZED ) {
+		return TT_OK;
+	}
+	if( g_state != TT_STATE_UNINITIALIZED ) {
+		fprintf( stderr, "TOKENTUBE - ABORTING in tt_initialize() BECAUSE INTERNAL ERROR\n" );
+		return TT_ERR;
+	}
+	g_state = TT_STATE_UNDEFINED;
+
 	if( libtokentube_debug_initialize() != TT_OK ) {
-		fprintf( stderr, "TOKENTUBE - ABORTING BECAUSE INTERNAL ERROR\n" );
+		fprintf( stderr, "TOKENTUBE - ABORTING in tt_initialize() BECAUSE INTERNAL ERROR\n" );
 		return TT_ERR;
 	}
 	TT_DEBUG1( "library/core", "initializing... (client version='%d.%d.%d')", version.major, version.minor, version.patch );
@@ -88,6 +107,10 @@ int tt_initialize(tt_version_t version) {
 	if( result != TT_OK ) {
 		TT_LOG_FATAL( "library/core", "initialization failed, ABORTING" );
 	}
+	if( result == TT_OK ) {
+		TT_DEBUG2( "library/core", "initialization completed" );
+		g_state = TT_STATE_INITIALIZED;
+	}
 	return result;
 }
 
@@ -95,7 +118,16 @@ int tt_initialize(tt_version_t version) {
 int tt_configure(const char* filename) {
 	int	result = TT_ERR;
 
+	if( g_state == TT_STATE_CONFIGURED ) {
+		return TT_OK;
+	}
 	TT_DEBUG1( "library/core", "configuring... (filename='%s')", filename );
+	if( g_state != TT_STATE_INITIALIZED ) {
+		fprintf( stderr, "TOKENTUBE - ABORTING in tt_configure() BECAUSE INTERNAL ERROR\n" );
+		return TT_ERR;
+	}
+	g_state = TT_STATE_UNDEFINED;
+
 	result = libtokentube_conf_configure( filename );
 	if( result == TT_OK ) {
 		TT_DEBUG2( "library/core", "configuring module 'debug'..." );
@@ -132,10 +164,12 @@ int tt_configure(const char* filename) {
 		result = libtokentube_plugin__configure();
 		TT_DEBUG2( "library/core", "...configured module 'plugin'" );
 	}
+	if( result != TT_OK ) {
+		TT_LOG_FATAL( "library/core", "configuration failed, ABORTING" );
+	}
 	if( result == TT_OK ) {
 		TT_DEBUG2( "library/core", "configuration completed" );
-	} else {
-		TT_LOG_FATAL( "library/core", "configuration failed, ABORTING" );
+		g_state = TT_STATE_CONFIGURED;
 	}
 	return result;
 }
@@ -144,7 +178,15 @@ int tt_configure(const char* filename) {
 int tt_finalize() {
 	int result = TT_OK;
 
+	if( g_state == TT_STATE_UNINITIALIZED ) {
+		return TT_OK;
+	}
 	TT_DEBUG1( "library/core", "finalizing..." );
+	if( g_state != TT_STATE_INITIALIZED && g_state != TT_STATE_CONFIGURED ) {
+		fprintf( stderr, "TOKENTUBE - FAILING QUIETLY IN tt_finalize() BECAUSE OF INTERNAL ERROR\n" );
+		return TT_IGN;
+	}
+	g_state = TT_STATE_UNDEFINED;
 	if( result == TT_OK ) {
 		TT_DEBUG2( "library/core", "finalizing module 'plugin'..." );
 		result = libtokentube_plugin__finalize();
@@ -177,6 +219,7 @@ int tt_finalize() {
 	}
 	if( result == TT_OK ) {
 		result = libtokentube_debug_finalize();
+		g_state = TT_STATE_UNINITIALIZED;
 	}
 	return result;
 }

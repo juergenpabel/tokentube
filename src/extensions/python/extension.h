@@ -15,3 +15,5 @@ extern PyObject* py_tt_otp_execute_challenge(PyObject* self, PyObject *args);
 extern PyObject* py_tt_otp_execute_response(PyObject* self, PyObject *args);
 extern PyObject* py_tt_otp_execute_apply(PyObject* self, PyObject *args);
 
+extern PyObject* py_tt_runtime_install_pba(PyObject* self, PyObject *args);
+
