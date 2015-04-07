@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import os, sys, argparse, tokentube
+import os, sys, argparse, getpass, tokentube
 
 
 def init(parser):
@@ -28,15 +28,27 @@ def init(parser):
 	parser_user_verify.set_defaults(func=verify)
 
 
+def get_username():
+	return input( "Enter username: " )
+
+
+def get_password():
+	return getpass.getpass( "Enter password: " )
+
+
 def message(args, msg):
 	if args.quiet is False:
 		print( msg )
 
 
 def create(args):
+	if args.username is None:
+		args.username = get_username()
 	if tokentube.user_exists( args.username ) is True:
 		message( args, "FAILURE: user '%s' already exists" % args.username )
 		return -1
+	if args.password is None:
+		args.password = get_password()
 	if tokentube.user_create( args.username, args.password ) is False:
 		message( args, "FAILURE: user '%s' not created" % args.username )
 		return -1
@@ -45,9 +57,15 @@ def create(args):
 
 
 def update(args):
+	if args.username is None:
+		args.username = get_username()
 	if tokentube.user_exists( args.username ) is False:
 		message( args, "FAILURE: user '%s' does not exist" % args.username )
 		return -1
+	if args.password_cur is None:
+		args.password_cur = get_password()
+	if args.password_new is None:
+		args.password_new = get_password()
 	if tokentube.user_update( args.username, args.password_cur, args.password_new ) is False:
 		message( args, "FAILURE: user '%s' not updated" % args.username )
 		return -1
@@ -56,6 +74,8 @@ def update(args):
 
 
 def exists(args):
+	if args.username is None:
+		args.username = get_username()
 	if tokentube.user_exists( args.username ) is False:
 		message( args, "WARNING: user '%s' does not exist" % args.username )
 		return -1
@@ -64,6 +84,8 @@ def exists(args):
 
 
 def delete(args):
+	if args.username is None:
+		args.username = get_username()
 	if tokentube.user_exists( args.username ) is False:
 		message( args, "WARNING: user '%s' does not exist" % args.username )
 		return 0
@@ -75,9 +97,13 @@ def delete(args):
 
 
 def verify(args):
+	if args.username is None:
+		args.username = get_username()
 	if tokentube.user_exists( args.username ) is False:
 		message( args, "FAILURE: user '%s' already exists" % args.username )
 		return -1
+	if args.password is None:
+		args.password = get_password()
 	if tokentube.user_execute_verify( args.username, args.password ) is False:
 		message( args, "FAILURE: user '%s' not verified" % args.username )
 		return -1

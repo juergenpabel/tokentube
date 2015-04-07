@@ -17,7 +17,7 @@ PyObject* py_tt_otp_create(PyObject* self __attribute__((unused)), PyObject *arg
 		return NULL;
 	}
 	if( g_library->api.otp.create( py_identifier ) != TT_OK ) {
-		PyErr_SetString(PyExc_TypeError, "libtokentube.api.user.create failed" );
+		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.create failed" );
 		return NULL;
 	}
 	Py_RETURN_TRUE;

@@ -28,9 +28,12 @@ if __name__ == '__main__':
 		os.environ["TT_LOG_TARGET"] = "FILE"
 		os.environ["TT_LOG_TARGET_FILE"] = "/proc/self/fd/2"
 
-	tokentube.initialize()
-	if args.config is None:
-		args.config = "/etc/tokentube/tokentube.conf"
-	tokentube.configure( args.config )
-	exit( args.func( args ) )
+	try:
+		tokentube.initialize()
+		if args.config is None:
+			args.config = "/etc/tokentube/tokentube.conf"
+		tokentube.configure( args.config )
+		exit( args.func( args ) )
+	except Exception as e:
+		print( 'ERROR: ', e )
 
