@@ -129,6 +129,10 @@ int tt_configure(const char* filename) {
 	g_state = TT_STATE_UNDEFINED;
 
 	result = libtokentube_conf_configure( filename );
+	if( result == TT_IGN ) {
+		g_state = TT_STATE_INITIALIZED;
+		return TT_IGN;
+	}
 	if( result == TT_OK ) {
 		TT_DEBUG2( "library/core", "configuring module 'debug'..." );
 		result = libtokentube_debug_configure();
@@ -222,5 +226,12 @@ int tt_finalize() {
 		g_state = TT_STATE_UNINITIALIZED;
 	}
 	return result;
+}
+
+
+__attribute__ ((visibility ("hidden")))
+int tt_reset() {
+	g_state = TT_STATE_UNINITIALIZED;
+	return TT_OK;
 }
 

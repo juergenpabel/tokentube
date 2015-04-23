@@ -5,16 +5,20 @@
 #include <cmocka.h>
 #include <tokentube.h>
 
+int tt_reset();
+
 
 static void test_init_too_old_version(void **state) {
 	tt_version_t	version;
 
 	(void)	state; /* unused */
+
 	version.major = 0;
 	version.minor = 0;
 	version.patch = 0;
 	assert_true( tt_initialize( version ) == TT_ERR );	
-	assert_true( tt_finalize() == TT_OK );	
+	assert_true( tt_finalize() == TT_IGN );	
+	tt_reset();
 }
 
 
@@ -52,7 +56,8 @@ static void test_init_too_new_version(void **state) {
 	version.minor = 255;
 	version.patch = 255;
 	assert_true( tt_initialize( version ) == TT_ERR );	
-	assert_true( tt_finalize() == TT_OK );	
+	assert_true( tt_finalize() == TT_IGN );	
+	tt_reset();
 }
 
 

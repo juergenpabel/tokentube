@@ -10,12 +10,16 @@ include_base_HEADERS = include/tokentube.h
 include_library_HEADERS = include/tokentube/defines.h include/tokentube/enums.h include/tokentube/library.h include/tokentube/pba.h include/tokentube/version.h include/tokentube/plugin.h
 include_plugin_HEADERS = include/tokentube/plugin/defines.h include/tokentube/plugin/plugin.h
 
-EXTRA_DIST=conf docs
+EXTRA_DIST=conf doc
 
 .PHONY:	cmocka
 cmocka:
 	make -C tests/cmocka
 	make -C tests/cmocka tests
+
+.PHONY:	man
+man:
+	make -C doc/man
 
 .PHONY:	trace
 trace:

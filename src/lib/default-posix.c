@@ -82,6 +82,8 @@ int default__posix_save(const char* filename, const char* buffer, const size_t b
 	size_t		permission_size = sizeof(permission);
 	struct passwd*	owner = NULL;
 	struct group*	group = NULL;
+	uid_t		uid = -1;
+	gid_t		gid = -1;
 	mode_t		mode = 0;
 	int		fd = -1;
 
@@ -99,37 +101,49 @@ int default__posix_save(const char* filename, const char* buffer, const size_t b
 	if( libtokentube_conf_read_str( "storage|files|permission", permission, &permission_size ) != TT_OK ) {
 		return TT_ERR;
 	}
-	owner = getpwnam( username );
-	if( owner == NULL ) {
-        	TT_LOG_ERROR( "plugin/default", "getpwnam() failed for username='%s' in %s()", username, __FUNCTION__ );
-		return TT_ERR;
+	if( username[0] != '\0' ) {
+		owner = getpwnam( username );
+		if( owner == NULL ) {
+			TT_LOG_ERROR( "plugin/default", "getpwnam() failed for username='%s' in %s()", username, __FUNCTION__ );
+			return TT_ERR;
+		}
+		uid = owner->pw_uid;
 	}
-	group = getgrnam( groupname );
-	if( owner == NULL ) {
-        	TT_LOG_ERROR( "plugin/default", "getgrnam() failed for groupname='%s' in %s()", groupname, __FUNCTION__ );
-		return TT_ERR;
+	if( groupname[0] != '\0' ) {
+		group = getgrnam( groupname );
+		if( group == NULL ) {
+			TT_LOG_ERROR( "plugin/default", "getgrnam() failed for groupname='%s' in %s()", groupname, __FUNCTION__ );
+			return TT_ERR;
+		}
+		gid = group->gr_gid;
 	}
-	mode = strtol( permission, NULL, 8 );
-	if( mode == 0 ) {
-		mode = S_IRWXU|S_IRGRP|S_IXGRP;
-		TT_LOG_WARN( "plugin/default", "strtol() failed for mode='%s' in %s()", permission, __FUNCTION__ );
+	if( permission[0] != '\0' ) {
+		mode = strtol( permission, NULL, 8 );
+		if( mode == 0 ) {
+			mode = S_IRWXU|S_IRGRP|S_IXGRP;
+			TT_LOG_WARN( "plugin/default", "strtol() failed for mode='%s' in %s()", permission, __FUNCTION__ );
+		}
 	}
 	fd = open( filename, O_CREAT|O_WRONLY|O_TRUNC, mode );
 	if( fd < 0 ) {
        		TT_LOG_ERROR( "plugin/default", "open() failed for '%s' in %s()", filename, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( fchown( fd, owner->pw_uid, group->gr_gid ) < 0 ) {
-       		TT_LOG_ERROR( "plugin/default", "fchown() failed for '%s' in %s()", filename, __FUNCTION__ );
-		unlink( filename );
-		close( fd );
-		return TT_ERR;
+	if( (int)uid != -1 || (int)gid != -1 ) {
+		if( fchown( fd, uid, gid ) < 0 ) {
+			TT_LOG_ERROR( "plugin/default", "fchown() failed for '%s' in %s()", filename, __FUNCTION__ );
+			unlink( filename );
+			close( fd );
+			return TT_ERR;
+		}
 	}
-	if( fchmod( fd, mode ) < 0 ) {
-       		TT_LOG_ERROR( "plugin/default", "fchmod() failed for '%s' in %s()", filename, __FUNCTION__ );
-		unlink( filename );
-		close( fd );
-		return TT_ERR;
+	if( mode > 0 ) {
+		if( fchmod( fd, mode ) < 0 ) {
+			TT_LOG_ERROR( "plugin/default", "fchmod() failed for '%s' in %s()", filename, __FUNCTION__ );
+			unlink( filename );
+			close( fd );
+			return TT_ERR;
+		}
 	}
 	if( write( fd, buffer, buffer_size ) < (ssize_t)buffer_size ) {
 		TT_LOG_ERROR( "plugin/default", "write() failed for '%s' in %s()", filename, __FUNCTION__ );

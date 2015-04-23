@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<refentry id="tokentube">
+  <refmeta>
+    <refentrytitle>tokentube</refentrytitle>
+
+    <manvolnum>1</manvolnum>
+
+    <refmiscinfo class="setdesc">MAINTENANCE COMMANDS</refmiscinfo>
+  </refmeta>
+
+  <refnamediv id="tokentube-name">
+    <refname>tokentube</refname>
+
+    <refpurpose>Integration of LUKS with PAM</refpurpose>
+  </refnamediv>
+
+  <!-- body begins here -->
+
+  <refsynopsisdiv id="tokentube-synopsis">
+    <cmdsynopsis>
+      <command>tokentube</command>
+
+      <arg>&lt;OPTIONS&gt;</arg>
+
+      <arg>&lt;ACTION&gt;</arg>
+
+      <arg>&lt;ACTION ARGUMENTS&gt;</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1 id="tokentube-description">
+    <title>DESCRIPTION</title>
+
+    <para>The program <command>tokentube</command> is the default tool for
+    manually managing the TokenTube database (according to the supplied
+    configuration).</para>
+
+    <para>For configuring TokenTube, please refer to <citerefentry>
+        <refentrytitle>tokentube.conf</refentrytitle>
+
+        <manvolnum>5</manvolnum>
+      </citerefentry>.</para>
+  </refsect1>
+
+  <refsect1 id="tokentube-options">
+    <title>OPTIONS</title>
+
+    <para><emphasis remap="B">--help, -h</emphasis></para>
+
+    <para>Shows the help, including all available action commands.</para>
+
+    <para><emphasis remap="B">--config,
+    -c</emphasis> <filename>FILENAME</filename></para>
+
+    <para>Explicitly specifies a configuration file (instead of the default
+    <filename>/etc/tokentube/tokentube.conf</filename> for this
+    invocation.</para>
+
+    <para><emphasis remap="B">--debug, -d</emphasis></para>
+
+    <para>Increase the debug-level (can be provided multiple times).</para>
+
+    <para><emphasis remap="B">--verbose, -v</emphasis></para>
+
+    <para>Increase the verbosity (can be provided multiple times).</para>
+  </refsect1>
+
+  <refsect1 id="tokentube-actions">
+    <title>ACTIONS</title>
+
+    <para><emphasis remap="B">USER ACTIONS</emphasis></para>
+
+    <para><emphasis remap="B">user-create</emphasis> [[--username|-u]
+    USERNAME] [[--password|-p] PASSWORD]</para>
+
+    <para>Creates a new user in the TokenTube database (as specified in the
+    configuration). If the <emphasis remap="B">username</emphasis> and
+    <emphasis remap="B">password</emphasis> parameters are not provided as
+    arguments then the program will ask for them (for security reasons it is
+    recommended to not provide the <emphasis remap="B">password</emphasis>
+    parameter via argument - unless the execution environment is considered
+    trustworthy).</para>
+
+    <para><emphasis remap="B">user-exists</emphasis> [[--username|-u]
+    USERNAME]</para>
+
+    <para>Checks if a user exists in the TokenTube database (as specified in
+    the configuration). If the <emphasis remap="B">username</emphasis>
+    parameter is not provided as an argument then the program will ask for
+    it.</para>
+
+    <para><emphasis remap="B">user-delete</emphasis> [[--username|-u]
+    USERNAME]</para>
+
+    <para>Deletes a user from the TokenTube database (as specified in the
+    configuration). If the <emphasis remap="B">username</emphasis> parameter
+    is not provided as an argument then the program will ask for it.</para>
+
+    <para><emphasis
+    remap="B">user-update</emphasis> [[--username|-u] USERNAME]
+    [[--cur-password|-p] PASSWORD] [[--new-password|-n] PASSWORD]</para>
+
+    <para>Updates the password of a user in the TokenTube database (as
+    specified in the configuration). If the <emphasis
+    remap="B">username</emphasis>, <emphasis remap="B">cur-password</emphasis>
+    and <emphasis remap="B">new-password</emphasis> parameters are not
+    provided as arguments then the program will ask for them (for security
+    reasons it is recommended to not provide the <emphasis
+    remap="B">cur-password</emphasis> and <emphasis
+    remap="B">new-password</emphasis> parameters via arguments - unless the
+    execution environment is considered trustworthy).</para>
+
+    <para><emphasis
+    remap="B">user-verify</emphasis> [[--username|-u] USERNAME]
+    [[--password|-p] PASSWORD]</para>
+
+    <para>Verifies the password of a user in the TokenTube database (as
+    specified in the configuration). If the <emphasis
+    remap="B">username</emphasis> and <emphasis remap="B">password</emphasis>
+    parameters are not provided as arguments then the program will ask for
+    them (for security reasons it is recommended to not provide the <emphasis
+    remap="B">password</emphasis> parameter via argument - unless the
+    execution environment is considered trustworthy).</para>
+
+    <para><emphasis remap="B">otp-create</emphasis> [[--identifier|-i]
+    IDENTIFIER]</para>
+
+    <para>Creates a new OTP record in the TokenTube database (as specified in
+    the configuration). If the identifier parameter is not provided as an
+    argument then the program will ask for it.</para>
+
+    <para><emphasis remap="B">otp-exists</emphasis> [[--identifier|-i]
+    IDENTIFIER]</para>
+
+    <para>Checks if an OTP record exists in the TokenTube database (as
+    specified in the configuration). If the identifier parameter is not
+    provided as an argument then the program will ask for it.</para>
+
+    <para><emphasis remap="B">otp-delete</emphasis> [[--identifier|-i]
+    IDENTIFIER]</para>
+
+    <para>Deletes an OTP record from the TokenTube database (as specified in
+    the configuration). If the identifier parameter is not provided as an
+    argument then the program will ask for it.</para>
+
+    <para><emphasis remap="B">otp-challenge</emphasis> [[--identifier|-i]
+    IDENTIFIER]</para>
+
+    <para>Generates a (random) challenge for and according to the provided OTP
+    record (as specified in the configuration). If the identifier parameter is
+    not provided as an argument then the program will ask for it.</para>
+
+    <para><emphasis remap="B">otp-response</emphasis> [[--identifier|-i]
+    IDENTIFIER] [[--challenge|-x] CHALLENGE]</para>
+
+    <para>Generates a (calculated) response for and according to the provided
+    OTP record (as specified in the configuration) and the provided challenge.
+    If the identifier and/or challenge parameter is not provided as an
+    argument then the program will ask for it. <emphasis role="bold">This
+    command is not intended to be executed on the target system.</emphasis>
+    </para>
+
+    <para><emphasis remap="B">otp-apply</emphasis> [[--identifier|-i]
+    IDENTIFIER] [[--challenge|-x] CHALLENGE] [[--response|-y] RESPONSE]</para>
+
+    <para>Calculates the cryptographic key based on the provided challenge,
+    response and OTP record from the TokenTube database (as specified in the
+    configuration). If successful, the OTP record in the TokenTube database is
+    updated to reflect the execution of a one-time-password cycle.</para>
+  </refsect1>
+
+  <refsect1 id="tokentube-see_also">
+    <title>SEE ALSO</title>
+
+    <para><citerefentry>
+        <refentrytitle>tokentube.conf</refentrytitle>
+
+        <manvolnum>5</manvolnum>
+      </citerefentry></para>
+  </refsect1>
+</refentry>

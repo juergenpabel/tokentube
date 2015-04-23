@@ -38,14 +38,14 @@ static cfg_opt_t opt_tokentube_crypto[] = {
 };
 
 static cfg_opt_t opt_tokentube_storage_files[] = {
-        CFG_STR("owner", "root", CFGF_NONE),
-        CFG_STR("group", "root", CFGF_NONE),
-        CFG_STR("permission",  "0660", CFGF_NONE),
+        CFG_STR("owner", "", CFGF_NONE),
+        CFG_STR("group", "", CFGF_NONE),
+        CFG_STR("permission",  "", CFGF_NONE),
         CFG_END()
 };
 
 static cfg_opt_t opt_tokentube_storage_lukskey[] = {
-        CFG_STR("file", NULL, CFGF_NODEFAULT),
+        CFG_STR("file", "", CFGF_NONE),
         CFG_END()
 };
 
@@ -60,7 +60,7 @@ static cfg_opt_t opt_tokentube_user_autoenrollment[] = {
         CFG_INT("uid-maximum", TT_UNINITIALIZED, CFGF_NONE),
         CFG_INT("gid-minimum", TT_UNINITIALIZED, CFGF_NONE),
         CFG_INT("gid-maximum", TT_UNINITIALIZED, CFGF_NONE),
-        CFG_STR_LIST("groups", NULL, CFGF_NONE),
+        CFG_STR_LIST("groups", "", CFGF_NONE),
         CFG_END()
 };
 
@@ -88,7 +88,7 @@ static cfg_opt_t opt_tokentube_plugin[] = {
 };
 
 static cfg_opt_t opt_tokentube_plugins[] = {
-	CFG_STR_LIST("enabled", NULL, CFGF_NONE),
+	CFG_STR_LIST("enabled", "", CFGF_NONE),
 	CFG_SEC("plugin", opt_tokentube_plugin, CFGF_TITLE|CFGF_MULTI),
 	CFG_END()
 };
@@ -117,7 +117,9 @@ int libtokentube_conf_configure(const char* filename) {
 	g_configuration_filename = strndup( filename, FILENAME_MAX+1 );
 	if( libtokentube_plugin__file_load( TT_FILE__CONFIG_STANDARD, g_configuration_filename, buffer, &buffer_size ) != TT_OK ) {
 		TT_LOG_FATAL( "library/runtime", "could not load configuration file '%s'", g_configuration_filename );
-		return TT_ERR;
+		free( g_configuration_filename );
+		g_configuration_filename = NULL;
+		return TT_IGN;
 	}
 	g_configuration = cfg_init( opt_tokentube, CFGF_NONE );
 	cfg_set_error_function( g_configuration, libtokentube_cfg_error_log );
