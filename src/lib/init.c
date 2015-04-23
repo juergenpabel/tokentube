@@ -56,13 +56,13 @@ int tt_initialize(tt_version_t version) {
 		return TT_OK;
 	}
 	if( g_state != TT_STATE_UNINITIALIZED ) {
-		fprintf( stderr, "TOKENTUBE - ABORTING in tt_initialize() BECAUSE INTERNAL ERROR\n" );
+		fprintf( stderr, "TOKENTUBE - ABORTING in %s() BECAUSE INTERNAL ERROR\n", __FUNCTION__ );
 		return TT_ERR;
 	}
 	g_state = TT_STATE_UNDEFINED;
 
 	if( libtokentube_debug_initialize() != TT_OK ) {
-		fprintf( stderr, "TOKENTUBE - ABORTING in tt_initialize() BECAUSE INTERNAL ERROR\n" );
+		fprintf( stderr, "TOKENTUBE - ABORTING in %s() BECAUSE INTERNAL ERROR\n", __FUNCTION__ );
 		return TT_ERR;
 	}
 	TT_DEBUG1( "library/core", "initializing... (client version='%d.%d.%d')", version.major, version.minor, version.patch );
@@ -123,7 +123,7 @@ int tt_configure(const char* filename) {
 	}
 	TT_DEBUG1( "library/core", "configuring... (filename='%s')", filename );
 	if( g_state != TT_STATE_INITIALIZED ) {
-		fprintf( stderr, "TOKENTUBE - ABORTING in tt_configure() BECAUSE INTERNAL ERROR\n" );
+		fprintf( stderr, "TOKENTUBE - ABORTING in %s() BECAUSE INTERNAL ERROR\n", __FUNCTION__ );
 		return TT_ERR;
 	}
 	g_state = TT_STATE_UNDEFINED;
@@ -187,7 +187,7 @@ int tt_finalize() {
 	}
 	TT_DEBUG1( "library/core", "finalizing..." );
 	if( g_state != TT_STATE_INITIALIZED && g_state != TT_STATE_CONFIGURED ) {
-		fprintf( stderr, "TOKENTUBE - FAILING QUIETLY IN tt_finalize() BECAUSE OF INTERNAL ERROR\n" );
+		fprintf( stderr, "TOKENTUBE - FAILING QUIETLY IN %s() BECAUSE OF INTERNAL ERROR\n", __FUNCTION__ );
 		return TT_IGN;
 	}
 	g_state = TT_STATE_UNDEFINED;
