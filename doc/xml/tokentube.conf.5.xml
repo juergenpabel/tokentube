@@ -301,7 +301,10 @@ scrypt</literallayout>
         <term>plugins.plugin</term>
 
         <listitem>
-          <para>TODO</para>
+          <para>Configuration section for a plugin, which is specified with
+          a unique (descriptive) name - provided here as a title to the
+          section. The name is the one that must be listed in
+          plugins.enabled for the plugin to be actually loaded.</para>
 
           <para>This configuration section requires a unique name.</para>
         </listitem>
@@ -311,7 +314,9 @@ scrypt</literallayout>
         <term>plugins.plugin.library</term>
 
         <listitem>
-          <para>TODO</para>
+          <para>Specifies the filename of the object that will be loaded
+          as a shared library and initiate the plugin. It is recommended
+          to specify the filename with its full path.</para>
 
           <para>This configuration directive has no default value.</para>
         </listitem>
@@ -321,7 +326,9 @@ scrypt</literallayout>
         <term>plugins.plugin.config</term>
 
         <listitem>
-          <para>TODO</para>
+          <para>Specifies the filename of the object that will be loaded
+          as the configuration for the plugin. It is recommended to specify
+          filename with its full path.</para>
 
           <para>This configuration directive has no default value.</para>
         </listitem>
@@ -331,7 +338,7 @@ scrypt</literallayout>
         <term>plugins.plugin.disable.api</term>
 
         <listitem>
-          <para>TODO</para>
+          <para>Specifies which APIs should be disabled for this plugin</para>
 
           <para>This configuration directive has no default value.</para>
         </listitem>
@@ -341,7 +348,7 @@ scrypt</literallayout>
         <term>plugins.plugin.disable.event</term>
 
         <listitem>
-          <para>TODO</para>
+          <para>Specifies which events should be disabled for this plugin</para>
 
           <para>This configuration directive has no default value.</para>
         </listitem>
@@ -355,7 +362,12 @@ scrypt</literallayout>
         <term>runtime.log.level</term>
 
         <listitem>
-          <para>TODO</para>
+          <para>Specifies the minimum log level. Valid log levels are:</para>
+          <literallayout>fatal
+error
+warn
+info</literallayout>
+
 
           <para>This configuration directive has no default value.</para>
         </listitem>
@@ -365,7 +377,8 @@ scrypt</literallayout>
         <term>runtime.debug.level</term>
 
         <listitem>
-          <para>TODO</para>
+          <para>Specifies the maximum debug level. Valid debug levels are
+          numeric values from 0 to 9.</para>
 
           <para>This configuration directive has no default value.</para>
         </listitem>
