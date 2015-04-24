@@ -136,6 +136,7 @@ am_libtokentube_la_OBJECTS = libtokentube_la-crypto.lo \
 	libtokentube_la-default-storage.lo \
 	libtokentube_la-default-user.lo \
 	libtokentube_la-default-user-storage.lo \
+	libtokentube_la-default-user-key.lo \
 	libtokentube_la-default-user-verifier.lo \
 	libtokentube_la-default-otp.lo \
 	libtokentube_la-default-otp-helpdesk.lo \
@@ -349,7 +350,7 @@ AUTOMAKE_OPTIONS = foreign
 lib_LTLIBRARIES = libtokentube.la
 libtokentube_la_CFLAGS = -I../../include 
 libtokentube_la_LDFLAGS = -lext2fs -lscrypt -lgcrypt -lconfuse -ldl
-libtokentube_la_SOURCES = crypto.c crypto-conf.c crypto-crypt.c crypto-oid.c init.c library.c plugin.c plugin-event.c plugin-luks.c plugin-pba.c plugin-runtime.c plugin-storage.c plugin-user.c plugin-otp.c default.c default-posix.c default-ext2fs.c default-misc.c default-luks.c default-pba.c default-runtime.c default-storage.c default-user.c default-user-storage.c default-user-verifier.c default-otp.c default-otp-helpdesk.c default-otp-storage.c runtime.c runtime-conf.c runtime-conf-confuse.c runtime-event.c runtime-log.c runtime-debug.c runtime-pba.c util-base32.c util-base64.c util-crc.c util-device.c util-file.c util-hex.c
+libtokentube_la_SOURCES = crypto.c crypto-conf.c crypto-crypt.c crypto-oid.c init.c library.c plugin.c plugin-event.c plugin-luks.c plugin-pba.c plugin-runtime.c plugin-storage.c plugin-user.c plugin-otp.c default.c default-posix.c default-ext2fs.c default-misc.c default-luks.c default-pba.c default-runtime.c default-storage.c default-user.c default-user-storage.c default-user-key.c default-user-verifier.c default-otp.c default-otp-helpdesk.c default-otp-storage.c runtime.c runtime-conf.c runtime-conf-confuse.c runtime-event.c runtime-log.c runtime-debug.c runtime-pba.c util-base32.c util-base64.c util-crc.c util-device.c util-file.c util-hex.c
 all: all-am
 
 .SUFFIXES:
@@ -443,6 +444,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-posix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-runtime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-storage.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-user-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-user-storage.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-user-verifier.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-user.Plo@am__quote@
@@ -659,6 +661,13 @@ libtokentube_la-default-user-storage.lo: default-user-storage.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='default-user-storage.c' object='libtokentube_la-default-user-storage.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-user-storage.lo `test -f 'default-user-storage.c' || echo '$(srcdir)/'`default-user-storage.c
+
+libtokentube_la-default-user-key.lo: default-user-key.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-user-key.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-user-key.Tpo -c -o libtokentube_la-default-user-key.lo `test -f 'default-user-key.c' || echo '$(srcdir)/'`default-user-key.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-default-user-key.Tpo $(DEPDIR)/libtokentube_la-default-user-key.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='default-user-key.c' object='libtokentube_la-default-user-key.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-user-key.lo `test -f 'default-user-key.c' || echo '$(srcdir)/'`default-user-key.c
 
 libtokentube_la-default-user-verifier.lo: default-user-verifier.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-user-verifier.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-user-verifier.Tpo -c -o libtokentube_la-default-user-verifier.lo `test -f 'default-user-verifier.c' || echo '$(srcdir)/'`default-user-verifier.c

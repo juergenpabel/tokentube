@@ -29,7 +29,10 @@ typedef enum {
 } tt_cryptmode_t;
 
 
-int libtokentube_crypto_crypt(tt_cryptmode_t mode, void* data, const size_t data_len, const void* key, const size_t keylen, const void* iv, const size_t ivlen);
+int libtokentube_crypto_crypt_impl(tt_cryptmode_t mode, const char* oid, void* data, const size_t data_len, const void* key, const size_t keylen, const void* iv, const size_t ivlen);
+int libtokentube_crypto_hash_impl(const char* oid, const void* in, size_t in_len, void* out, size_t* out_len);
+int libtokentube_crypto_kdf_impl(const char* kdf, size_t kdf_iter, const char* oid, const void* salt, size_t salt_size, const void* in, size_t in_size, void* out, size_t* out_size);
+
 const char* libtokentube_name2oid(const char* name);
 
 #endif /* __LIBTOKENTUBE_CRYPT_H__ */

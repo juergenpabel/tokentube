@@ -20,36 +20,37 @@
 __attribute__ ((visibility ("hidden")))
 int default__api__user_create(const char* username, const char* password) {
 	tt_user_t	user = TT_USER__UNDEFINED;
-	char		data[TT_KEY_BITS_MAX/8] = { 0 };
-	size_t		data_size = sizeof(data);
 
 	TT_TRACE( "library/plugin", "%s(username='%s',password='%s')", __FUNCTION__, username, password );
 	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_plugin__luks_load( data, &data_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__luks_load() failed in %s()", __FUNCTION__ );
-		return TT_ERR;
-	}
-	if( libtokentube_crypto_encrypt( data, data_size, password, strlen(password), username, strlen(username) ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_encrypt() failed in %s()", __FUNCTION__ );
-		return TT_ERR;
-	}
 	strncpy( user.cipher, libtokentube_crypto_get_cipher(), sizeof(user.cipher)-1 );
 	strncpy( user.hash, libtokentube_crypto_get_hash(), sizeof(user.hash)-1 );
 	strncpy( user.kdf, g_crypto_kdf, sizeof(user.kdf)-1 );
 	user.kdf_iter = g_crypto_kdf_iter;
-	memcpy( user.luks_data, data, data_size );
-	user.luks_data_len = data_size;
+	if( libtokentube_plugin__luks_load( user.luks_data, &user.luks_data_len ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__luks_load() failed in %s()", __FUNCTION__ );
+		memset( &user, '\0', sizeof(user) );
+		return TT_ERR;
+	}
+	if( default__impl__user_key_encrypt( username, password, &user ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__user_key_encrypt() failed in %s()", __FUNCTION__ );
+		memset( &user, '\0', sizeof(user) );
+		return TT_ERR;
+	}
 	if( default__impl__user_verifier_set( username, password, &user ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "default__impl__user_verifier_set() failed in %s()", __FUNCTION__ );
+		memset( &user, '\0', sizeof(user) );
 		return TT_ERR;
 	}
 	if( default__impl__user_storage_save( username, &user ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__user_save() failed in %s()", __FUNCTION__ );
+		memset( &user, '\0', sizeof(user) );
 		return TT_ERR;
 	}
+	memset( &user, '\0', sizeof(user) );
 	return TT_OK;
 }
 
@@ -72,12 +73,17 @@ int default__api__user_update(const char* username, const char* old_password, co
 		return TT_ERR;
 	}
 	if( *status == TT_STATUS__YES ) {
-		if( libtokentube_crypto_decrypt( user.luks_data, user.luks_data_len, old_password, strlen(old_password), username, strlen(username) ) != TT_OK ) {
-			TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_decrypt() failed in %s()", __FUNCTION__ );
+		if( default__impl__user_key_decrypt( username, old_password, &user ) != TT_OK ) {
+			TT_LOG_ERROR( "plugin/default", "default__impl__user_key_decrypt() failed in %s()", __FUNCTION__ );
+			memset( &user, '\0', sizeof(user) );
 			return TT_ERR;
 		}
-		if( libtokentube_crypto_encrypt( user.luks_data, user.luks_data_len, new_password, strlen(new_password), username, strlen(username) ) != TT_OK ) {
-			TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_encrypt() failed in %s()", __FUNCTION__ );
+		strncpy( user.cipher, libtokentube_crypto_get_cipher(), sizeof(user.cipher)-1 );
+		strncpy( user.hash, libtokentube_crypto_get_hash(), sizeof(user.hash)-1 );
+		strncpy( user.kdf, g_crypto_kdf, sizeof(user.kdf)-1 );
+		user.kdf_iter = g_crypto_kdf_iter;
+		if( default__impl__user_key_encrypt( username, new_password, &user ) != TT_OK ) {
+			TT_LOG_ERROR( "plugin/default", "default__impl__user_key_encrypt() failed in %s()", __FUNCTION__ );
 			memset( &user, '\0', sizeof(user) );
 			return TT_ERR;
 		}
@@ -174,8 +180,8 @@ int default__api__user_execute_load(const char* username, const char* password, 
                 TT_LOG_ERROR( "plugin/default", "user loaded but provided buffer too small for username='%s' in %s()", username, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_crypto_decrypt( user.luks_data, user.luks_data_len, password, strlen(password), username, strlen(username) ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_decrypt() failed for username='%s' in %s()", username, __FUNCTION__ );
+	if( default__impl__user_key_decrypt( username, password, &user ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__user_key_decrypt() failed for username='%s' in %s()", username, __FUNCTION__ );
 		return TT_ERR;
 	}
 	memcpy( key, user.luks_data, user.luks_data_len );
