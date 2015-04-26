@@ -23,14 +23,12 @@ int libtokentube_util_base32_encode(const char* input, size_t input_len, char* o
 		char b[4] = {0};
 		int i, bits=0, val=0;
 
-		b[0] = (input[input_pos+0] & 0x0f);
-		b[1] = (input[input_pos+0] & 0xf0) >> 4;
-		b[2] = (input[input_pos+1] & 0x0f);
-		b[3] = (input[input_pos+1] & 0xf0) >> 4;
+		b[0] = (input[input_pos+0] & 0xf0) >> 4;
+		b[1] = (input[input_pos+0] & 0x0f);
+		b[2] = (input[input_pos+1] & 0xf0) >> 4;
+		b[3] = (input[input_pos+1] & 0x0f);
 
-		bits |= input[input_pos+0] & 0xff;
-		bits <<= 8;
-		bits |= input[input_pos+1] & 0xff;
+		bits = ((input[input_pos+0] & 0xff) << 8) | ((input[input_pos+1] & 0xff) << 0);
 		bits <<= 4;
 		bits |= b[0] ^ b[1] ^ b[2] ^ b[3];
 
