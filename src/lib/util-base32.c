@@ -28,16 +28,16 @@ int libtokentube_util_base32_encode(const char* input, size_t input_len, char* o
 		b[2] = (input[input_pos+1] & 0x0f);
 		b[3] = (input[input_pos+1] & 0xf0) >> 4;
 
-		bits |= input[input_pos+1] & 0xff;
-		bits <<= 8;
 		bits |= input[input_pos+0] & 0xff;
+		bits <<= 8;
+		bits |= input[input_pos+1] & 0xff;
 		bits <<= 4;
 		bits |= b[0] ^ b[1] ^ b[2] ^ b[3];
 
 		for( i=0; i<4; i++ ) {
 			val = bits & 0x1f;
 			bits >>= 5;
-			output[output_pos+i] = CHARSET[val];
+			output[output_pos+3-i] = CHARSET[val];
 		}
 		output_pos +=4;
 		input_pos += 2;
@@ -76,20 +76,20 @@ int libtokentube_util_base32_decode(const char* input, size_t input_len, char* o
 		}
 		for( i=0; i<4; i++ ) {
 			bits <<=5;
-			bits |= b[3-i];
+			bits |= b[i];
 		}
 		val = (bits & 0xffff0) >> 4;
 
 		for( i=0; i<5; i++ ) {
-			b[4-i] = bits & 0xf;
+			b[i] = bits & 0xf;
 			bits >>= 4;
 		}
 		if((b[0] ^ b[1] ^ b[2] ^ b[3] ^ b[4]) != 0) {
 			return TT_ERR;
 		}
 		if( output != NULL ) {
-			output[output_pos+1] = (val & 0xff00) >> 8;
-			output[output_pos+0] = (val & 0x00ff);
+			output[output_pos+0] = (val & 0xff00) >> 8;
+			output[output_pos+1] = (val & 0x00ff) >> 0;
 		}
 		output_pos += 2;
 		input_pos += 4;

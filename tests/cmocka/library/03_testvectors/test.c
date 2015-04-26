@@ -58,7 +58,13 @@ static void test_testvectors_base32(void **state) {
 	output_size = sizeof(output);
 	assert_true( library->api.util.base32_encode( "test", 4, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 9 );
-	assert_string_equal( output, "a4yp-03ur" );
+	assert_string_equal( output, "ruvt-rq4h" );
+
+	output_size = sizeof(output);
+	assert_true( library->api.util.base32_decode( "ruvt-rq4h", 9, output, &output_size ) == TT_OK );
+	assert_int_equal( output_size, 4 );
+	output[4] = '\0';
+	assert_string_equal( output, "test" );
 }
 
 
