@@ -107,7 +107,7 @@ __attribute__ ((visibility ("hidden")))
 int default__api__otp_execute_challenge( const char* identifier, char* challenge, size_t* challenge_size) {
 	char		bytes[2+TT_OTP_BITS_MAX/8] = { 0 };
 	tt_otp_t	otp = {0};
-	int		crc = 0;
+	unsigned short	crc = 0;
 	size_t		i = 0;
 
 	TT_TRACE( "plugin/default", "%s(identifier='%s')", __FUNCTION__, identifier );
@@ -161,7 +161,8 @@ int default__api__otp_execute_response(const char* identifier, const char* chall
 	gcry_md_hd_t	digest = NULL;
 	void*		digest_result;
 	size_t		i = 0;
-	int		hash_id, crc;
+	int		hash_id;
+	unsigned short	crc;
 
 
 	TT_TRACE( "plugin/default", "%s(identifier='%s',challenge='%s')", __FUNCTION__, identifier, challenge );
@@ -297,7 +298,7 @@ int default__api__otp_execute_apply(const char* identifier, const char* challeng
 	size_t		hash_size = sizeof(hash);
 	char		xor[TT_OTP_BITS_MAX/8] = {0};
 	size_t		i = 0;
-	int		crc = 0;
+	unsigned short	crc = 0;
 	tt_otp_t	otp = {0};
 
 	TT_TRACE( "plugin/default", "%s(identifier='%s',challenge='%s',response='%s')", __FUNCTION__, identifier, challenge, response );

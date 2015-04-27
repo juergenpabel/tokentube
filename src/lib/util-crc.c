@@ -3,7 +3,7 @@
 #include "libtokentube.h"
 
 
-static short const g_crc16_table[256] = {
+static unsigned short g_crc16_table[256] = {
 	0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
 	0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1, 0xC481, 0x0440,
 	0xCC01, 0x0CC0, 0x0D80, 0xCD41, 0x0F00, 0xCFC1, 0xCE81, 0x0E40,
@@ -40,17 +40,17 @@ static short const g_crc16_table[256] = {
 
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_util_crc16(const char const* input, size_t input_len, int* result) {
-	size_t	i=0;
-	int	crc = 0;
+int libtokentube_util_crc16(const void const* data, size_t data_len, unsigned short* result) {
+	size_t		i=0;
+	unsigned short	crc = 0;
 
-	if( input == NULL || result == NULL ) {
+	if( data == NULL || result == NULL ) {
 		TT_LOG_ERROR( "library/crc", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 
-	for( i=0; i<input_len; i++ ) {
-		crc = (crc>>8) ^ g_crc16_table[(crc ^ input[i]) & 0xff];
+	for( i=0; i<data_len; i++ ) {
+		crc = (crc>>8) ^ g_crc16_table[(crc ^ ((const unsigned char*)data)[i]) & 0xff];
 	}
 	*result = crc;
 	return TT_OK;

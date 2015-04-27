@@ -28,7 +28,7 @@ static void test_testvectors_hex(void **state) {
 
 static void test_testvectors_crc16(void **state) {
 	tt_library_t*	library;
-	int		result;
+	unsigned short	result;
 
 	library = (tt_library_t*)*state;
 	assert_non_null( library );
@@ -37,7 +37,7 @@ static void test_testvectors_crc16(void **state) {
 	assert_int_equal( result, 0x0000 );
 
 	assert_true( library->api.util.crc16( "test", 4, &result ) == TT_OK );
-	assert_int_equal( result, 0x072e );
+	assert_int_equal( result, 0xf82e );
 
 }
 
@@ -57,14 +57,18 @@ static void test_testvectors_base32(void **state) {
 
 	output_size = sizeof(output);
 	assert_true( library->api.util.base32_encode( "test", 4, output, &output_size ) == TT_OK );
-	assert_int_equal( output_size, 9 );
-	assert_string_equal( output, "ruvt-rq4h" );
+	assert_int_equal( output_size, 8 );
+	assert_string_equal( output, "ruvtrq4h" );
 
 	output_size = sizeof(output);
-	assert_true( library->api.util.base32_decode( "ruvt-rq4h", 9, output, &output_size ) == TT_OK );
+	assert_true( library->api.util.base32_decode( "ruvtrq4h", 8, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 4 );
 	output[4] = '\0';
 	assert_string_equal( output, "test" );
+
+	output_size = sizeof(output);
+	assert_true( library->api.util.base32_decode( "zpcp2e37qua92y9u860e", 20, output, &output_size ) == TT_OK );
+	assert_int_equal( output_size, 10 );
 }
 
 
