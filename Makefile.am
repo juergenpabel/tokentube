@@ -17,6 +17,10 @@ cmocka:
 	make -C tests/cmocka
 	make -C tests/cmocka tests
 
+.PHONY:	helpdesk
+helpdesk:
+	( cd src/helpdesk && ant )
+
 .PHONY:	man
 man:
 	make -C doc/man

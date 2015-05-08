@@ -1,0 +1,123 @@
+/* General settings */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #FFFFFF;
+}
+body, td, th {
+  color: #000000;
+  font-family: "Luxi Sans", Arial, sans-serif;
+  font-size: 10pt;
+}
+body {
+  background-color: #FFFFFF;
+}
+a, a:visited {
+  color: #0000FF;
+}
+/* Layout */
+#header, #body {
+  padding: 8px;
+}
+#header {
+  background-color: #EEFFDD;
+}
+#header {
+  border-bottom: 2px solid #EECCAA;
+}
+span.title {
+  color: #770000;
+  font-size: large;
+  font-weight: bold;
+}
+/* Tables */
+table {
+  border-collapse: collapse;
+}
+th, td {
+  border: 1px solid #777777;
+  padding-left:  4px;
+  padding-right: 4px;
+}
+th {
+  background-color: #FFEEDD;
+  border-bottom: 3px solid #777777;
+}
+table.view td {
+  border: none;
+}
+table.view td.label {
+  font-weight: bold;
+  color: #6699AA;
+  text-align: right;
+}
+table.view td.value {
+  font-family: monospace;
+}
+/* Display Tag */
+table#otp {
+  margin-top: 8px;
+}
+tr.odd {
+  background-color: #E5F5E5;
+}
+tr.even {
+  background-color: #FFFFFF;
+}
+th.sorted {
+  background-color: #EECCAA;
+}
+th.order1 {
+  background-image: url(../images/gradient_asc.png);
+}
+th.order2 {
+  background-image: url(../images/gradient_desc.png);
+}
+/* Form controls */
+table.form td {
+  color: #004499;
+  border: none;
+  padding: 4px;
+}
+input, textarea {
+  background-color: #F5F5FF;
+  border: 1px solid #777777;
+  font-family: "Luxi Mono", monospace;
+  font-size: 10pt;
+}
+input[type="button"], input[type="submit"] {
+  border: 1px solid #007A68;
+  color: #004499;
+  background-color: #EEEEFF;
+  font-family: "Luxi Sans", sans-serif;
+}
+/* Message display */
+div.messages {
+  display: block;
+  border: 2px solid #008800;
+  margin-bottom: 8px;
+  background-color: #CCFFCC;
+}
+div.messages p {
+  font-weight: bold;
+  color: #008800;
+  margin: 0;
+}
+span.error {
+  font-weight: bold;
+  color: #880000;
+  padding: 8px;
+}
+input.error {
+  border: 2px solid #880000;
+  background-color: #FFDDDD;
+}
+label.error {
+  color: #880000;
+  font-weight: bold;
+  text-decoration: underline;
+}
+input.required {
+  border-width: 2px;
+}
