@@ -18,17 +18,21 @@ static int base64_value(char c) {
 
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_util_base64_encode(char const* input, size_t input_len, char* output, size_t* output_len) {
-	int	char_array_3[3];
-	int	char_array_4[4];
-	int	i=0, j=0;
+int libtokentube_util_base64_encode(void const* bytes, size_t bytes_len, void* text, size_t* text_len) {
+	const unsigned char*    input = bytes;
+	size_t                  input_len = bytes_len;
+	char*                   output = text;
+	size_t*                 output_len = text_len;
+	int			char_array_3[3];
+	int			char_array_4[4];
+	int			i=0, j=0;
 
 	if( input == NULL || output_len == NULL ) {
 		TT_LOG_ERROR( "library/util", "invalid parameters in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( input_len == 0 ) {
-		input_len = strlen( input );
+		input_len = strlen( (const char*)input );
 	}
 	if( output != NULL ) {
 		memset( output, '\0', *output_len );
@@ -79,19 +83,21 @@ int libtokentube_util_base64_encode(char const* input, size_t input_len, char* o
 
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_util_base64_decode(char const* input, size_t input_len, char* output, size_t* output_len) {
-	int i = 0;
-	int j = 0;
-	int pos = 0;
-	char char_array_4[4], char_array_3[3];
-	char c = 0;
+int libtokentube_util_base64_decode(void const* text, size_t text_len, void* bytes, size_t* bytes_len) {
+	const unsigned char*    input = text;
+	size_t                  input_len = text_len;
+	char*                   output = bytes;
+	size_t*                 output_len = bytes_len;
+	char			char_array_4[4], char_array_3[3];
+	int			i = 0, j = 0, pos = 0;
+	char			c = 0;
 
 	if( input == NULL || output_len == NULL ) {
 		TT_LOG_ERROR( "library/util", "invalid parameters in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( input_len == 0 ) {
-		input_len = strlen( input );
+		input_len = strlen( (const char*)input );
 	}
 	if( output != NULL ) {
 		memset( output, '\0', *output_len );

@@ -31,12 +31,26 @@ def init(parser):
 	parser_otp_apply.set_defaults(func=apply)
 
 
+def get_identifier():
+	return input( "Enter identifier: " )
+
+
+def get_challenge():
+	return input( "Enter challenge: " )
+
+
+def get_response():
+	return input( "Enter response: " )
+
+
 def message(args, msg):
 	if args.quiet is False:
 		print( msg )
 
 
 def create(args):
+	if args.identifier is None:
+		args.identifier = get_identifier()
 	if tokentube.otp_exists( args.identifier ) is True:
 		message( args, "FAILURE: otp '%s' already exists" % args.identifier )
 		return -1
@@ -48,6 +62,8 @@ def create(args):
 
 
 def exists(args):
+	if args.identifier is None:
+		args.identifier = get_identifier()
 	if tokentube.otp_exists( args.identifier ) is False:
 		message( args, "WARNING: otp '%s' does not exist" % args.identifier )
 		return -1
@@ -56,6 +72,8 @@ def exists(args):
 
 
 def delete(args):
+	if args.identifier is None:
+		args.identifier = get_identifier()
 	if tokentube.otp_exists( args.identifier ) is False:
 		message( args, "WARNING: otp '%s' does not exist" % args.identifier )
 		return 0
@@ -68,6 +86,8 @@ def delete(args):
 
 def challenge(args):
 	challenge = " " * tokentube.TT_OTP_TEXT_MAX;
+	if args.identifier is None:
+		args.identifier = get_identifier()
 	if tokentube.otp_exists( args.identifier ) is False:
 		message( args, "WARNING: otp '%s' does not exist" % args.identifier )
 		return 0
@@ -80,9 +100,13 @@ def challenge(args):
 
 def response(args):
 	response = " " * tokentube.TT_OTP_TEXT_MAX;
+	if args.identifier is None:
+		args.identifier = get_identifier()
 	if tokentube.otp_exists( args.identifier ) is False:
 		message( args, "WARNING: otp '%s' does not exist" % args.identifier )
 		return 0
+	if args.challenge is None:
+		args.challenge = get_challenge()
 	if tokentube.otp_execute_response( args.identifier, args.challenge, response ) is False:
 		message( args, "FAILURE: failed to process response for otp '%s'" % args.identifier )
 		return -1
@@ -92,9 +116,15 @@ def response(args):
 
 def apply(args):
 	key = " " * tokentube.TT_OTP_TEXT_MAX;
+	if args.identifier is None:
+		args.identifier = get_identifier()
 	if tokentube.otp_exists( args.identifier ) is False:
 		message( args, "WARNING: otp '%s' does not exist" % args.identifier )
 		return 0
+	if args.challenge is None:
+		args.challenge = get_challenge()
+	if args.response is None:
+		args.response = get_response()
 	if tokentube.otp_execute_apply( args.identifier, args.challenge, args.response, key ) is False:
 		message( args, "FAILURE: failed to process otp '%s'" % args.identifier )
 		return -1

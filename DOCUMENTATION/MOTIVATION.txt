@@ -1,0 +1,24 @@
+Motivation
+==========
+
+The existing LUKS/dm-crypt based implementation for full-disk-encryption on Linux
+implies dedicated passwords/passphases for LUKS/dm-crypt. For the average users
+this implies that they have to remember two separate credentials, one for the
+full-disk-encryption and one for their system login users. Although this allows
+for a cryptographically stronger secret to be employed for the full-disk-encryption
+while allowing for a simpler login password (that users would have to type in more
+oftenly: to unlock the screensaver). However, most users would simply choose the same
+password for both subsystems and thus not benefiting from this possibility. On the
+downside this incurs a higher password management overhead when changing passwords.
+Also, some users may find it unintuitive to maintain two separate passwords.
+
+
+Scope definition
+================
+
+TokenTube shall implement a subsystem for Linux systems that enables users to employ
+their system login credentials for the pre-boot-authentication (PBA) in order to
+mount an LUKS/dm-crypt encrypted system partition/filesystem. The implementation shall
+address password changes and other user-management related changes automatically and
+by that be virtually unnoticably for users.
+

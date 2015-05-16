@@ -669,6 +669,8 @@ LIBTOOL
 MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
+XSLTPROC
+XMLLINT
 pkgpyexecdir
 pyexecdir
 pkgpythondir
@@ -2742,6 +2744,7 @@ END
   fi
 fi
 
+
 # Checks for programs.
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -4074,6 +4077,88 @@ $as_echo "$am_cv_python_pyexecdir" >&6; }
 
 
   fi
+
+
+
+# Extract the first word of "xmllint", so it can be a program name with args.
+set dummy xmllint; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_XMLLINT+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $XMLLINT in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_XMLLINT="$XMLLINT" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_XMLLINT="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_path_XMLLINT" && ac_cv_path_XMLLINT="/bin/true"
+  ;;
+esac
+fi
+XMLLINT=$ac_cv_path_XMLLINT
+if test -n "$XMLLINT"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $XMLLINT" >&5
+$as_echo "$XMLLINT" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+# Extract the first word of "xsltproc", so it can be a program name with args.
+set dummy xsltproc; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_XSLTPROC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $XSLTPROC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_XSLTPROC="$XSLTPROC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_XSLTPROC="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+XSLTPROC=$ac_cv_path_XSLTPROC
+if test -n "$XSLTPROC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $XSLTPROC" >&5
+$as_echo "$XSLTPROC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
 
 
 
@@ -11703,7 +11788,7 @@ CC="$lt_save_CC"
 # Checks for library functions.
 
 CFLAGS="-g -O0 -Wall -Wextra -Werror -Wno-missing-braces -Wno-missing-field-initializers"
-ac_config_files="$ac_config_files Makefile src/lib/Makefile src/pam/Makefile src/plugins/Makefile src/plugins/exec/Makefile src/plugins/log/Makefile src/plugins/syslog/Makefile src/plugins/test/Makefile src/plugins/helpdesk/Makefile src/plugins/lua/Makefile src/plugins/python/Makefile src/extensions/Makefile src/extensions/python/Makefile src/bin/cli/Makefile src/bin/pba/Makefile src/bin/ssod/Makefile src/bin/sso-greeter-lightdm/Makefile tests/cmocka/Makefile tests/cmocka/library/Makefile tests/cmocka/library/00_compile/Makefile tests/cmocka/library/01_init/Makefile tests/cmocka/library/02_config/Makefile tests/cmocka/library/03_testvectors/Makefile tests/cmocka/library/04_user/Makefile tests/cmocka/library/05_otp/Makefile tests/cmocka/plugins/Makefile tests/cmocka/plugins/00_compile/Makefile tests/cmocka/plugins/01_init/Makefile tests/cmocka/plugins/02_helpdesk/Makefile tests/cmocka/pam/Makefile tests/cmocka/pam/libpam/Makefile tests/cmocka/pam/00_compile/Makefile tests/cmocka/pam/01_init/Makefile tests/cmocka/pam/02_sm_authenticate/Makefile tests/cmocka/pam/03_sm_chauthtok/Makefile"
+ac_config_files="$ac_config_files Makefile src/lib/Makefile src/pam/Makefile src/plugins/Makefile src/plugins/exec/Makefile src/plugins/log/Makefile src/plugins/syslog/Makefile src/plugins/test/Makefile src/plugins/helpdesk/Makefile src/plugins/lua/Makefile src/plugins/python/Makefile src/extensions/Makefile src/extensions/python/Makefile src/bin/cli/Makefile src/bin/pba/Makefile src/bin/ssod/Makefile src/bin/sso-greeter-lightdm/Makefile doc/Makefile doc/man/Makefile tests/cmocka/Makefile tests/cmocka/library/Makefile tests/cmocka/library/00_compile/Makefile tests/cmocka/library/01_init/Makefile tests/cmocka/library/02_config/Makefile tests/cmocka/library/03_testvectors/Makefile tests/cmocka/library/04_user/Makefile tests/cmocka/library/05_otp/Makefile tests/cmocka/plugins/Makefile tests/cmocka/plugins/00_compile/Makefile tests/cmocka/plugins/01_init/Makefile tests/cmocka/plugins/02_helpdesk/Makefile tests/cmocka/pam/Makefile tests/cmocka/pam/libpam/Makefile tests/cmocka/pam/00_compile/Makefile tests/cmocka/pam/01_init/Makefile tests/cmocka/pam/02_sm_authenticate/Makefile tests/cmocka/pam/03_sm_chauthtok/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -12731,6 +12816,8 @@ do
     "src/bin/pba/Makefile") CONFIG_FILES="$CONFIG_FILES src/bin/pba/Makefile" ;;
     "src/bin/ssod/Makefile") CONFIG_FILES="$CONFIG_FILES src/bin/ssod/Makefile" ;;
     "src/bin/sso-greeter-lightdm/Makefile") CONFIG_FILES="$CONFIG_FILES src/bin/sso-greeter-lightdm/Makefile" ;;
+    "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
+    "doc/man/Makefile") CONFIG_FILES="$CONFIG_FILES doc/man/Makefile" ;;
     "tests/cmocka/Makefile") CONFIG_FILES="$CONFIG_FILES tests/cmocka/Makefile" ;;
     "tests/cmocka/library/Makefile") CONFIG_FILES="$CONFIG_FILES tests/cmocka/library/Makefile" ;;
     "tests/cmocka/library/00_compile/Makefile") CONFIG_FILES="$CONFIG_FILES tests/cmocka/library/00_compile/Makefile" ;;

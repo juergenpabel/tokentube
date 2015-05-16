@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<refentry id="tokentube.conf">
+  <refmeta>
+    <refentrytitle>tokentube.conf</refentrytitle>
+
+    <manvolnum>5</manvolnum>
+
+    <refmiscinfo class="setdesc">TokenTube Manual</refmiscinfo>
+  </refmeta>
+
+  <refnamediv id="tokentube.conf-name">
+    <refname>tokentube.conf</refname>
+
+    <refpurpose>Main configuration file for TokenTube</refpurpose>
+  </refnamediv>
+
+  <!-- body begins here -->
+
+  <refsect1 id="tokentube.conf-description">
+    <title>DESCRIPTION</title>
+
+    <para>The main configuration file is located at
+    <filename>/etc/tokentube/tokentube.conf</filename>, although another
+    location can be specified at program invocation time. The main
+    configuration file must refer to another configuration file located at
+    <filename>/boot/tokentube/crypto.conf</filename>, which is required in
+    order to be accessible at boot time for the
+    Pre-Boot-Authentication.</para>
+
+    <para>For clarification purposes only: The following configuration
+    directives are expressed by their full formal name. Given the following
+    configuration snippet example:</para>
+
+    <literallayout>storage {
+    files {
+        owner = "A"
+        group = "B"
+    }
+}</literallayout>
+
+    <para>The configuration directive "storage.files.owner" would thus yield
+    the value "A" and "storage.files.group" would yield the value "B" in this
+    example.</para>
+
+    <para><emphasis role="bold">Section "storage"</emphasis></para>
+
+    <variablelist>
+      <varlistentry>
+        <term>storage.files.owner</term>
+
+        <listitem>
+          <para>Specifies the owner of any files created by the default
+          user/otp database implementation (refers to files located in
+          <filename>/boot/toketube/user/</filename> and
+          <filename>/boot/tokentube/otp/</filename>).</para>
+
+          <para>The owner may be specified by name or by the numeric
+          value.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.files.group</term>
+
+        <listitem>
+          <para>Specifies the group of any files created by the default
+          user/otp database implementation (refers to files located in
+          <filename>/boot/toketube/user/</filename> and
+          <filename>/boot/tokentube/otp/</filename>).</para>
+
+          <para>The group may be specified by name or by the numeric
+          value.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.files.permission</term>
+
+        <listitem>
+          <para>Specifies the permission of any files created by the default
+          user/otp database implementation (refers to files located in
+          <filename>/boot/toketube/user/</filename> and
+          <filename>/boot/tokentube/otp/</filename>).</para>
+
+          <para>The permission must be specified in standard octal
+          notation.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.luks-key.file</term>
+
+        <listitem>
+          <para>Specifies the file (configuring an absolute path is highly
+          recommended) which stores a plaintext copy of the cryptographic key
+          used for LUKS.</para>
+
+          <para>This configuration directive is optional and the cryptographic
+          key is only neccessary when creating new users or OTP records in the
+          TokenTube database.</para>
+
+          <para>It is common practise to store the cryptographic key in
+          <filename>/etc/tokentube/keys/luks.key</filename> in order to allow
+          a convenient creation of users/OTP records in the TokenTube
+          database. This does not incur a security risk if
+          <filename>/etc/tokentube/keys/luks.key</filename> is located on the
+          encrypted filesystem.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para><emphasis role="bold">Section "user"</emphasis></para>
+
+    <variablelist>
+      <varlistentry>
+        <term>user.auto-enrollment.uid-minimum</term>
+
+        <listitem>
+          <para>Specifies the minimum numeric uid value a user account must
+          have in order to be automatically enrolled to TokenTube (creation of
+          user in TokenTube database) upon user login.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>user.auto-enrollment.uid-maximum</term>
+
+        <listitem>
+          <para>Specifies the maximum numeric uid value a user account must
+          have in order to be automatically enrolled to TokenTube (creation of
+          user in TokenTube database) upon user login.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>user.auto-enrollment.gid-minimum</term>
+
+        <listitem>
+          <para>Specifies the minimum numeric gid value a user account must
+          have in order to be automatically enrolled to TokenTube (creation of
+          user in TokenTube database) upon user login.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>user.auto-enrollment.gid-maximum</term>
+
+        <listitem>
+          <para>Specifies the maximum numeric gid value a user account must
+          have in order to be automatically enrolled to TokenTube (creation of
+          user in TokenTube database) upon user login.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>user.auto-enrollment.groups</term>
+
+        <listitem>
+          <para>Specifies the group names (as a comma separated list) that a
+          user account must be assigned to (at least to one of them) in order
+          to be automatically enrolled to TokenTube (resulting in the creation
+          of a user record in the TokenTube database) upon user login.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para><emphasis role="bold">Section "otp"</emphasis></para>
+
+    <variablelist>
+      <varlistentry>
+        <term>otp.bits</term>
+
+        <listitem>
+          <para>Specifies the number of bits to use when creating new OTP
+          records in the TokenTube database. The number must be a multiple of
+          16 and the range must be within 64 and 256.</para>
+
+          <para>The length of OTP challenges and responses is linearly
+          dependant on this setting.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para><emphasis role="bold">Section "crypto"</emphasis></para>
+
+    <variablelist>
+      <varlistentry>
+        <term>crypto.cipher</term>
+
+        <listitem>
+          <para>Specifies the cryptographic block cipher (and mode) to be
+          employed for all cryptographic operations by TokenTube.</para>
+
+          <para>Valid options include any one OID supported by the installed
+          libgcrypt or of the following internally predefined strings (which
+          map to the corresponding OID):</para>
+
+          <literallayout>AES-256-CFB
+AES-256-OFB
+AES-256-CBC
+AES-192-CFB
+AES-192-OFB
+AES-192-CBC
+AES-128-CFB
+AES-128-OFB
+AES-128-CBC</literallayout>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>crypto.hash</term>
+
+        <listitem>
+          <para>Specifies the cryptographic hash function to be employed for
+          all hashing operations by TokenTube.</para>
+
+          <para>Valid options include any one OID supported by the installed
+          libgcrypt or of the following internally predefined strings (which
+          map to the corresponding OID):</para>
+
+          <literallayout>SHA-512
+SHA-384
+SHA-256
+SHA-1
+MD5    </literallayout>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>crypto.kdf</term>
+
+        <listitem>
+          <para>Specifies the cryptographic key derivative function to be
+          employed for all key derivation operations by TokenTube.</para>
+
+          <para>Valid options include the following internally predefined
+          strings:</para>
+
+          <literallayout>pbkdf2
+scrypt</literallayout>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>crypto.kdf-iterations</term>
+
+        <listitem>
+          <para>Specifies the number of iterations to be conducted for all key
+          derivation operations by TokenTube.</para>
+
+          <para>Any positive integer is a valid value.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para><emphasis role="bold">Section "plugins"</emphasis></para>
+
+    <variablelist>
+      <varlistentry>
+        <term>plugins.enabled</term>
+
+        <listitem>
+          <para>Specifies which of the (potentially configured) plugins should
+          be loaded. The list has to be comma-separated.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>plugins.plugin</term>
+
+        <listitem>
+          <para>Configuration section for a plugin, which is specified with
+          a unique (descriptive) name - provided here as a title to the
+          section. The name is the one that must be listed in
+          plugins.enabled for the plugin to be actually loaded.</para>
+
+          <para>This configuration section requires a unique name.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>plugins.plugin.library</term>
+
+        <listitem>
+          <para>Specifies the filename of the object that will be loaded
+          as a shared library and initiate the plugin. It is recommended
+          to specify the filename with its full path.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>plugins.plugin.config</term>
+
+        <listitem>
+          <para>Specifies the filename of the object that will be loaded
+          as the configuration for the plugin. It is recommended to specify
+          filename with its full path.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>plugins.plugin.disable.api</term>
+
+        <listitem>
+          <para>Specifies which APIs should be disabled for this plugin</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>plugins.plugin.disable.event</term>
+
+        <listitem>
+          <para>Specifies which events should be disabled for this plugin</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para><emphasis role="bold">Section "runtime"</emphasis></para>
+
+    <variablelist>
+      <varlistentry>
+        <term>runtime.log.level</term>
+
+        <listitem>
+          <para>Specifies the minimum log level. Valid log levels are:</para>
+          <literallayout>fatal
+error
+warn
+info</literallayout>
+
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>runtime.debug.level</term>
+
+        <listitem>
+          <para>Specifies the maximum debug level. Valid debug levels are
+          numeric values from 0 to 9.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1 id="tokentube.conf-see_also">
+    <title>SEE ALSO</title>
+
+    <para><citerefentry>
+        <refentrytitle>tokentube</refentrytitle>
+
+        <manvolnum>1</manvolnum>
+      </citerefentry></para>
+  </refsect1>
+</refentry>

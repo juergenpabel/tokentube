@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<project name="tokentube" default="build">
+  <property name="src" value="src"/>
+  <property name="web" value="web"/>
+  <property name="res" value="res"/>
+  <property name="dist" value="dist"/>
+  <property name="classes" value="web/WEB-INF/classes"/>
+  <property name="lib_path" value="lib"/>
+
+  <path id="classpath_servlet">
+    <fileset dir="${lib_path}/servlet" includes="*.jar"/>
+  </path>
+
+  <target name="init">
+    <mkdir dir="${classes}"/>
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${web}/images"/>
+  </target>
+
+  <target name="clean" description="Cleans generated files">
+    <delete dir="${classes}"/>
+    <delete dir="${dist}"/>
+    <delete dir="${web}/images"/>
+  </target>
+
+  <target name="compile" depends="init" description="Compiles source code">
+    <javac srcdir="${src}" destdir="${classes}" debug="true" deprecation="true">
+      <classpath>
+        <path refid="classpath_servlet"/>
+        <fileset refid="libraries"/>
+      </classpath>
+      <compilerarg value="-Xlint:unchecked"/>
+    </javac>
+  </target>
+
+  <target name="build" depends="compile" description="Builds the WAR file">
+    <property name="templib" value="${dist}/lib"/>
+    <mkdir dir="${templib}"/>
+    <copy todir="${templib}" flatten="true">
+      <fileset refid="libraries"/>
+    </copy>
+    <war destfile="${dist}/tokentube.war" needxmlfile="false">
+      <fileset dir="${web}"/>
+      <classes dir="${res}"/>
+      <lib dir="${templib}"/>
+    </war>
+    <delete dir="${templib}"/>
+  </target>
+
+  <fileset id="libraries" dir="${lib_path}">
+    <include name="base/*.jar"/>
+    <include name="displaytag/*.jar"/>
+    <include name="javamail/*.jar"/>
+  </fileset>
+
+</project>

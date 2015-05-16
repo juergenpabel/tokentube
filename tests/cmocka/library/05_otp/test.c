@@ -74,12 +74,12 @@ static void test_otp_execute(void **state) {
 
 	assert_true( library->api.otp.create( "otp" ) == TT_OK );
 	assert_true( library->api.otp.execute_challenge( "otp", challenge, &challenge_size ) == TT_OK );
-	assert_int_equal( challenge_size, 24 );
+	assert_int_equal( challenge_size, 20 );
 
-	assert_true( library->api.otp.execute_response( "otp", "63va-e94r-cyce-ew4q-c04u", response, &response_size ) == TT_OK );
-	assert_string_equal( response, "k5r7-ukpe-sq04-zd67-xvv8" );
+	assert_true( library->api.otp.execute_response( "otp", "hxstyrzhpq65p89y9uwv", response, &response_size ) == TT_OK );
+	assert_string_equal( response, "fynraw6vcrgg229h86rx" );
 
-	assert_true( library->api.otp.execute_apply( "otp", "63va-e94r-cyce-ew4q-c04u", "k5r7-ukpe-sq04-zd67-xvv8", key, &key_size ) == TT_OK );
+	assert_true( library->api.otp.execute_apply( "otp", "hxstyrzhpq65p89y9uwv", "fynraw6vcrgg229h86rx", key, &key_size ) == TT_OK );
 	assert_int_equal( key_size, 32 );
 	assert_true( memcmp( key, null, 32 ) == 0 );
 

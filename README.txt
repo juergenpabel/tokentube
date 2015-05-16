@@ -27,7 +27,7 @@ distribution.
 3. Further documentation
 ========================
 
-Refer to the DESIGN.txt, CRYPTOGRAPHY.txt and HACKING.txt
+Refer to the documents in the subdirectory DOCUMENTATION.
 
 
 A. License

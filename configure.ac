@@ -16,6 +16,9 @@ AC_PROG_MAKE_SET
 
 AM_PATH_PYTHON([3.4])
 
+AC_PATH_PROG([XMLLINT], [xmllint],[/bin/true])
+AC_PATH_PROG([XSLTPROC], [xsltproc])
+
 AM_MAINTAINER_MODE([disable])
 
 # Checks for libraries.
@@ -28,5 +31,5 @@ AM_PROG_LIBTOOL
 # Checks for library functions.
 
 CFLAGS="-g -O0 -Wall -Wextra -Werror -Wno-missing-braces -Wno-missing-field-initializers"
-AC_CONFIG_FILES([Makefile src/lib/Makefile src/pam/Makefile src/plugins/Makefile src/plugins/exec/Makefile src/plugins/log/Makefile src/plugins/syslog/Makefile src/plugins/test/Makefile src/plugins/helpdesk/Makefile src/plugins/lua/Makefile src/plugins/python/Makefile src/extensions/Makefile src/extensions/python/Makefile src/bin/cli/Makefile src/bin/pba/Makefile src/bin/ssod/Makefile src/bin/sso-greeter-lightdm/Makefile tests/cmocka/Makefile tests/cmocka/library/Makefile tests/cmocka/library/00_compile/Makefile tests/cmocka/library/01_init/Makefile tests/cmocka/library/02_config/Makefile tests/cmocka/library/03_testvectors/Makefile tests/cmocka/library/04_user/Makefile tests/cmocka/library/05_otp/Makefile tests/cmocka/plugins/Makefile tests/cmocka/plugins/00_compile/Makefile tests/cmocka/plugins/01_init/Makefile tests/cmocka/plugins/02_helpdesk/Makefile tests/cmocka/pam/Makefile tests/cmocka/pam/libpam/Makefile tests/cmocka/pam/00_compile/Makefile tests/cmocka/pam/01_init/Makefile tests/cmocka/pam/02_sm_authenticate/Makefile tests/cmocka/pam/03_sm_chauthtok/Makefile])
+AC_CONFIG_FILES([Makefile src/lib/Makefile src/pam/Makefile src/plugins/Makefile src/plugins/exec/Makefile src/plugins/log/Makefile src/plugins/syslog/Makefile src/plugins/test/Makefile src/plugins/helpdesk/Makefile src/plugins/lua/Makefile src/plugins/python/Makefile src/extensions/Makefile src/extensions/python/Makefile src/bin/cli/Makefile src/bin/pba/Makefile src/bin/ssod/Makefile src/bin/sso-greeter-lightdm/Makefile doc/Makefile doc/man/Makefile tests/cmocka/Makefile tests/cmocka/library/Makefile tests/cmocka/library/00_compile/Makefile tests/cmocka/library/01_init/Makefile tests/cmocka/library/02_config/Makefile tests/cmocka/library/03_testvectors/Makefile tests/cmocka/library/04_user/Makefile tests/cmocka/library/05_otp/Makefile tests/cmocka/plugins/Makefile tests/cmocka/plugins/00_compile/Makefile tests/cmocka/plugins/01_init/Makefile tests/cmocka/plugins/02_helpdesk/Makefile tests/cmocka/pam/Makefile tests/cmocka/pam/libpam/Makefile tests/cmocka/pam/00_compile/Makefile tests/cmocka/pam/01_init/Makefile tests/cmocka/pam/02_sm_authenticate/Makefile tests/cmocka/pam/03_sm_chauthtok/Makefile])
 AC_OUTPUT

@@ -15,7 +15,7 @@ typedef struct {
 	size_t  luks_vrfy_len;
 } tt_user_t;
 
-#define TT_USER__UNDEFINED { 0, 0, 0, 0 }
+#define TT_USER__UNDEFINED { "", "", "", 0, "", TT_KEY_BITS_MAX/8, "", TT_DIGEST_BITS_MAX/8 }
 
 
 typedef struct {
@@ -25,7 +25,7 @@ typedef struct {
 	size_t	data_len;
 } tt_otp_t;
 
-#define TT_OTP__UNDEFINED { 0, 0, 0, 0, 0 }
+#define TT_OTP__UNDEFINED { "", 0, "", TT_DIGEST_BITS_MAX/8 }
 
 
 int  default__initialize(tt_plugin_t* plugin);
@@ -60,6 +60,8 @@ int  default__impl__user_storage_save(const char* identifier, const tt_user_t* u
 int  default__impl__user_storage_exists(const char* identifier, tt_status_t* status);
 int  default__impl__user_storage_delete(const char* identifier, tt_status_t* status);
 
+int  default__impl__user_key_encrypt(const char* username, const char* password, tt_user_t* user);
+int  default__impl__user_key_decrypt(const char* username, const char* password, tt_user_t* user);
 int  default__impl__user_verifier_set(const char* username, const char* password, tt_user_t* user);
 int  default__impl__user_verifier_test(const char* username, const char* password, tt_user_t* user, tt_status_t* status);
 

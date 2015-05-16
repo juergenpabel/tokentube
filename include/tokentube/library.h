@@ -57,13 +57,13 @@ typedef struct {
 
 
 typedef struct {
-	int (*crc16)(const char const* input, size_t input_size, int* result);
-	int (*hex_encode)(const char* bytes, size_t bytes_size, char* text, size_t* text_size);
-	int (*hex_decode)(const char* text, size_t text_size, char* bytes, size_t* bytes_size);
-	int (*base32_encode)(const char* bytes, size_t bytes_size, char* text, size_t* text_size);
-	int (*base32_decode)(const char* text, size_t text_size, char* bytes, size_t* bytes_size);
-	int (*base64_encode)(const char* bytes, size_t bytes_size, char* text, size_t* text_size);
-	int (*base64_decode)(const char* text, size_t text_size, char* bytes, size_t* bytes_size);
+	int (*crc16)(const void const* input, size_t input_size, unsigned short* result);
+	int (*hex_encode)(const void* bytes, size_t bytes_size, void* text, size_t* text_size);
+	int (*hex_decode)(const void* text, size_t text_size, void* bytes, size_t* bytes_size);
+	int (*base32_encode)(const void* bytes, size_t bytes_size, void* text, size_t* text_size);
+	int (*base32_decode)(const void* text, size_t text_size, void* bytes, size_t* bytes_size);
+	int (*base64_encode)(const void* bytes, size_t bytes_size, void* text, size_t* text_size);
+	int (*base64_decode)(const void* text, size_t text_size, void* bytes, size_t* bytes_size);
 	int (*posix_mkdir)(const char* path);
 	int (*posix_copy)(const char* src, const char* dst);
 } tt_library_api_util_t;

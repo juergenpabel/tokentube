@@ -18,5 +18,6 @@ libtool
 src/bin/pba/pba
 src/bin/sso-greeter-lightdm/sso-greeter-lightdm
 src/bin/ssod/ssod
-stamp-h1
+doc/man/*.[123456789]
 tests/cmocka/**/**/test
+stamp-h1
