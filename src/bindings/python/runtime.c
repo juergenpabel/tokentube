@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include <tokentube.h>
 #include <Python.h>
-#include "extension.h"
+#include "binding.h"
 
 
 __attribute__ ((visibility ("hidden")))

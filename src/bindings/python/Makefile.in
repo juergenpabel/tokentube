@@ -78,7 +78,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/extensions/python
+subdir = src/bindings/python
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -119,9 +119,8 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(pyexecdir)"
 LTLIBRARIES = $(pyexec_LTLIBRARIES)
 tokentube_la_LIBADD =
-am_tokentube_la_OBJECTS = tokentube_la-extension.lo \
-	tokentube_la-user.lo tokentube_la-otp.lo \
-	tokentube_la-runtime.lo
+am_tokentube_la_OBJECTS = tokentube_la-binding.lo tokentube_la-user.lo \
+	tokentube_la-otp.lo tokentube_la-runtime.lo
 tokentube_la_OBJECTS = $(am_tokentube_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -319,7 +318,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 pyexec_LTLIBRARIES = tokentube.la
-tokentube_la_SOURCES = extension.c user.c otp.c runtime.c
+tokentube_la_SOURCES = binding.c user.c otp.c runtime.c
 tokentube_la_CFLAGS = -I../../../include -I/usr/include/python3.4m
 tokentube_la_LDFLAGS = -L../../../src/lib/.libs -ltokentube -module -avoid-version -export-symbols-regex PyInit_tokentube
 all: all-am
@@ -335,9 +334,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/extensions/python/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/bindings/python/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/extensions/python/Makefile
+	  $(AUTOMAKE) --foreign src/bindings/python/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -401,7 +400,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tokentube_la-extension.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tokentube_la-binding.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tokentube_la-otp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tokentube_la-runtime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tokentube_la-user.Plo@am__quote@
@@ -427,12 +426,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
-tokentube_la-extension.lo: extension.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tokentube_la_CFLAGS) $(CFLAGS) -MT tokentube_la-extension.lo -MD -MP -MF $(DEPDIR)/tokentube_la-extension.Tpo -c -o tokentube_la-extension.lo `test -f 'extension.c' || echo '$(srcdir)/'`extension.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/tokentube_la-extension.Tpo $(DEPDIR)/tokentube_la-extension.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='extension.c' object='tokentube_la-extension.lo' libtool=yes @AMDEPBACKSLASH@
+tokentube_la-binding.lo: binding.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tokentube_la_CFLAGS) $(CFLAGS) -MT tokentube_la-binding.lo -MD -MP -MF $(DEPDIR)/tokentube_la-binding.Tpo -c -o tokentube_la-binding.lo `test -f 'binding.c' || echo '$(srcdir)/'`binding.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/tokentube_la-binding.Tpo $(DEPDIR)/tokentube_la-binding.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='binding.c' object='tokentube_la-binding.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tokentube_la_CFLAGS) $(CFLAGS) -c -o tokentube_la-extension.lo `test -f 'extension.c' || echo '$(srcdir)/'`extension.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tokentube_la_CFLAGS) $(CFLAGS) -c -o tokentube_la-binding.lo `test -f 'binding.c' || echo '$(srcdir)/'`binding.c
 
 tokentube_la-user.lo: user.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tokentube_la_CFLAGS) $(CFLAGS) -MT tokentube_la-user.lo -MD -MP -MF $(DEPDIR)/tokentube_la-user.Tpo -c -o tokentube_la-user.lo `test -f 'user.c' || echo '$(srcdir)/'`user.c

@@ -124,6 +124,8 @@
     remap="B">password</emphasis> parameter via argument - unless the
     execution environment is considered trustworthy).</para>
 
+    <para><emphasis remap="B">OTP ACTIONS</emphasis></para>
+
     <para><emphasis remap="B">otp-create</emphasis> [[--identifier|-i]
     IDENTIFIER]</para>
 
