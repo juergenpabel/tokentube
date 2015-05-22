@@ -9,7 +9,7 @@ Item 1: User Key Files (/boot/tokentube/user/*)
 Item 2a: One-Time-Password File / Client (/boot/tokentube/otp/*)
 - the filename is the hash of the identifier (algorithm is configurable)
 - file contents are
-  - a hash derivation of the LUKS key
+  - a hash-chain derivation of the LUKS key
   - the number of bits to use for the challenge/response-cycle (this is thus
     the upper limit of the cryptographic strength of the C/R-cycle...upper
     limit implies that bad entropy might further impact this limit)
@@ -24,10 +24,12 @@ Item 2c: Challenge-Response/One-Time-Password Protocol
   - server has LUKS key in plaintext: hashes n-times the LUKS key according to
     current hash-depths (first OTP 1, then +1 for each request)
   - server verifies that the first block of the challenge-code matches crc16 of
-    the calculated hash-value (usability improvement)
+    the calculated hash-value (for usability improvements in order to detect
+    typos)
   - server calculates response: challenge ^ hash-value ^ LUKS-key 
-- client (askpass) XOR's the challenge, the response and the hash-value stored
-  in the OTP-file ("luks|data")
+- client (src/bin/pba) XOR's the challenge, the response and the hash-value stored
+  in the OTP-file ("luks|data") and increases the depth of the hash-chain (by
+  simply hashing the current value), thus updating the OTP file (Item 2a)
 
 
 General Aspects

@@ -3,32 +3,147 @@ This document describes what you need to know in order to get hacking on tokentu
 First off, read the DESIGN.txt and CRYPTOGRAPHY.txt documents - they'll describe
 some basic stuff you need to know.
 
-Item 1: library
+Item 1: library (libtokentube.so)
+=================================
 The first stop is the src/lib directory: it contains the source files for the
 libtokentube.so library. This library implements all the core/generic/reusable stuff.
 
 The library is linked into all tokentube objects (PAM module, tokentube binary, ...).
-These "consumers" of the libtokentube are called "clients".
+These "consumers" of the libtokentube are called "clients". The library exposes
+(exports) only a minimal set of symbols (functions):
+- tt_initialize() must be invoked first in order to initialize library internal states
+    after the library is loaded (linked or dlopen'ed). Calls to any of the other
+    exported functions will fail unless tt_initialize is (successfully) invoked
+    before.
+- tt_configure() must be invoked for any functions that rely on configuration
+    values. The function takes a string argument which specifies the configuration
+    file to be loaded (or NULL if the default configuration file should be user).
+- tt_finalize() should be called before the library is unloaded  (because of 
+    dlclose or process terminiation) in order to correctly de-initialize any internal
+    states (as of 1.0.*, there arent't any that matter). 
+- tt_discover() should be invoked after tt_configure() in order to obtain function-
+    pointers to functions that the library provides.  So by some means this function
+    exposes the library(!) interface to the client. This approach was taken in order
+    to assure that all "real" functions (that acutally do stuff) are only called if
+    a correct initialization/configuration is in place (which must be the case if
+    tt_initialize() and -optionally but almost always- tt_configure() returns
+    success. It also reduces the attack surface to some specific low-level attacks.
+- tt_plugin_register() is a function that will "automatically" be invoked by any
+    plugin upon dlopen'ing the plugin (that is actually invoked by the C macro 
+    "TT_PLUGIN_REGISTER", which *really* should be used by plugin developers). Aside
+    from registering the plugin by invoking this function, this function also 
+    exposes (as with tt_discover, but with a slightly different set of functions)
+    library functions to the plugin for usage. If the "TT_PLUGIN_REGISTER" macro
+    is used, then this function should not be invoked "manually".
 
-A list of some of the source files for the library:
+To summarize: The library exposes only lifecycle-related functions via symbols and
+    all "functions" are exposed via function pointers by calling tt_discover for
+    "clients" (things that link libtokentube.so) and for plugins (that implement a
+    specific 'behaviour' via the plugin subsystem) by invoking tt_plugin_register(),
+    which is taken care of with a C macro.
+
+
+Now to a list of the source files for the library:
+
+First off: the exposed "core" functions of libtokentube.
 init.c - contains tt_initialize(), tt_configure(FILENAME) and tt_finalize(), which
-         govern the lifecycle phases of libtokentube
-crypto.c - provides single function-call interface for any gcrypt supported primitives
-conf.c - implements the configuration stuff
-user.c - provides single function-call interface for user stuff (implying key files)
-otp.c - provides single function-call interface for one-time-password stuff
-plugin.c - plugin interface and grunt stuff for plugin handling
-util-*.c - various functions, like obtaining the UUID of the root filesystem
+    govern the lifecycle phases of the library.
+library.c - contains the internal lifecycle functions for discovering libtokentube
+    functions (see tt_discover(), implemented in this file).
+plugin.c - contains the internal lifecycle functions for the plugin API.
+    (that can be discovered using tt_discover(),
+    see "library.c" that themselves invoke the internal handler functions.
+Aside from some technical stuff, everything else is implemented as 'modules'
+(which should just represent an source code structuring construct within the library).
 
-The PAM module in src/pam implements the PAM functions for password verification and
-password changes. The functions do nothing but call the corresponding functions in
-the library. The PAM module needs to be registered in the corresponding configuration
-files in /etc/pam.d/
+Module "crypto":
+crypto.c - containts the internal lifecycle functions for the submodule crypto,
+    which is implemented in crypto-*.c
+crypto-conf.c - contains the (internal) functions to get the configured crypto-
+    primitives (which are themselves loaded by the submodule "conf".
+crypto-oid.c - containts some (hardcoded) mappings from symbolic names for crypto-
+    primitices to their OIDs (which are passed to libgcrypt).
+
+Module "runtime":
+runtime.c - contains the internal lifecycle functions for the submodule "runtime",
+    which is implemented in runtime-*.c
+runtime-conf.c - contains the functions for accessing configuration settings.
+runtime-conf-confuse.c - contains some libconfuse-specific implementations.
+runtime-debug.c - contains the debug-functions (in contrast to runtime-log.c)
+runtime-event.c - contains the functions to raise or listen for TT events
+runtime-log.c - containts the log-functions (in contrast to runtime-debug.c)
+runtime-pba.c- contains the functions to generate/update the PBA environment
+
+
+Module "plugin":
+plugin.c - contains the internal lifecycle functions for the submodule "plugin",
+    which is implemented in plugin-*.c (it also contains tt_plugin_register)
+plugin-event.c - contains the implementation of the event-related API functions,
+    which dispatch the requests to the loaded plugins.
+plugin-luks.c - contains the implementation of the luks-related API functions,
+    which dispatch the requests to the loaded plugins.
+plugin-otp.c - contains the implementation of the OTP-related API functions,
+    which dispatch the requests to the loaded plugins.
+plugin-pba.c - contains the implementation of the PBA-related API functions,
+    which dispatch the requests to the loaded plugins.
+plugin-runtime.c - contains the implementation of the runtime-related API functions,
+    which dispatch the requests to the loaded plugins.
+plugin-storage.c - contains the implementation of the storage-related API functions,
+    which dispatch the requests to the loaded plugins.
+plugin-user.c - contains the implementation of the USER-related API functions,
+    which dispatch the requests to the loaded plugins.
+
+
+and now to the remaining "technical stuff" that doesn't belong to a "module" (take a look at
+the functions in init.c, you'll get the idea):
+util-base32.c - contains the encoding and decoding functions for base32, which is used to
+    encode the OTP challenges and responses.
+util-bsae64.c - contains the encoding and decoding functions for base64 (instead of
+    linking an additional library to reduce dependencies).
+util-crc.c - contains the implementation of a CRC16 function (instead of linking an
+    additional library to reduce dependencies).
+util-device.c - contains internal helper functions to identify a block device
+util-file.c - contains internal helper functions for filesystem operations
+util-hex.c - contains the encoding and decoding functions for hex (instead of linking
+    an additional library to reduce dependencies).
+
+
+default.c - containts the internal lifecycle functions for the submodule default
+    which is implemented in crypto-*.c
+default-ext2fs.c - containts the (internal) read/write functions for accessing an ext2
+    filesystem (primarily used for the PBA, because /boot isn't mounted yet).
+default-luks.c - contains the functions for loading the LUKS key (during system runtime),
+    which is an optional configuration (to enabled automatic user enrollment).
+default-misc.c - contains internal helper functions regarding filename parsing/generating.
+default-otp.c - contains the OTP state-related API functions that the module (default)
+    provides.
+default-otp-helpdesk.c - contains the OTP helpdesk-related API functions that the module
+    (default) provides.
+default-otp-storage.c - contains the OTP storage-related API functions that the module
+    (default) provides.
+default-pba.c - contains the API functions for preparing the PBA environment (invoked
+    from mkinitramfs and other tools).
+default-posix - containts the (internal) read/write functions for accessing (any)
+    mounted filesystem (primarily used at system runtime, unlike default-ext2fs.c)
+default-runtime.c - containts the (internal) functions to evaluate some runtime-related
+    environment variables (for manually specifying a bootdevice and such).
+default-storage.c - contains the API functions for storage operations, which decides
+    based on the system state (PBA or runtime) to invoke either the functions in
+    default-posix.c or default-ext2fs.c.
+default-user.c - contains the USER state-related API functions that the module (default)
+    provides.
+default-user-key.c - contains the USER key-related API functions that the module (default)
+    provides.
+default-user-storage.c - contains the USER storage-related API functions that the module
+    (default) provides for en-/decrypting the key with the user password.
+default-user-verifier.c - contains the USER key-related API functions that the module (default)
+    provides for validating the user password.
+
 
 Item 2: pam module [sic]
 The PAM-module is a wrapper to libtokentube, tying the PAM-specific actions (auth,
 password changes, etc) to the libtokentube user-management interface - this is really
-straigt forward.
+straight forward.
 
 Item 3: tokentube binary
 The application is a tool for admins to manually inspect/setup the user management, otp
@@ -36,6 +151,5 @@ initialization and execution as well as generating initrd/initramfs-images for P
 
 Item 4: PBA binary
 This application is (almost) single-purpose: read in a username/password, call the
-corresponding library function and output the decrypted LUKS key to stdout. The
-second-purpose is to handle the OTP-logic.
-
+corresponding libtokentube function and output the decrypted LUKS key to stdout. The
+second-purpose is to invoke the OTP-functions.
