@@ -24,7 +24,7 @@ typedef struct {
 } default_ext2_dir_t;
 
 
-static int default__ext2fs_dir_iter(struct ext2_dir_entry* de, int offset, int blocksize, char* buffer, void* priv_data) {
+static int default__storage_ext2fs_dir_iter(struct ext2_dir_entry* de, int offset, int blocksize, char* buffer, void* priv_data) {
 	default_ext2_dir_t*	data = (default_ext2_dir_t*)priv_data;
 	size_t			buffer_offset = 0;
 
@@ -41,7 +41,7 @@ static int default__ext2fs_dir_iter(struct ext2_dir_entry* de, int offset, int b
 
 
 __attribute__ ((visibility ("hidden")))
-int default__ext2fs_load(const char* filename, char* buffer, size_t* buffer_size) {
+int default__storage_ext2fs_load(tt_file_t type, const char* filename, char* buffer, size_t* buffer_size) {
 	char			device[FILENAME_MAX+1] = {0};
 	ext2_filsys		e2fs;
 	ext2_ino_t		e2dir;
@@ -53,7 +53,7 @@ int default__ext2fs_load(const char* filename, char* buffer, size_t* buffer_size
 	const char*		next;
 
 	TT_TRACE( "plugin/default", "%s(filename='%s',buffer=%p,buffer_size=%p)", __FUNCTION__, filename, buffer, buffer_size );
-	if( filename == NULL || buffer == NULL || buffer_size == NULL || *buffer_size == 0 ) {
+	if( type == TT_FILE__UNDEFINED || filename == NULL || buffer == NULL || buffer_size == NULL || *buffer_size == 0 ) {
         	TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -118,7 +118,7 @@ int default__ext2fs_load(const char* filename, char* buffer, size_t* buffer_size
 			dir_data.path = filename;
 			dir_data.buffer = buffer;
 			dir_data.buffer_size = buffer_size;
-			if( ext2fs_dir_iterate( e2fs, e2file, 0, NULL, default__ext2fs_dir_iter, &dir_data ) != 0 ) {
+			if( ext2fs_dir_iterate( e2fs, e2file, 0, NULL, default__storage_ext2fs_dir_iter, &dir_data ) != 0 ) {
 				TT_LOG_ERROR( "plugin/default", "failed to iterate dir '%s' on EXT2 filesystem ('%s')", filename, device );
 				ext2fs_close( e2fs );
 				return TT_ERR;
@@ -127,6 +127,8 @@ int default__ext2fs_load(const char* filename, char* buffer, size_t* buffer_size
 			break;
 		default:
 			TT_DEBUG2( "plugin/default", "file '%s' not a regular file or directory on EXT2 filesystem '%s'", filename, device );
+			ext2fs_close( e2fs );
+			return TT_ERR;
 	}
 	ext2fs_close( e2fs );
 	return TT_OK;
@@ -134,7 +136,7 @@ int default__ext2fs_load(const char* filename, char* buffer, size_t* buffer_size
 
 
 __attribute__ ((visibility ("hidden")))
-int default__ext2fs_save(const char* filename, const char* buffer, const size_t buffer_size) {
+int default__storage_ext2fs_save(tt_file_t type, const char* filename, const char* buffer, const size_t buffer_size) {
 	char		device[FILENAME_MAX+1] = {0};
 	char		username[TT_USERNAME_CHAR_MAX+1] = {0};
 	size_t		username_size = sizeof(username);
@@ -142,6 +144,9 @@ int default__ext2fs_save(const char* filename, const char* buffer, const size_t 
 	size_t		groupname_size = sizeof(groupname);
 	char		permission[4] = {0};
 	size_t		permission_size = sizeof(permission);
+	const char*	conf_owner = NULL;
+	const char*	conf_group = NULL;
+	const char*	conf_perm = NULL;
 	struct passwd*	owner = NULL;
 	struct group*	group = NULL;
 	mode_t		mode = 0;
@@ -153,7 +158,7 @@ int default__ext2fs_save(const char* filename, const char* buffer, const size_t 
 	const char*	next;
 
 	TT_TRACE( "plugin/default", "%s(filename='%s',buffer=%p,buffer_size=%zd)", __FUNCTION__, filename, buffer, buffer_size );
-	if( filename == NULL || buffer == NULL || buffer_size == 0 ) {
+	if( type == TT_FILE__UNDEFINED || filename == NULL || buffer == NULL || buffer_size == 0 ) {
         	TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -161,32 +166,31 @@ int default__ext2fs_save(const char* filename, const char* buffer, const size_t 
 		TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
 		return TT_ERR;
 	}
-	if( libtokentube_conf_read_str( "storage|files|owner", username, &username_size ) != TT_OK ) {
+	switch( type ) {
+		case TT_FILE__USER:
+			conf_owner = "storage|user-files|owner";
+			conf_group = "storage|user-files|group";
+			conf_perm  = "storage|user-files|permission";
+			break;
+		case TT_FILE__OTP:
+			conf_owner = "storage|otp-files|owner";
+			conf_group = "storage|otp-files|group";
+			conf_perm  = "storage|otp-files|permission";
+			break;
+		default:
+			break;
+	}
+	if( libtokentube_conf_read_str( conf_owner, username, &username_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
 		return TT_ERR;
 	}
-	if( libtokentube_conf_read_str( "storage|files|group", groupname, &groupname_size ) != TT_OK ) {
+	if( libtokentube_conf_read_str( conf_group, groupname, &groupname_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
 		return TT_ERR;
 	}
-	if( libtokentube_conf_read_str( "storage|files|permission", permission, &permission_size ) != TT_OK ) {
+	if( libtokentube_conf_read_str( conf_perm, permission, &permission_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
 		return TT_ERR;
-	}
-	owner = getpwnam( username );
-	if( owner == NULL ) {
-		TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
-		return TT_ERR;
-	}
-	group = getgrnam( groupname );
-	if( owner == NULL ) {
-		TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
-		return TT_ERR;
-	}
-	mode = strtol( permission, NULL, 8 );
-	if( mode == 0 ) {
-		TT_LOG_WARN( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
-		mode = S_IRWXU|S_IRGRP|S_IXGRP;
 	}
 
 	TT_DEBUG2( "plugin/default", "opening '%s' as EXT2 filesystem in %s()", device, __FUNCTION__ );
@@ -222,9 +226,18 @@ int default__ext2fs_save(const char* filename, const char* buffer, const size_t 
 	if( ext2fs_lookup( e2fs, e2dir, filename, strnlen(filename, FILENAME_MAX), NULL, &e2file ) == EXT2_ET_FILE_NOT_FOUND ) {
 		TT_DEBUG2( "plugin/default", "file-not-found, creating new inode&file entries in %s()", __FUNCTION__ );
 		memset(&target_inode, 0, sizeof(target_inode));
-		target_inode.i_uid = owner->pw_uid;
-		target_inode.i_gid = group->gr_gid;
-		target_inode.i_mode = LINUX_S_IFREG | (mode & 0777);
+		owner = getpwnam( username );
+		group = getgrnam( groupname );
+		mode = strtol( permission, NULL, 8 );
+		if( owner != NULL )  {
+			target_inode.i_uid = owner->pw_uid;
+		}
+		if( group != NULL )  {
+			target_inode.i_gid = group->gr_gid;
+		}
+		if( mode != 0 )  {
+			target_inode.i_mode = LINUX_S_IFREG | (mode & 0777);
+		}
 		target_inode.i_links_count = 1;
 		target_inode.i_size = buffer_size;
 
@@ -263,6 +276,12 @@ int default__ext2fs_save(const char* filename, const char* buffer, const size_t 
 		ext2fs_close( e2fs );
 		return TT_ERR;
 	}
+	if( ext2fs_file_set_size( target_file, buffer_size ) != 0 ) {
+		TT_LOG_ERROR( "plugin/default", "error while setting size for file '%s' on EXT2 filesystem '%s'", filename, device );
+		ext2fs_file_close( target_file );
+		ext2fs_close( e2fs );
+		return TT_ERR;
+	}
 	if( ext2fs_file_flush( target_file ) != 0 ) {
 		TT_LOG_ERROR( "plugin/default", "error while flushing file '%s' on EXT2 filesystem '%s'", filename, device );
 		ext2fs_file_close( target_file );
@@ -277,7 +296,7 @@ int default__ext2fs_save(const char* filename, const char* buffer, const size_t 
 
 
 __attribute__ ((visibility ("hidden")))
-int default__ext2fs_exists(const char* filename, tt_status_t* status) {
+int default__storage_ext2fs_exists(tt_file_t type, const char* filename, tt_status_t* status) {
 	char		device[FILENAME_MAX+1] = {0};
 	ext2_filsys	e2fs;
 	ext2_ino_t	e2dir;
@@ -285,7 +304,7 @@ int default__ext2fs_exists(const char* filename, tt_status_t* status) {
 	const char*	next;
 
 	TT_TRACE( "plugin/default", "%s(filename='%s',status=%p)", __FUNCTION__, filename, status );
-	if( filename == NULL || status == NULL ) {
+	if( type == TT_FILE__UNDEFINED || filename == NULL || status == NULL ) {
         	TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -333,7 +352,7 @@ int default__ext2fs_exists(const char* filename, tt_status_t* status) {
 
 
 __attribute__ ((visibility ("hidden")))
-int default__ext2fs_delete(const char* filename, tt_status_t* status) {
+int default__storage_ext2fs_delete(tt_file_t type, const char* filename, tt_status_t* status) {
 	char		device[FILENAME_MAX+1] = {0};
 	ext2_filsys	e2fs;
 	ext2_ino_t	e2dir;
@@ -341,7 +360,7 @@ int default__ext2fs_delete(const char* filename, tt_status_t* status) {
 	const char*	next;
 
 	TT_TRACE( "plugin/default", "%s(filename='%s',status=%p)", __FUNCTION__, filename, status );
-	if( filename == NULL || status == NULL ) {
+	if( type == TT_FILE__UNDEFINED || filename == NULL || status == NULL ) {
         	TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}

@@ -10,7 +10,7 @@
 
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_cfg_include(cfg_t* cfg, cfg_opt_t* opt, int argc, const char** argv) {
+int libtokentube_runtime_conf__include(cfg_t* cfg, cfg_opt_t* opt, int argc, const char** argv) {
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 	tt_file_t	filetype = TT_FILE__UNDEFINED;
 	char		buffer[TT_CONFIG_MAX] = {0};
@@ -89,7 +89,7 @@ int libtokentube_cfg_include(cfg_t* cfg, cfg_opt_t* opt, int argc, const char** 
 
 
 __attribute__ ((visibility ("hidden")))
-void libtokentube_cfg_error_log(cfg_t* cfg, const char *fmt, va_list ap) {
+void libtokentube_runtime_conf__log_error(cfg_t* cfg, const char *fmt, va_list ap) {
 	char buffer[1024] = { 0 };
 	(void) cfg;
 
@@ -102,7 +102,7 @@ void libtokentube_cfg_error_log(cfg_t* cfg, const char *fmt, va_list ap) {
 
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_cfg_print(cfg_t* cfg, char* buffer, size_t* buffer_size) {
+int libtokentube_runtime_conf__serialize(cfg_t* cfg, char* buffer, size_t* buffer_size) {
 	FILE*	fp;
 
 	if( cfg == NULL || buffer == NULL || buffer_size == NULL || *buffer_size == 0 ) {

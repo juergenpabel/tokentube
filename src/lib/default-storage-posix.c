@@ -15,14 +15,14 @@
 
 
 __attribute__ ((visibility ("hidden")))
-int default__posix_load(const char* filename, char* buffer, size_t* buffer_size) {
+int default__storage_posix_load(tt_file_t type, const char* filename, char* buffer, size_t* buffer_size) {
         struct stat	st = {0};
 	struct dirent*	entry = NULL;
 	DIR*		dir = NULL;
 	int		pos = 0, fd = -1;
 
 	TT_TRACE( "library/plugin", "%s(filename=%d,buffer=%p,buffer_size='%p')", __FUNCTION__, filename, buffer, buffer_size );
-	if( filename == NULL || filename[0] == '\0' || buffer == NULL || buffer_size == NULL || *buffer_size == 0 ) {
+	if( type == TT_FILE__UNDEFINED || filename == NULL || filename[0] == '\0' || buffer == NULL || buffer_size == NULL || *buffer_size == 0 ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -73,7 +73,7 @@ int default__posix_load(const char* filename, char* buffer, size_t* buffer_size)
 
 
 __attribute__ ((visibility ("hidden")))
-int default__posix_save(const char* filename, const char* buffer, const size_t buffer_size) {
+int default__storage_posix_save(tt_file_t type, const char* filename, const char* buffer, const size_t buffer_size) {
 	char		username[TT_USERNAME_CHAR_MAX+1] = {0};
 	size_t		username_size = sizeof(username);
 	char		groupname[TT_USERNAME_CHAR_MAX+1] = {0};
@@ -88,17 +88,20 @@ int default__posix_save(const char* filename, const char* buffer, const size_t b
 	int		fd = -1;
 
 	TT_TRACE( "library/plugin", "%s(filename=%d,buffer=%p,buffer_size='%zd')", __FUNCTION__, filename, buffer, buffer_size );
-	if( filename == NULL || filename[0] == '\0' || buffer == NULL || buffer_size == 0 ) {
+	if( type == TT_FILE__UNDEFINED || filename == NULL || filename[0] == '\0' || buffer == NULL || buffer_size == 0 ) {
         	TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( libtokentube_conf_read_str( "storage|files|owner", username, &username_size ) != TT_OK ) {
+        	TT_LOG_ERROR( "plugin/default", "reading storage|files|owner failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( libtokentube_conf_read_str( "storage|files|group", groupname, &groupname_size ) != TT_OK ) {
+        	TT_LOG_ERROR( "plugin/default", "reading storage|files|group failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( libtokentube_conf_read_str( "storage|files|permission", permission, &permission_size ) != TT_OK ) {
+        	TT_LOG_ERROR( "plugin/default", "reading storage|files|permission failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( username[0] != '\0' ) {
@@ -157,11 +160,11 @@ int default__posix_save(const char* filename, const char* buffer, const size_t b
 
 
 __attribute__ ((visibility ("hidden")))
-int default__posix_exists(const char* filename, tt_status_t* status) {
+int default__storage_posix_exists(tt_file_t type, const char* filename, tt_status_t* status) {
         struct stat	st;
 
 	TT_TRACE( "library/plugin", "%s(filename=%d,status=%p)", __FUNCTION__, filename, status );
-	if( filename == NULL || filename[0] == '\0' || status == NULL ) {
+	if( type == TT_FILE__UNDEFINED || filename == NULL || filename[0] == '\0' || status == NULL ) {
         	TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -179,9 +182,9 @@ int default__posix_exists(const char* filename, tt_status_t* status) {
 
 
 __attribute__ ((visibility ("hidden")))
-int default__posix_delete(const char* filename, tt_status_t* status) {
+int default__storage_posix_delete(tt_file_t type, const char* filename, tt_status_t* status) {
 	TT_TRACE( "library/plugin", "%s(filename=%d,status=%p)", __FUNCTION__, filename, status );
-	if( filename == NULL || filename[0] == '\0' || status == NULL ) {
+	if( type == TT_FILE__UNDEFINED || filename == NULL || filename[0] == '\0' || status == NULL ) {
         	TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}

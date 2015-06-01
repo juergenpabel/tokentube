@@ -22,18 +22,19 @@ extern tt_module_t* g_modules[MAX_PLUGINS+1];
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__runtime_get_bootdevice(char* result, size_t result_size);
 
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__file_load(tt_file_t type, const char* identifier, char* buffer, size_t* buffer_size);
-/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__file_save(tt_file_t type, const char* identifier, char* buffer, size_t buffer_size);
+/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__file_save(tt_file_t type, const char* identifier, const char* buffer, size_t buffer_size);
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__file_exists(tt_file_t type, const char* identifier, tt_status_t* status);
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__file_delete(tt_file_t type, const char* identifier, tt_status_t* status);
-
-/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__luks_load(char* key, size_t* key_size);
 
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__user_create(const char* username, const char* password);
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__user_update(const char* username, const char* old_password, const char* new_password, tt_status_t* status);
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__user_delete(const char* username, tt_status_t* status);
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__user_exists(const char* username, tt_status_t* status);
 
-/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__user_execute_load( const char* username, const char* password, char* key, size_t* key_size );
+/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__user_key_add(const char* username, const char* password, const char* identifier, tt_status_t* status);
+/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__user_key_del(const char* username, const char* password, const char* identifier, tt_status_t* status);
+
+/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__user_execute_loadkey( const char* username, const char* password, const char* key_name, char* key, size_t* key_size );
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__user_execute_verify( const char* username, const char* password, tt_status_t* status );
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__user_execute_autoenrollment(const char* username, const char* password, tt_status_t* status);
 

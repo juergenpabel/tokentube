@@ -94,10 +94,10 @@ static int test__api__user_execute_autoenrollment(const char* username, const ch
 
 
 static int initialize() {
-	g_self.interface.api.storage.file_load = test__api__file_load;
-	g_self.interface.api.storage.file_save = test__api__file_save;
-	g_self.interface.api.storage.file_delete = test__api__file_delete;
-	g_self.interface.api.storage.file_exists = test__api__file_exists;
+	g_self.interface.api.storage.load = test__api__file_load;
+	g_self.interface.api.storage.save = test__api__file_save;
+	g_self.interface.api.storage.delete = test__api__file_delete;
+	g_self.interface.api.storage.exists = test__api__file_exists;
 	g_self.interface.api.user.execute_autoenrollment = test__api__user_execute_autoenrollment;
 	return TT_OK;
 }

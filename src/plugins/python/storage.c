@@ -9,15 +9,19 @@
 
 
 __attribute__ ((visibility ("hidden")))
-int python__luks_load(char* key, size_t* key_size) {
+int python__storage_load(tt_file_t file, const char* identifier, char* key, size_t* key_size) {
 	PyObject*	result = NULL;
 	char*		data = NULL;
 	ssize_t		data_size = 0;
 
-	if( key == NULL || key_size == NULL || *key_size == 0) {
+	if( file != TT_FILE__KEY ) {
+		return TT_IGN;
+	}
+	if( identifier == NULL || key == NULL || key_size == NULL || *key_size == 0) {
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "invalid parameter in python__luks_load()'" );
 		return TT_ERR;
 	}
+//TODO: identifier as param to exec
 	if( python__exec_script( g_cfg, "luks-load", &result ) != TT_OK ) {
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "no script configured for 'luks_load'" );
 		return TT_ERR;

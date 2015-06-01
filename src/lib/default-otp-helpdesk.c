@@ -31,7 +31,7 @@ static cfg_opt_t opt_helpdesk[] = {
 
 __attribute__ ((visibility ("hidden")))
 void default__event__otp_created(const char* identifier) {
-	char            buffer[DEFAULT__FILESIZE_MAX] = { 0 };
+	char            buffer[DEFAULT__FILESIZE_MAX+1] = { 0 };
 	size_t          buffer_size = sizeof(buffer);
 	char            key[TT_KEY_BITS_MAX/8] = { 0 };
 	size_t          key_size = sizeof(key);
@@ -53,8 +53,8 @@ void default__event__otp_created(const char* identifier) {
 		TT_LOG_ERROR( "plugin/default", "API:get_sysid() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return;
 	}
-	if( libtokentube_plugin__luks_load( key, &key_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "API:luks_load() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
+	if( libtokentube_plugin__file_load( TT_FILE__KEY, identifier, key, &key_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__file_load() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return;
 	}
 	cfg = cfg_init( opt_helpdesk, CFGF_NONE );
@@ -76,8 +76,8 @@ void default__event__otp_created(const char* identifier) {
 	}
 	cfg_setstr( cfg, "helpdesk|luks-key", buffer );
 	buffer_size = sizeof(buffer);
-	if( libtokentube_cfg_print( cfg, buffer, &buffer_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_cfg_print() failed in %s()", __FUNCTION__ );
+	if( libtokentube_runtime_conf__serialize( cfg, buffer, &buffer_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_cfg_serialize() failed in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return;
 	}
@@ -143,7 +143,7 @@ int default__api__otp_execute_challenge( const char* identifier, char* challenge
 
 __attribute__ ((visibility ("hidden")))
 int default__api__otp_execute_response(const char* identifier, const char* challenge, char* response, size_t* response_size) {
-	char		buffer[DEFAULT__FILESIZE_MAX] = {0};
+	char		buffer[DEFAULT__FILESIZE_MAX+1] = {0};
 	size_t		buffer_size = sizeof(buffer);
 	char		challenge_raw[2+TT_OTP_BITS_MAX/8] = {0};
 	size_t		challenge_raw_size = sizeof(challenge_raw);
@@ -274,8 +274,8 @@ int default__api__otp_execute_response(const char* identifier, const char* chall
 	cfg_setstr( cfg, "api", buffer );
 	cfg_setint( cfg, "helpdesk|otp-iterations", helpdesk_otp_iterations+1 );
 	buffer_size = sizeof(buffer);
-	if( libtokentube_cfg_print( cfg, buffer, &buffer_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_cfg_print() failed in %s()", __FUNCTION__ );
+	if( libtokentube_runtime_conf__serialize( cfg, buffer, &buffer_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_cfg_serialize() failed in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;
 	}

@@ -123,15 +123,14 @@ am_libtokentube_la_OBJECTS = libtokentube_la-crypto.lo \
 	libtokentube_la-crypto-conf.lo libtokentube_la-crypto-crypt.lo \
 	libtokentube_la-crypto-oid.lo libtokentube_la-init.lo \
 	libtokentube_la-library.lo libtokentube_la-plugin.lo \
-	libtokentube_la-plugin-event.lo libtokentube_la-plugin-luks.lo \
-	libtokentube_la-plugin-pba.lo \
+	libtokentube_la-plugin-event.lo libtokentube_la-plugin-pba.lo \
 	libtokentube_la-plugin-runtime.lo \
 	libtokentube_la-plugin-storage.lo \
 	libtokentube_la-plugin-user.lo libtokentube_la-plugin-otp.lo \
-	libtokentube_la-default.lo libtokentube_la-default-posix.lo \
-	libtokentube_la-default-ext2fs.lo \
-	libtokentube_la-default-misc.lo \
-	libtokentube_la-default-luks.lo libtokentube_la-default-pba.lo \
+	libtokentube_la-default.lo \
+	libtokentube_la-default-storage-posix.lo \
+	libtokentube_la-default-storage-ext2fs.lo \
+	libtokentube_la-default-misc.lo libtokentube_la-default-pba.lo \
 	libtokentube_la-default-runtime.lo \
 	libtokentube_la-default-storage.lo \
 	libtokentube_la-default-user.lo \
@@ -350,7 +349,7 @@ AUTOMAKE_OPTIONS = foreign
 lib_LTLIBRARIES = libtokentube.la
 libtokentube_la_CFLAGS = -I../../include 
 libtokentube_la_LDFLAGS = -lext2fs -lscrypt -lgcrypt -lconfuse -ldl
-libtokentube_la_SOURCES = crypto.c crypto-conf.c crypto-crypt.c crypto-oid.c init.c library.c plugin.c plugin-event.c plugin-luks.c plugin-pba.c plugin-runtime.c plugin-storage.c plugin-user.c plugin-otp.c default.c default-posix.c default-ext2fs.c default-misc.c default-luks.c default-pba.c default-runtime.c default-storage.c default-user.c default-user-storage.c default-user-key.c default-user-verifier.c default-otp.c default-otp-helpdesk.c default-otp-storage.c runtime.c runtime-conf.c runtime-conf-confuse.c runtime-event.c runtime-log.c runtime-debug.c runtime-pba.c util-base32.c util-base64.c util-crc.c util-device.c util-file.c util-hex.c
+libtokentube_la_SOURCES = crypto.c crypto-conf.c crypto-crypt.c crypto-oid.c init.c library.c plugin.c plugin-event.c plugin-pba.c plugin-runtime.c plugin-storage.c plugin-user.c plugin-otp.c default.c default-storage-posix.c default-storage-ext2fs.c default-misc.c default-pba.c default-runtime.c default-storage.c default-user.c default-user-storage.c default-user-key.c default-user-verifier.c default-otp.c default-otp-helpdesk.c default-otp-storage.c runtime.c runtime-conf.c runtime-conf-confuse.c runtime-event.c runtime-log.c runtime-debug.c runtime-pba.c util-base32.c util-base64.c util-crc.c util-device.c util-file.c util-hex.c
 all: all-am
 
 .SUFFIXES:
@@ -434,15 +433,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-crypto-crypt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-crypto-oid.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-crypto.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-ext2fs.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-luks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-misc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-otp-helpdesk.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-otp-storage.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-otp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-pba.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-posix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-runtime.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-storage-ext2fs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-storage-posix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-storage.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-user-key.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-user-storage.Plo@am__quote@
@@ -452,7 +450,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-init.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-library.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-event.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-luks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-otp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-pba.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-runtime.Plo@am__quote@
@@ -550,13 +547,6 @@ libtokentube_la-plugin-event.lo: plugin-event.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-plugin-event.lo `test -f 'plugin-event.c' || echo '$(srcdir)/'`plugin-event.c
 
-libtokentube_la-plugin-luks.lo: plugin-luks.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-plugin-luks.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-plugin-luks.Tpo -c -o libtokentube_la-plugin-luks.lo `test -f 'plugin-luks.c' || echo '$(srcdir)/'`plugin-luks.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-plugin-luks.Tpo $(DEPDIR)/libtokentube_la-plugin-luks.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='plugin-luks.c' object='libtokentube_la-plugin-luks.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-plugin-luks.lo `test -f 'plugin-luks.c' || echo '$(srcdir)/'`plugin-luks.c
-
 libtokentube_la-plugin-pba.lo: plugin-pba.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-plugin-pba.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-plugin-pba.Tpo -c -o libtokentube_la-plugin-pba.lo `test -f 'plugin-pba.c' || echo '$(srcdir)/'`plugin-pba.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-plugin-pba.Tpo $(DEPDIR)/libtokentube_la-plugin-pba.Plo
@@ -599,19 +589,19 @@ libtokentube_la-default.lo: default.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default.lo `test -f 'default.c' || echo '$(srcdir)/'`default.c
 
-libtokentube_la-default-posix.lo: default-posix.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-posix.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-posix.Tpo -c -o libtokentube_la-default-posix.lo `test -f 'default-posix.c' || echo '$(srcdir)/'`default-posix.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-default-posix.Tpo $(DEPDIR)/libtokentube_la-default-posix.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='default-posix.c' object='libtokentube_la-default-posix.lo' libtool=yes @AMDEPBACKSLASH@
+libtokentube_la-default-storage-posix.lo: default-storage-posix.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-storage-posix.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-storage-posix.Tpo -c -o libtokentube_la-default-storage-posix.lo `test -f 'default-storage-posix.c' || echo '$(srcdir)/'`default-storage-posix.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-default-storage-posix.Tpo $(DEPDIR)/libtokentube_la-default-storage-posix.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='default-storage-posix.c' object='libtokentube_la-default-storage-posix.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-posix.lo `test -f 'default-posix.c' || echo '$(srcdir)/'`default-posix.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-storage-posix.lo `test -f 'default-storage-posix.c' || echo '$(srcdir)/'`default-storage-posix.c
 
-libtokentube_la-default-ext2fs.lo: default-ext2fs.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-ext2fs.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-ext2fs.Tpo -c -o libtokentube_la-default-ext2fs.lo `test -f 'default-ext2fs.c' || echo '$(srcdir)/'`default-ext2fs.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-default-ext2fs.Tpo $(DEPDIR)/libtokentube_la-default-ext2fs.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='default-ext2fs.c' object='libtokentube_la-default-ext2fs.lo' libtool=yes @AMDEPBACKSLASH@
+libtokentube_la-default-storage-ext2fs.lo: default-storage-ext2fs.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-storage-ext2fs.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-storage-ext2fs.Tpo -c -o libtokentube_la-default-storage-ext2fs.lo `test -f 'default-storage-ext2fs.c' || echo '$(srcdir)/'`default-storage-ext2fs.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-default-storage-ext2fs.Tpo $(DEPDIR)/libtokentube_la-default-storage-ext2fs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='default-storage-ext2fs.c' object='libtokentube_la-default-storage-ext2fs.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-ext2fs.lo `test -f 'default-ext2fs.c' || echo '$(srcdir)/'`default-ext2fs.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-storage-ext2fs.lo `test -f 'default-storage-ext2fs.c' || echo '$(srcdir)/'`default-storage-ext2fs.c
 
 libtokentube_la-default-misc.lo: default-misc.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-misc.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-misc.Tpo -c -o libtokentube_la-default-misc.lo `test -f 'default-misc.c' || echo '$(srcdir)/'`default-misc.c
@@ -619,13 +609,6 @@ libtokentube_la-default-misc.lo: default-misc.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='default-misc.c' object='libtokentube_la-default-misc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-misc.lo `test -f 'default-misc.c' || echo '$(srcdir)/'`default-misc.c
-
-libtokentube_la-default-luks.lo: default-luks.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-luks.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-luks.Tpo -c -o libtokentube_la-default-luks.lo `test -f 'default-luks.c' || echo '$(srcdir)/'`default-luks.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-default-luks.Tpo $(DEPDIR)/libtokentube_la-default-luks.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='default-luks.c' object='libtokentube_la-default-luks.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-luks.lo `test -f 'default-luks.c' || echo '$(srcdir)/'`default-luks.c
 
 libtokentube_la-default-pba.lo: default-pba.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-pba.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-pba.Tpo -c -o libtokentube_la-default-pba.lo `test -f 'default-pba.c' || echo '$(srcdir)/'`default-pba.c

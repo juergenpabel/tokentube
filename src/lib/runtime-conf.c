@@ -37,21 +37,29 @@ static cfg_opt_t opt_tokentube_crypto[] = {
 	CFG_END()
 };
 
-static cfg_opt_t opt_tokentube_storage_files[] = {
-        CFG_STR("owner", "", CFGF_NONE),
-        CFG_STR("group", "", CFGF_NONE),
-        CFG_STR("permission",  "", CFGF_NONE),
-        CFG_END()
+static cfg_opt_t opt_tokentube_storage_user_files[] = {
+	CFG_STR("owner", "", CFGF_NONE),
+	CFG_STR("group", "", CFGF_NONE),
+	CFG_STR("permission",  "", CFGF_NONE),
+	CFG_END()
 };
 
-static cfg_opt_t opt_tokentube_storage_lukskey[] = {
-        CFG_STR("file", "", CFGF_NONE),
-        CFG_END()
+static cfg_opt_t opt_tokentube_storage_otp_files[] = {
+	CFG_STR("owner", "", CFGF_NONE),
+	CFG_STR("group", "", CFGF_NONE),
+	CFG_STR("permission",  "", CFGF_NONE),
+	CFG_END()
+};
+
+static cfg_opt_t opt_tokentube_storage_key_files[] = {
+	CFG_STR("directory",  "", CFGF_NONE),
+	CFG_END()
 };
 
 static cfg_opt_t opt_tokentube_storage[] = {
-        CFG_SEC("files", opt_tokentube_storage_files, CFGF_NONE),
-        CFG_SEC("luks-key", opt_tokentube_storage_lukskey, CFGF_NONE),
+	CFG_SEC("user-files", opt_tokentube_storage_user_files, CFGF_NONE),
+	CFG_SEC("otp-files", opt_tokentube_storage_otp_files, CFGF_NONE),
+	CFG_SEC("key-files", opt_tokentube_storage_key_files, CFGF_NONE),
 	CFG_END()
 };
 
@@ -94,7 +102,7 @@ static cfg_opt_t opt_tokentube_plugins[] = {
 };
 
 static cfg_opt_t opt_tokentube[] = {
-	CFG_FUNC("include", libtokentube_cfg_include),
+	CFG_FUNC("include", libtokentube_runtime_conf__include),
 	CFG_SEC("runtime", opt_tokentube_runtime, CFGF_NONE),
         CFG_SEC("user",    opt_tokentube_user,    CFGF_NONE),
         CFG_SEC("otp",     opt_tokentube_otp,     CFGF_NONE),
@@ -122,7 +130,7 @@ int libtokentube_conf_configure(const char* filename) {
 		return TT_IGN;
 	}
 	g_configuration = cfg_init( opt_tokentube, CFGF_NONE );
-	cfg_set_error_function( g_configuration, libtokentube_cfg_error_log );
+	cfg_set_error_function( g_configuration, libtokentube_runtime_conf__log_error );
 	err = cfg_parse_buf( g_configuration, buffer );
 	if( err != 0 ) {
 		TT_LOG_FATAL( "library/runtime", "syntax error in configuration file '%s'", g_configuration_filename );
@@ -147,8 +155,8 @@ int libtokentube_conf_finalize() {
 
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_conf_print(char* buffer, size_t* buffer_size) {
-	return libtokentube_cfg_print( g_configuration, buffer, buffer_size );
+int libtokentube_conf_serialize(char* buffer, size_t* buffer_size) {
+	return libtokentube_runtime_conf__serialize( g_configuration, buffer, buffer_size );
 }
 
 
@@ -262,12 +270,12 @@ int libtokentube_conf_read_list(const char* name, size_t index, char* value, siz
 
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_conf_read_plugin_library(const char* name, char* value, size_t* value_size) {
+int libtokentube_conf_read_plugin_library(const char* plugin, char* value, size_t* value_size) {
 	cfg_t*	section = NULL;
 	char*	data = NULL;
 
-	TT_TRACE( "library/runtime", "%s(name='%s',index=%zd)", __FUNCTION__, name, index );
-	if( name == NULL || name[0] == '\0' || value == NULL || value_size == NULL || *value_size == 0 ) {
+	TT_TRACE( "library/runtime", "%s(plugin='%s',index=%zd)", __FUNCTION__, plugin, index );
+	if( plugin == NULL || plugin[0] == '\0' || value == NULL || value_size == NULL || *value_size == 0 ) {
 		TT_LOG_ERROR( "library/runtime", "internal error in %s at %d", __FUNCTION__, __LINE__ );
 		return TT_ERR;
 	}
@@ -276,7 +284,7 @@ int libtokentube_conf_read_plugin_library(const char* name, char* value, size_t*
 		TT_LOG_ERROR( "library/runtime", "section 'plugins' not configured in '%s'", g_configuration_filename );
 		return TT_ERR;
 	}
-	section = cfg_gettsec( section, "plugin", name );
+	section = cfg_gettsec( section, "plugin", plugin );
 	if(section == NULL) {
 		TT_LOG_ERROR( "library/runtime", "section 'plugins|plugin' not configured in '%s'", g_configuration_filename );
 		return TT_ERR;
@@ -297,12 +305,12 @@ int libtokentube_conf_read_plugin_library(const char* name, char* value, size_t*
 
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_conf_read_plugin_config(const char* name, char* value, size_t* value_size) {
+int libtokentube_conf_read_plugin_config(const char* plugin, char* value, size_t* value_size) {
 	cfg_t*	section = NULL;
 	char*	data = NULL;
 
-	TT_TRACE( "library/runtime", "%s(name='%s',index=%zd)", __FUNCTION__, name, index );
-	if( name == NULL || name[0] == '\0' || value == NULL || value_size == NULL || *value_size == 0 ) {
+	TT_TRACE( "library/runtime", "%s(plugin='%s',index=%zd)", __FUNCTION__, plugin, index );
+	if( plugin == NULL || plugin[0] == '\0' || value == NULL || value_size == NULL || *value_size == 0 ) {
 		TT_LOG_ERROR( "library/runtime", "internal error in %s at %d", __FUNCTION__, __LINE__ );
 		return TT_ERR;
 	}
@@ -311,7 +319,7 @@ int libtokentube_conf_read_plugin_config(const char* name, char* value, size_t* 
 		TT_LOG_ERROR( "library/runtime", "section 'plugins' not configured in '%s'", g_configuration_filename );
 		return TT_ERR;
 	}
-	section = cfg_gettsec( section, "plugin", name );
+	section = cfg_gettsec( section, "plugin", plugin );
 	if(section == NULL) {
 		TT_LOG_ERROR( "library/runtime", "section 'plugins|plugin' not configured in '%s'", g_configuration_filename );
 		return TT_ERR;
@@ -336,7 +344,7 @@ int libtokentube_conf_read_plugin_filter_api(const char* plugin, size_t index, c
 	cfg_t*	section = NULL;
 	char*	data = NULL;
 
-	TT_TRACE( "library/runtime", "%s(plugin='%s',index=%zd)", __FUNCTION__, name, index );
+	TT_TRACE( "library/runtime", "%s(plugin='%s',index=%zd)", __FUNCTION__, plugin, index );
 	if( plugin == NULL || plugin[0] == '\0' || value == NULL || value_size == NULL || *value_size == 0 ) {
 		TT_LOG_ERROR( "library/runtime", "internal error in %s at %d", __FUNCTION__, __LINE__ );
 		return TT_ERR;
@@ -386,7 +394,7 @@ int libtokentube_conf_read_plugin_filter_event(const char* plugin, size_t index,
 	cfg_t*	section = NULL;
 	char*	data = NULL;
 
-	TT_TRACE( "library/runtime", "%s(name='%s',index=%zd)", __FUNCTION__, name, index );
+	TT_TRACE( "library/runtime", "%s(plugin='%s',index=%zd)", __FUNCTION__, plugin, index );
 	if( plugin == NULL || plugin[0] == '\0' || value == NULL || value_size == NULL || *value_size == 0 ) {
 		TT_LOG_ERROR( "library/runtime", "internal error in %s at %d", __FUNCTION__, __LINE__ );
 		return TT_ERR;

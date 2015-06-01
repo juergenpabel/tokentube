@@ -165,9 +165,92 @@ int libtokentube_plugin__user_exists(const char* username, tt_status_t* status) 
 }
 
 
+__attribute__ ((visibility ("hidden")))
+int libtokentube_plugin__user_key_add(const char* username, const char* password, const char* identifier, tt_status_t* status) {
+	tt_module_t*	module;
+	size_t		i;
+
+	TT_TRACE( "library/plugin", "%s(username='%s' password='%s')", __FUNCTION__, username, password );
+	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || status == NULL ) {
+		TT_LOG_ERROR( "library/plugin", "invalid parameters in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	TT_DEBUG3( "library/plugin", "invoking 'user_key_add' handlers" );
+	*status = TT_STATUS__UNDEFINED;
+	for( i=0; i<MAX_PLUGINS+1; i++ ) {
+		module = g_modules[i];
+		if( module != NULL && module->plugin != NULL ) {
+			TT_DEBUG5( "library/plugin", "checking 'user_key_add' for plugin '%s'", module->name );
+			if( module->plugin->interface.api.user.key_add != NULL ) {
+				TT_DEBUG4( "library/plugin", "invoking 'user_key_add' handler for plugin '%s'", module->name );
+				switch( module->plugin->interface.api.user.key_add( username, password, identifier, status ) ) {
+					case TT_OK:
+						if( *status == TT_STATUS__YES ) {
+							TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_key_add'", module->name );
+							if( libtokentube_runtime_broadcast( TT_EVENT__USER_UPDATED, username ) != TT_OK ) {
+								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
+							}
+							return TT_OK;
+						}
+					case TT_IGN:
+						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'user_update'", module->name );
+						break;
+					default:
+						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'user_key_add'", module->name );
+				}
+			}
+		}
+	}
+	TT_LOG_ERROR( "library/plugin", "no plugin handled 'user_key_add', returning TT_ERR" );
+	*status = TT_STATUS__NO;
+	return TT_ERR;
+}
+
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_plugin__user_execute_load( const char* username, const char* password, char* key, size_t* key_size ) {
+int libtokentube_plugin__user_key_del(const char* username, const char* password, const char* identifier, tt_status_t* status) {
+	tt_module_t*	module;
+	size_t		i;
+
+	TT_TRACE( "library/plugin", "%s(username='%s' password='%s')", __FUNCTION__, username, password );
+	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || status == NULL ) {
+		TT_LOG_ERROR( "library/plugin", "invalid parameters in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	TT_DEBUG3( "library/plugin", "invoking 'user_key_del' handlers" );
+	*status = TT_STATUS__UNDEFINED;
+	for( i=0; i<MAX_PLUGINS+1; i++ ) {
+		module = g_modules[i];
+		if( module != NULL && module->plugin != NULL ) {
+			TT_DEBUG5( "library/plugin", "checking 'user_key_del' for plugin '%s'", module->name );
+			if( module->plugin->interface.api.user.key_del != NULL ) {
+				TT_DEBUG4( "library/plugin", "invoking 'user_key_del' handler for plugin '%s'", module->name );
+				switch( module->plugin->interface.api.user.key_del( username, password, identifier, status ) ) {
+					case TT_OK:
+						if( *status == TT_STATUS__YES ) {
+							TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_key_del'", module->name );
+							if( libtokentube_runtime_broadcast( TT_EVENT__USER_UPDATED, username ) != TT_OK ) {
+								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
+							}
+							return TT_OK;
+						}
+					case TT_IGN:
+						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'user_update'", module->name );
+						break;
+					default:
+						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'user_key_del'", module->name );
+				}
+			}
+		}
+	}
+	TT_LOG_ERROR( "library/plugin", "no plugin handled 'user_key_del', returning TT_ERR" );
+	*status = TT_STATUS__NO;
+	return TT_ERR;
+}
+
+
+__attribute__ ((visibility ("hidden")))
+int libtokentube_plugin__user_execute_loadkey( const char* username, const char* password, const char* key_name, char* key, size_t* key_size ) {
 	tt_module_t*	module;
 	size_t		i;
 
@@ -181,11 +264,11 @@ int libtokentube_plugin__user_execute_load( const char* username, const char* pa
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "checking 'user_execute_load' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.user.execute_load != NULL ) {
-				TT_DEBUG4( "library/plugin", "invoking 'user_execute_load' handler for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.user.execute_load( username, password, key, key_size ) ) {
+			if( module->plugin->interface.api.user.execute_loadkey != NULL ) {
+				TT_DEBUG4( "library/plugin", "invoking 'user_execute_loadkey' handler for plugin '%s'", module->name );
+				switch( module->plugin->interface.api.user.execute_loadkey( username, password, key_name, key, key_size ) ) {
 					case TT_OK:
-						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_execute_load'", module->name );
+						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_execute_loadkey'", module->name );
 						if( *key_size > 0 ) {
 							if( libtokentube_runtime_broadcast( TT_EVENT__USER_VERIFIED, username ) != TT_OK ) {
 								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
