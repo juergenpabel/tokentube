@@ -65,7 +65,7 @@ int default__get_filename(tt_file_t file, const char* identifier, char* buffer, 
 	}
 	TT_DEBUG1( "plugin/default", "processing '%s' in %s()", identifier, __FUNCTION__ );
 	memset( buffer, '\0', buffer_size );
-	if( file == TT_FILE__CONFIG_STANDARD ||  file == TT_FILE__CONFIG_PBA ) {
+	if( file == TT_FILE__CONFIG_STANDARD || file == TT_FILE__CONFIG_PBA ) {
 		strncpy( buffer, identifier, buffer_size-1 );
 		return TT_OK;
 	}

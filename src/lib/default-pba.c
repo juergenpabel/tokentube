@@ -95,8 +95,8 @@ int default__api__pba_install(const char* type, const char* path) {
 		TT_LOG_ERROR( "plugin/default", "unsupported PBA-type in %s()", __FUNCTION__ );
 		return TT_IGN;
 	}
-	if( libtokentube_conf_print( buffer, &buffer_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_conf_print() failed for '%s' in %()", filename_target, __FUNCTION__ );
+	if( libtokentube_conf_serialize( buffer, &buffer_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_conf_serialize() failed for '%s' in %()", filename_target, __FUNCTION__ );
 		return TT_ERR;
 	}
 	snprintf( filename_target, sizeof(filename_target)-1, "%s%s", path, TT_FILENAME__TOKENTUBE_CONF );

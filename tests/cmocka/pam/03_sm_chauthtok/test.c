@@ -13,7 +13,7 @@
 
 
 static void test_pam_sm_chauthtok(void **state) {
-	(void)state; /* unused */
+	(void)state; /* TODO */
 
 }
 

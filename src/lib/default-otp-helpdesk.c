@@ -76,8 +76,8 @@ void default__event__otp_created(const char* identifier) {
 	}
 	cfg_setstr( cfg, "helpdesk|luks-key", buffer );
 	buffer_size = sizeof(buffer);
-	if( libtokentube_cfg_print( cfg, buffer, &buffer_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_cfg_print() failed in %s()", __FUNCTION__ );
+	if( libtokentube_runtime_conf__serialize( cfg, buffer, &buffer_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_cfg_serialize() failed in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return;
 	}
@@ -274,8 +274,8 @@ int default__api__otp_execute_response(const char* identifier, const char* chall
 	cfg_setstr( cfg, "api", buffer );
 	cfg_setint( cfg, "helpdesk|otp-iterations", helpdesk_otp_iterations+1 );
 	buffer_size = sizeof(buffer);
-	if( libtokentube_cfg_print( cfg, buffer, &buffer_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_cfg_print() failed in %s()", __FUNCTION__ );
+	if( libtokentube_runtime_conf__serialize( cfg, buffer, &buffer_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_cfg_serialize() failed in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;
 	}

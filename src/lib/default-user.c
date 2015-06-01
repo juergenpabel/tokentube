@@ -21,7 +21,7 @@ __attribute__ ((visibility ("hidden")))
 int default__api__user_create(const char* username, const char* password) {
 	tt_user_t	user = TT_USER__UNDEFINED;
 
-	TT_TRACE( "library/plugin", "%s(username='%s',password='%s')", __FUNCTION__, username, password );
+	TT_TRACE( "plugin/default", "%s(username='%s',password='%s')", __FUNCTION__, username, password );
 	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
@@ -59,7 +59,7 @@ __attribute__ ((visibility ("hidden")))
 int default__api__user_update(const char* username, const char* old_password, const char* new_password, tt_status_t* status) {
 	tt_user_t	user = TT_USER__UNDEFINED;
 
-	TT_TRACE( "library/plugin", "%s(username='%s',old_password='%s',new_password='%s')", __FUNCTION__, username, old_password, new_password );
+	TT_TRACE( "plugin/default", "%s(username='%s',old_password='%s',new_password='%s')", __FUNCTION__, username, old_password, new_password );
 	if( username == NULL || username[0] == '\0' || old_password == NULL || old_password[0] == '\0' || new_password == NULL || new_password[0] == '\0' || status == NULL ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
@@ -105,7 +105,7 @@ int default__api__user_update(const char* username, const char* old_password, co
 
 __attribute__ ((visibility ("hidden")))
 int default__api__user_delete(const char* username, tt_status_t* status) {
-	TT_TRACE( "library/plugin", "%s(username='%s',status=%p)", __FUNCTION__, username, status );
+	TT_TRACE( "plugin/default", "%s(username='%s',status=%p)", __FUNCTION__, username, status );
 	if( username == NULL || username[0] == '\0' || status == NULL ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
@@ -120,7 +120,7 @@ int default__api__user_delete(const char* username, tt_status_t* status) {
 
 __attribute__ ((visibility ("hidden")))
 int default__api__user_exists(const char* username, tt_status_t* status) {
-	TT_TRACE( "library/plugin", "%s(username='%s',status=%p)", __FUNCTION__, username, status );
+	TT_TRACE( "plugin/default", "%s(username='%s',status=%p)", __FUNCTION__, username, status );
 	if( username == NULL || username[0] == '\0' || status == NULL ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
@@ -137,7 +137,7 @@ __attribute__ ((visibility ("hidden")))
 int default__api__user_execute_verify(const char* username, const char* password, tt_status_t* status) {
 	tt_user_t	user = TT_USER__UNDEFINED;
 
-	TT_TRACE( "library/plugin", "%s(username='%s',password='%s',status=%p)", __FUNCTION__, username, password, status );
+	TT_TRACE( "plugin/default", "%s(username='%s',password='%s',status=%p)", __FUNCTION__, username, password, status );
 	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || status == NULL ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
@@ -159,7 +159,7 @@ int default__api__user_execute_load(const char* username, const char* password, 
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 	tt_user_t	user = TT_USER__UNDEFINED;
 
-	TT_TRACE( "library/plugin", "%s(username='%s',password='%s',key=%p,key_size=%p)", __FUNCTION__, username, password, key, key_size );
+	TT_TRACE( "plugin/default", "%s(username='%s',password='%s',key=%p,key_size=%p)", __FUNCTION__, username, password, key, key_size );
 	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || key == NULL || key_size == NULL || *key_size == 0) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
@@ -173,6 +173,7 @@ int default__api__user_execute_load(const char* username, const char* password, 
 		return TT_ERR;
 	}
 	if( status == TT_STATUS__NO ) {
+		TT_DEBUG3( "plugin/default", "default__impl__user_verifier_test() returned TT_STATUS__NO in %s()", __FUNCTION__ );
 		*key_size = 0;
 		return TT_OK;
 	}
@@ -202,7 +203,7 @@ int default__api__user_execute_autoenrollment(const char* username, const char* 
 	struct group*	group = NULL;
 	int		offset = 0;
 
-	TT_TRACE( "library/plugin", "%s(username='%s',status=%p)", __FUNCTION__, username, status );
+	TT_TRACE( "plugin/default", "%s(username='%s',status=%p)", __FUNCTION__, username, status );
 	if( username == NULL || username[0] == '\0' || status == NULL ) {
 		return TT_ERR;
 	}

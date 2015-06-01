@@ -109,7 +109,7 @@ int default__impl__user_storage_save(const char* username, const tt_user_t* user
 	}
 	cfg_setstr( cfg, "user|verifier", buffer );
 	buffer_size = sizeof(buffer);
-	if( libtokentube_cfg_print( cfg, buffer, &buffer_size ) != TT_OK ) {
+	if( libtokentube_runtime_conf__serialize( cfg, buffer, &buffer_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_cfg_print() failed in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;

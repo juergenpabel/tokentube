@@ -22,7 +22,7 @@
 static tt_library_t	g_library;
 static char* 		g_conf_user_userprompt = NULL;
 static char*		g_conf_user_passprompt = NULL;
-static int   		g_conf_sso = TT_YES;
+static int   		g_conf_sso = TT_NO;
 static char*		g_conf_sso_exec = NULL;
 static char*		g_conf_sso_socket = NULL;
 static char*		g_conf_otp_identifier = NULL;
@@ -172,8 +172,8 @@ int main (int argc, char *argv[]) {
 				verbose++;
 				break;
  			case 's':
-				if( strncmp( "no", optarg, 3) == 0) {
-					g_conf_sso = TT_NO;
+				if( strncmp( "yes", optarg, 4 ) == 0) {
+					g_conf_sso = TT_YES;
 				}
 				break;
 			default:

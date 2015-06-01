@@ -18,6 +18,9 @@ static void test_user_create_success(void **state) {
 	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
 	assert_true( library->api.user.exists( "user", &status ) == TT_OK );
 	assert_true( status == TT_YES );
+	status = TT_STATUS__UNDEFINED;
+	assert_true( library->api.user.execute_verify( "user", "pass", &status ) == TT_OK );
+	assert_true( status == TT_YES );
 }
 
 

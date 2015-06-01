@@ -100,7 +100,7 @@ def verify(args):
 	if args.username is None:
 		args.username = get_username()
 	if tokentube.user_exists( args.username ) is False:
-		message( args, "FAILURE: user '%s' already exists" % args.username )
+		message( args, "FAILURE: user '%s' does not exist" % args.username )
 		return -1
 	if args.password is None:
 		args.password = get_password()

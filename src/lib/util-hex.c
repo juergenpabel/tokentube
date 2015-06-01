@@ -53,10 +53,11 @@ int libtokentube_util_hex_decode(void const* text, size_t text_len, void* bytes,
 	}
 	for( i=0; i<input_len; i+=2 ) {
 		output[i/2] = 0;
-		output[i/2] |= hex_value( input[i+0] ) << 0;
-		output[i/2] |= hex_value( input[i+1] ) << 4;
+		output[i/2] |= hex_value( input[i+0] ) << 4;
+		output[i/2] |= hex_value( input[i+1] ) << 0;
 	}
 	output[input_len/2] = '\0';
+	*output_len = input_len/2;
 	return TT_OK;
 }
 

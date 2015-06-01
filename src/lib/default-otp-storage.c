@@ -83,8 +83,8 @@ int default__impl__otp_save(const char* identifier, tt_otp_t* otp) {
 	}
 	cfg_setstr( cfg, "otp|data", data );
 	data_size = sizeof(data);
-	if( libtokentube_cfg_print( cfg, data, &data_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_cfg_print() failed in %s()", __FUNCTION__ );
+	if( libtokentube_runtime_conf__serialize( cfg, data, &data_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_cfg_serialize() failed in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;
 	}

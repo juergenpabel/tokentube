@@ -53,7 +53,7 @@ static inline void libtokentube_runtime_trace( const char* source, const char* m
 #endif
 
 
-/*[TT_ERR|TT_OK]*/ int libtokentube_conf_print(char* buffer, size_t* buffer_size);
+/*[TT_ERR|TT_OK]*/ int libtokentube_conf_serialize(char* buffer, size_t* buffer_size);
 /*[TT_ERR|TT_OK]*/ int libtokentube_conf_get_filename(char* buffer, size_t* buffer_size);
 /*[TT_ERR|TT_OK]*/ int libtokentube_conf_read_int(const char* name, int* value);
 /*[TT_ERR|TT_OK]*/ int libtokentube_conf_read_size(const char* name, size_t* value);
@@ -69,9 +69,9 @@ static inline void libtokentube_runtime_trace( const char* source, const char* m
 
 typedef struct cfg_t cfg_t;
 typedef struct cfg_opt_t cfg_opt_t;
-int  libtokentube_cfg_include(cfg_t* cfg, cfg_opt_t* opt, int argc, const char** argv);
-int  libtokentube_cfg_print(cfg_t* cfg, char* buffer, size_t* buffer_size);
-void libtokentube_cfg_error_log(cfg_t *cfg, const char *fmt, va_list ap);
+int  libtokentube_runtime_conf__include(cfg_t* cfg, cfg_opt_t* opt, int argc, const char** argv);
+int  libtokentube_runtime_conf__serialize(cfg_t* cfg, char* buffer, size_t* buffer_size);
+void libtokentube_runtime_conf__log_error(cfg_t *cfg, const char *fmt, va_list ap);
 
 /*[TT_ERR|TT_OK]*/ int libtokentube_runtime_install_pba(const char* type, const char* data);
 

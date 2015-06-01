@@ -23,6 +23,11 @@ static void test_testvectors_hex(void **state) {
 	assert_true( library->api.util.hex_encode( "test", 4, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 8 );
 	assert_string_equal( output, "74657374" );
+
+	output_size = sizeof(output);
+	assert_true( library->api.util.hex_decode( "74657374", 8, output, &output_size ) == TT_OK );
+	assert_int_equal( output_size, 4 );
+	assert_string_equal( output, "test" );
 }
 
 
@@ -89,6 +94,16 @@ static void test_testvectors_base64(void **state) {
 	assert_true( library->api.util.base64_encode( "test", 4, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 8 );
 	assert_string_equal( output, "dGVzdA==" );
+
+	output_size = sizeof(output);
+	assert_true( library->api.util.base64_decode( "", 0, output, &output_size ) == TT_OK );
+	assert_int_equal( output_size, 0 );
+	assert_string_equal( output, "" );
+
+	output_size = sizeof(output);
+	assert_true( library->api.util.base64_decode( "dGVzdA==", 8, output, &output_size ) == TT_OK );
+	assert_int_equal( output_size, 4 );
+	assert_string_equal( output, "test" );
 }
 
 
