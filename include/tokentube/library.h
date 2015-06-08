@@ -22,6 +22,7 @@ typedef struct {
 	int (*encrypt)(void* data, const size_t data_size, const void* key, const size_t key_size, const void* iv, const size_t iv_size);
 	int (*decrypt)(void* data, const size_t data_size, const void* key, const size_t key_size, const void* iv, const size_t iv_size);
 	int (*hash)(const void* in, size_t in_size, void* out, size_t* out_size);
+	int (*hmac)(const void* in, size_t in_size, const void* key, size_t key_size, void* out, size_t* out_size);
 	int (*kdf)(const void* salt, size_t salt_size, const void* in, size_t in_size, void* out, size_t* out_size);
 } tt_library_api_crypto_t;
 

@@ -30,8 +30,8 @@ int default__api__user_create(const char* username, const char* password) {
 	strncpy( user.crypto.hash, libtokentube_crypto_get_hash(), sizeof(user.crypto.hash)-1 );
 	strncpy( user.crypto.kdf, g_crypto_kdf, sizeof(user.crypto.kdf)-1 );
 	user.crypto.kdf_iter = g_crypto_kdf_iter;
-	if( default__impl__user_verifier_set( username, password, &user ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__impl__user_verifier_set() failed in %s()", __FUNCTION__ );
+	if( default__impl__user_hmac_set( username, password, &user ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_set() failed in %s()", __FUNCTION__ );
 		memset( &user, '\0', sizeof(user) );
 		return TT_ERR;
 	}
@@ -59,8 +59,8 @@ int default__api__user_update(const char* username, const char* old_password, co
 		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__user_load() failed for username='%s' in %s()", username, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__impl__user_verifier_test( username, old_password, &user, status ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__impl__user_verifier_test() failed in %s()", __FUNCTION__ );
+	if( default__impl__user_hmac_test( username, old_password, &user, status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_test() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( *status == TT_STATUS__YES ) {
@@ -82,8 +82,8 @@ int default__api__user_update(const char* username, const char* old_password, co
 				}
 			}
 		}
-		if( default__impl__user_verifier_set( username, new_password, &user ) != TT_OK ) {
-			TT_LOG_ERROR( "plugin/default", "default__impl__user_verifier_set() failed in %s()", __FUNCTION__ );
+		if( default__impl__user_hmac_set( username, new_password, &user ) != TT_OK ) {
+			TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_set() failed in %s()", __FUNCTION__ );
 			memset( &user, '\0', sizeof(user) );
 			return TT_ERR;
 		}
@@ -144,8 +144,8 @@ int default__api__user_key_add(const char* username, const char* password, const
 		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__user_load() failed for username='%s' in %s()", username, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__impl__user_verifier_test( username, password, &user, status ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__impl__user_verifier_test() failed in %s()", __FUNCTION__ );
+	if( default__impl__user_hmac_test( username, password, &user, status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_test() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( *status == TT_STATUS__YES ) {
@@ -172,10 +172,17 @@ int default__api__user_key_add(const char* username, const char* password, const
 				*status = TT_STATUS__YES;
 			}
 		}
-		if( default__impl__user_storage_save( username, &user ) != TT_OK ) {
-			TT_LOG_ERROR( "plugin/default", "default__impl__user_save() failed in %s()", __FUNCTION__ );
-			memset( &user, '\0', sizeof(user) );
-			return TT_ERR;
+		if( *status == TT_STATUS__YES ) {
+			if( default__impl__user_hmac_set( username, password, &user ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_set() failed in %s()", __FUNCTION__ );
+				memset( &user, '\0', sizeof(user) );
+				return TT_ERR;
+			}
+			if( default__impl__user_storage_save( username, &user ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "default__impl__user_save() failed in %s()", __FUNCTION__ );
+				memset( &user, '\0', sizeof(user) );
+				return TT_ERR;
+			}
 		}
 	}
 	memset( &user, '\0', sizeof(user) );
@@ -199,8 +206,8 @@ int default__api__user_key_del(const char* username, const char* password, const
 		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__user_load() failed for username='%s' in %s()", username, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__impl__user_verifier_test( username, password, &user, status ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__impl__user_verifier_test() failed in %s()", __FUNCTION__ );
+	if( default__impl__user_hmac_test( username, password, &user, status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_test() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( *status == TT_STATUS__YES ) {
@@ -219,6 +226,11 @@ int default__api__user_key_del(const char* username, const char* password, const
 			}
 		}
 		if( *status == TT_STATUS__YES ) {
+			if( default__impl__user_hmac_set( username, password, &user ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_set() failed in %s()", __FUNCTION__ );
+				memset( &user, '\0', sizeof(user) );
+				return TT_ERR;
+			}
 			if( default__impl__user_storage_save( username, &user ) != TT_OK ) {
 				TT_LOG_ERROR( "plugin/default", "default__impl__user_save() failed in %s()", __FUNCTION__ );
 				memset( &user, '\0', sizeof(user) );
@@ -244,8 +256,8 @@ int default__api__user_execute_verify(const char* username, const char* password
 		TT_LOG_ERROR( "plugin/default", "default__impl__user_storage_load() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__impl__user_verifier_test( username, password, &user, status ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__impl__user_verifier_test() failed in %s()", __FUNCTION__ );
+	if( default__impl__user_hmac_test( username, password, &user, status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_test() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	return TT_OK;
@@ -269,12 +281,12 @@ int default__api__user_execute_loadkey(const char* username, const char* passwor
 		TT_LOG_ERROR( "plugin/default", "default__impl__user_storage_load() failed for username='%s' in %s()", username, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__impl__user_verifier_test( username, password, &user, &status ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__impl__user_verifier_test() failed for username='%s' in %s()", username, __FUNCTION__ );
+	if( default__impl__user_hmac_test( username, password, &user, &status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_test() failed for username='%s' in %s()", username, __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( status == TT_STATUS__NO ) {
-		TT_DEBUG3( "plugin/default", "default__impl__user_verifier_test() returned TT_STATUS__NO in %s()", __FUNCTION__ );
+		TT_DEBUG3( "plugin/default", "default__impl__user_hmac_test() returned TT_STATUS__NO in %s()", __FUNCTION__ );
 		*key_size = 0;
 		return TT_OK;
 	}

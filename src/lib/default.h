@@ -15,7 +15,7 @@ typedef struct {
 typedef struct {
 	char    data[TT_DIGEST_BITS_MAX/8];
 	size_t  data_len;
-} tt_user_verifier_t;
+} tt_user_hmac_t;
 
 typedef struct {
 	char    uuid[TT_DIGEST_BITS_MAX/8];
@@ -26,8 +26,8 @@ typedef struct {
 
 typedef struct {
 	tt_user_crypto_t   crypto;
-	tt_user_verifier_t verifier;
 	tt_user_key_t      key[DEFAULT__KEY_MAX];
+	tt_user_hmac_t     hmac;
 } tt_user_t;
 
 #define TT_USER__UNDEFINED { { "", "", "", 0 }, {0} }
@@ -79,8 +79,8 @@ int  default__impl__user_storage_delete(const char* identifier, tt_status_t* sta
 
 int  default__impl__user_key_encrypt(const char* username, const char* password, tt_user_t* user, size_t key_offset);
 int  default__impl__user_key_decrypt(const char* username, const char* password, tt_user_t* user, size_t key_offset);
-int  default__impl__user_verifier_set(const char* username, const char* password, tt_user_t* user);
-int  default__impl__user_verifier_test(const char* username, const char* password, tt_user_t* user, tt_status_t* status);
+int  default__impl__user_hmac_set(const char* username, const char* password, tt_user_t* user);
+int  default__impl__user_hmac_test(const char* username, const char* password, tt_user_t* user, tt_status_t* status);
 
 
 int  default__storage_ext2fs_load(tt_file_t type, const char* filename, char* data, size_t* data_size);

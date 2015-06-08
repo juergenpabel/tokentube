@@ -35,6 +35,7 @@ int libtokentube_library_configure() {
 	g_library_api.crypto.encrypt = libtokentube_crypto_encrypt;
 	g_library_api.crypto.decrypt = libtokentube_crypto_decrypt;
 	g_library_api.crypto.hash = libtokentube_crypto_hash;
+	g_library_api.crypto.hmac = libtokentube_crypto_hmac;
 	g_library_api.crypto.kdf = libtokentube_crypto_kdf;
 	g_library_api.storage.load = libtokentube_plugin__file_load;
 	g_library_api.storage.save = libtokentube_plugin__file_save;
