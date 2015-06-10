@@ -46,7 +46,9 @@ int default__storage_posix_load(tt_file_t type, const char* filename, char* buff
 			}
 			entry = readdir( dir );
 			while( entry != NULL ) {
-				pos += snprintf( buffer+pos, sizeof(buffer)-pos, "%s/%s\n", filename, entry->d_name );
+				if( entry->d_type == DT_LNK || entry->d_type == DT_REG ) {
+					pos += snprintf( buffer+pos, *buffer_size-pos, "%s/%s\n", filename, entry->d_name );
+				}
 				entry = readdir( dir );
 			}
 			closedir( dir );

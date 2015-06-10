@@ -193,7 +193,7 @@ int libtokentube_plugin__user_key_add(const char* username, const char* password
 							return TT_OK;
 						}
 					case TT_IGN:
-						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'user_update'", module->name );
+						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'key_add'", module->name );
 						break;
 					default:
 						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'user_key_add'", module->name );
@@ -234,8 +234,12 @@ int libtokentube_plugin__user_key_del(const char* username, const char* password
 							}
 							return TT_OK;
 						}
+						if( *status == TT_STATUS__NO ) {
+							TT_DEBUG5( "library/plugin", "plugin '%s' handled 'key_del' (no changes though)", module->name );
+							return TT_OK;
+						}
 					case TT_IGN:
-						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'user_update'", module->name );
+						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'key_del'", module->name );
 						break;
 					default:
 						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'user_key_del'", module->name );
