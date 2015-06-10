@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <syslog.h>
 #include <sys/types.h>
+#include <arpa/inet.h>
 
 #include <tokentube.h>
 #include <tokentube/plugin.h>

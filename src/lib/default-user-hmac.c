@@ -8,6 +8,8 @@
 __attribute__ ((visibility ("hidden")))
 int default__impl__user_hmac_set(const char* username, const char* password, tt_user_t* user) {
 	tt_user_hmac_t orig;
+	size_t         size;
+	int            i;
 
 	TT_TRACE( "plugin/default", "%s(username='%s',password='%s',user=%p)", __FUNCTION__, username, password, user );
 	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || user == NULL ) {
@@ -18,12 +20,26 @@ int default__impl__user_hmac_set(const char* username, const char* password, tt_
 		TT_LOG_ERROR( "plugin/default", "gcry_md_get_algo_dlen() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	orig.data_len = sizeof(orig.data);
+
+	user->crypto.kdf_iter = htonl( user->crypto.kdf_iter );
+	for( i=0; i<DEFAULT__KEY_MAX; i++ ) {
+		user->key[i].uuid_len = htonl( user->key[i].uuid_len );
+		user->key[i].data_len = htonl( user->key[i].data_len );
+	}
+
 	memset( &user->hmac, '\0', sizeof(user->hmac) );
-	if( libtokentube_crypto_hmac_impl( user->crypto.hash, user, sizeof(tt_user_t), password, strlen(password), orig.data, &orig.data_len ) != TT_OK ) {
+	size = sizeof(orig.data);
+	if( libtokentube_crypto_hmac_impl( user->crypto.hash, user, sizeof(tt_user_t), password, strlen(password), orig.data, &size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hmac() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
+	orig.data_len = size;
+
+	for( i=0; i<DEFAULT__KEY_MAX; i++ ) {
+		user->key[i].uuid_len = ntohl( user->key[i].uuid_len );
+		user->key[i].data_len = ntohl( user->key[i].data_len );
+	}
+	user->crypto.kdf_iter = ntohl( user->crypto.kdf_iter );
 	memcpy( &user->hmac, &orig, sizeof(tt_user_hmac_t) );
 	return TT_OK;
 }
@@ -33,6 +49,8 @@ __attribute__ ((visibility ("hidden")))
 int default__impl__user_hmac_test(const char* username, const char* password, tt_user_t* user, tt_status_t* status) {
 	tt_user_hmac_t orig;
 	tt_user_hmac_t test;
+	size_t         size;
+	int            i;
 
 	TT_TRACE( "plugin/default", "%s(username='%s',password='%s',user=%p,status=%p)", __FUNCTION__, username, password, user, status );
 	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || user == NULL || status == NULL ) {
@@ -44,12 +62,27 @@ int default__impl__user_hmac_test(const char* username, const char* password, tt
 		return TT_ERR;
 	}
 	memcpy( &orig, &user->hmac, sizeof(tt_user_hmac_t) );
-	test.data_len = sizeof(test.data);
 	memset( &user->hmac, '\0', sizeof(tt_user_hmac_t) );
-	if( libtokentube_crypto_hmac_impl( user->crypto.hash, user, sizeof(tt_user_t), password, strlen(password), test.data, &test.data_len ) != TT_OK ) {
+
+	user->crypto.kdf_iter = htonl( user->crypto.kdf_iter );
+	for( i=0; i<DEFAULT__KEY_MAX; i++ ) {
+		user->key[i].uuid_len = htonl( user->key[i].uuid_len );
+		user->key[i].data_len = htonl( user->key[i].data_len );
+	}
+
+	size = sizeof(orig.data);
+	if( libtokentube_crypto_hmac_impl( user->crypto.hash, user, sizeof(tt_user_t), password, strlen(password), test.data, &size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hmac() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
+	test.data_len = size;
+
+	for( i=0; i<DEFAULT__KEY_MAX; i++ ) {
+		user->key[i].uuid_len = ntohl( user->key[i].uuid_len );
+		user->key[i].data_len = ntohl( user->key[i].data_len );
+	}
+	user->crypto.kdf_iter = ntohl( user->crypto.kdf_iter );
+
 	if( test.data_len != orig.data_len ) {
 		TT_LOG_WARN( "plugin/default", "size of calculated hmac does not match size of stored hmac in %s()", __FUNCTION__ );
 		*status = TT_NO;

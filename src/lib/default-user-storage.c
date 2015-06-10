@@ -53,6 +53,7 @@ int default__impl__user_storage_load(const char* username, tt_user_t* user) {
 	cfg_t*  cfg = NULL;
 	cfg_t*  section = NULL;
 	size_t  key_offset = 0;
+	size_t  size = 0;
 
 	TT_TRACE( "library/plugin", "%s(username='%s',user=%p)", __FUNCTION__, username, user );
 	if( username == NULL || username[0] == '\0' || user == NULL ) {
@@ -85,27 +86,30 @@ int default__impl__user_storage_load(const char* username, tt_user_t* user) {
 			cfg_free( cfg );
 			return TT_ERR;
 		}
-		user->key[key_offset].uuid_len = sizeof(user->key[key_offset].uuid);
-		if( libtokentube_util_hex_decode( cfg_title( section ), strnlen( cfg_title( section ), TT_IDENTIFIER_CHAR_MAX ), user->key[key_offset].uuid, &user->key[key_offset].uuid_len ) != TT_OK ) {
+		size = sizeof(user->key[key_offset].uuid);
+		if( libtokentube_util_hex_decode( cfg_title( section ), strnlen( cfg_title( section ), TT_IDENTIFIER_CHAR_MAX ), user->key[key_offset].uuid, &size ) != TT_OK ) {
 			TT_LOG_ERROR( "plugin/default", "libtokentube_util_base64_decode() failed for user|key in %s()", __FUNCTION__ );
 			cfg_free( cfg );
 			return TT_ERR;
 		}
-		user->key[key_offset].data_len = sizeof(user->key[key_offset].data);
-		if( libtokentube_util_base64_decode( cfg_getstr( section, "value" ), 0, user->key[key_offset].data, &user->key[key_offset].data_len ) != TT_OK ) {
+		user->key[key_offset].uuid_len = size;
+		size = sizeof(user->key[key_offset].data);
+		if( libtokentube_util_base64_decode( cfg_getstr( section, "value" ), 0, user->key[key_offset].data, &size ) != TT_OK ) {
 			TT_LOG_ERROR( "plugin/default", "libtokentube_util_base64_decode() failed for user|key in %s()", __FUNCTION__ );
 			cfg_free( cfg );
 			return TT_ERR;
 		}
+		user->key[key_offset].data_len = size;
 		key_offset++;
 		section = cfg_getnsec( cfg, "user|key", key_offset );
 	}
-	user->hmac.data_len = sizeof(user->hmac.data);
-	if( libtokentube_util_base64_decode( cfg_getstr( cfg, "user-hmac" ), 0, user->hmac.data, &user->hmac.data_len ) != TT_OK ) {
+	size = sizeof(user->hmac.data);
+	if( libtokentube_util_base64_decode( cfg_getstr( cfg, "user-hmac" ), 0, user->hmac.data, &size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_util_base64_decode() failed for user-hmac in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;
 	}
+	user->hmac.data_len = size;
 	cfg_free( cfg );
 	return TT_OK;
 }

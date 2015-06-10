@@ -134,6 +134,7 @@ int default__api__user_key_add(const char* username, const char* password, const
 	char         key[TT_KEY_BITS_MAX/8] = {0};
 	size_t       key_size = sizeof(key);
 	size_t       key_offset = 0;
+	size_t       size = 0;
 
 	TT_TRACE( "plugin/default", "%s(username='%s',password='%s',idenfifier='%s')", __FUNCTION__, username, password, identifier );
 	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || identifier == NULL || identifier[0] == '\0' ) {
@@ -164,11 +165,12 @@ int default__api__user_key_add(const char* username, const char* password, const
 					memset( &user, '\0', sizeof(user) );
 					return TT_ERR;
 				}
-				user.key[key_offset].uuid_len = sizeof(user.key[key_offset].uuid);
-				if( libtokentube_crypto_hash_impl( user.crypto.hash, identifier, strnlen( identifier, TT_IDENTIFIER_CHAR_MAX ), user.key[key_offset].uuid, &user.key[key_offset].uuid_len ) != TT_OK ) {
+				size = sizeof(user.key[key_offset].uuid);
+				if( libtokentube_crypto_hash_impl( user.crypto.hash, identifier, strnlen( identifier, TT_IDENTIFIER_CHAR_MAX ), user.key[key_offset].uuid, &size) != TT_OK ) {
 					TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hash_impl() failed for hash='%s' in %s()", user.crypto.hash, __FUNCTION__ );
 					return TT_ERR;
 				}
+				user.key[key_offset].uuid_len = size;
 				*status = TT_STATUS__YES;
 			}
 		}

@@ -6,22 +6,22 @@
 #define DEFAULT__KEY_MAX 32
 
 typedef struct {
-	char    cipher[TT_IDENTIFIER_CHAR_MAX+1];
-	char    hash[TT_IDENTIFIER_CHAR_MAX+1];
-	char    kdf[TT_IDENTIFIER_CHAR_MAX+1];
-	size_t  kdf_iter;
+	char      cipher[TT_IDENTIFIER_CHAR_MAX+1];
+	char      hash[TT_IDENTIFIER_CHAR_MAX+1];
+	char      kdf[TT_IDENTIFIER_CHAR_MAX+1];
+	uint32_t  kdf_iter;
 } tt_user_crypto_t;
 
 typedef struct {
-	char    data[TT_DIGEST_BITS_MAX/8];
-	size_t  data_len;
+	char      data[TT_DIGEST_BITS_MAX/8];
+	uint32_t  data_len;
 } tt_user_hmac_t;
 
 typedef struct {
-	char    uuid[TT_DIGEST_BITS_MAX/8];
-	size_t  uuid_len;
-	char    data[TT_KEY_BITS_MAX/8];
-	size_t  data_len;
+	char      uuid[TT_DIGEST_BITS_MAX/8];
+	uint32_t  uuid_len;
+	char      data[TT_KEY_BITS_MAX/8];
+	uint32_t  data_len;
 } tt_user_key_t;
 
 typedef struct {
