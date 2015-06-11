@@ -174,14 +174,11 @@ int tt_configure(const char* filename) {
 	}
 	if( result != TT_OK ) {
 		TT_LOG_FATAL( "library/core", "configuration failed, ABORTING" );
+		g_state = TT_STATE_UNDEFINED;
 	}
 	if( result == TT_OK ) {
 		TT_DEBUG2( "library/core", "configuration completed" );
 		g_state = TT_STATE_CONFIGURED;
-	}
-	if( g_state == TT_STATE_UNDEFINED ) {
-		g_state = TT_STATE_INITIALIZED;
-		return TT_ERR;
 	}
 	return result;
 }
