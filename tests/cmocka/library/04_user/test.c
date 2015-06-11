@@ -155,8 +155,12 @@ static void test_user_keys_success(void **state) {
 	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
 	assert_true( library->api.user.key_del( "user", "pass", "test", &status ) == TT_OK );
 	assert_true( status == TT_YES );
+	assert_true( library->api.user.key_del( "user", "pass", "test", &status ) == TT_OK );
+	assert_true( status == TT_NO );
 	assert_true( library->api.user.key_add( "user", "pass", "test", &status ) == TT_OK );
 	assert_true( status == TT_YES );
+	assert_true( library->api.user.key_add( "user", "pass", "test", &status ) == TT_OK );
+	assert_true( status == TT_NO );
 
 	assert_true( library->api.user.delete( "user", &status ) == TT_OK );
 	assert_true( status == TT_YES );
@@ -173,16 +177,12 @@ static void test_user_keys_failure(void **state) {
 	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
 	assert_true( library->api.user.key_del( "user", "pass", "test", &status ) == TT_OK );
 	assert_true( status == TT_YES );
-	assert_true( library->api.user.key_del( "user", "pass", "test", &status ) == TT_OK );
-	assert_true( status == TT_NO );
-	assert_true( library->api.user.key_add( "fail", "pass", "test", &status ) == TT_ERR );
 	assert_true( library->api.user.key_add( "user", "fail", "test", &status ) == TT_ERR );
 	assert_true( library->api.user.key_add( "user", "pass", "fail", &status ) == TT_ERR );
+	assert_true( library->api.user.key_add( "fail", "pass", "test", &status ) == TT_ERR );
 
-	assert_true( library->api.user.key_add( "user", "pass", "test", &status ) == TT_OK );
 	assert_true( library->api.user.key_del( "fail", "pass", "test", &status ) == TT_ERR );
-	assert_true( library->api.user.key_del( "user", "fail", "test", &status ) == TT_OK );
-	assert_true( status == TT_NO );
+	assert_true( library->api.user.key_del( "user", "fail", "test", &status ) == TT_ERR );
 	assert_true( library->api.user.key_del( "user", "pass", "fail", &status ) == TT_OK );
 	assert_true( status == TT_NO );
 

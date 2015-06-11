@@ -111,6 +111,10 @@ int tt_initialize(tt_version_t version) {
 		TT_DEBUG2( "library/core", "initialization completed" );
 		g_state = TT_STATE_INITIALIZED;
 	}
+	if( g_state == TT_STATE_UNDEFINED ) {
+		g_state = TT_STATE_UNINITIALIZED;
+		return TT_ERR;
+	}
 	return result;
 }
 
@@ -183,7 +187,7 @@ int tt_finalize() {
 	int result = TT_OK;
 
 	if( g_state == TT_STATE_UNINITIALIZED ) {
-		return TT_OK;
+		return TT_IGN;
 	}
 	TT_DEBUG1( "library/core", "finalizing..." );
 	if( g_state != TT_STATE_INITIALIZED && g_state != TT_STATE_CONFIGURED ) {
