@@ -35,6 +35,15 @@ int test__impl__get_filename(tt_file_t type, const char* identifier, char* buffe
 				return TT_ERR;
 			}
 			break;
+		case TT_FILE__KEY:
+			if( snprintf( buffer, (*buffer_size)-1, "etc/tokentube/keys/%s", identifier ) > 0 ) {
+				g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY5, "plugin/test", "returning '%s' in test__get_filename()", buffer );
+				return TT_OK;
+			} else {
+				g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "snprintf() failed in test__get_filename()" );
+				return TT_ERR;
+			}
+			break;
 		case TT_FILE__USER:
 			path = "boot/tokentube/user";
 			break;

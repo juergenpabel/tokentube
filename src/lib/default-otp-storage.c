@@ -20,7 +20,7 @@ static cfg_opt_t opt[] = {
 
 __attribute__ ((visibility ("hidden")))
 int default__impl__otp_load(const char* identifier, tt_otp_t* otp) {
-	char    data[DEFAULT__FILESIZE_MAX] = { 0 };
+	char    data[DEFAULT__FILESIZE_MAX+1] = { 0 };
 	size_t	data_size = sizeof(data);
 	cfg_t*  cfg = NULL;
 
@@ -58,7 +58,7 @@ int default__impl__otp_load(const char* identifier, tt_otp_t* otp) {
 
 __attribute__ ((visibility ("hidden")))
 int default__impl__otp_save(const char* identifier, tt_otp_t* otp) {
-	char    data[DEFAULT__FILESIZE_MAX] = { 0 };
+	char    data[DEFAULT__FILESIZE_MAX+1] = { 0 };
 	size_t  data_size = sizeof(data);
 	cfg_t*	cfg = NULL;
 

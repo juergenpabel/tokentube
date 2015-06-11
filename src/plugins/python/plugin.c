@@ -62,7 +62,7 @@ static int configure(const char* filename) {
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "error loading configuration file '%s'", filename );
 		return TT_ERR;
 	}
-	g_self.interface.api.storage.luks_load = python__luks_load;
+	g_self.interface.api.storage.load = python__storage_load;
 	return TT_OK;
 }
 

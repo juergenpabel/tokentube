@@ -41,11 +41,14 @@ static cfg_opt_t opt_lua[] = {
 };
 
 
-static int lua__luks_load(char* key, size_t* key_len) {
+static int lua__luks_load(tt_file_t file, const char* identifier, char* key, size_t* key_len) {
 	char	filename[1024] = {0};
 	int	result = TT_ERR;
 
-	if( key == NULL || key_len == NULL || *key_len == 0) {
+	if( file != TT_FILE__KEY ) {
+		return TT_IGN;
+	}
+	if( identifier == NULL || key == NULL || key_len == NULL || *key_len == 0) {
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/lua", "invalid parameter in lua__luks_load()'" );
 		return TT_ERR;
 	}
@@ -55,7 +58,7 @@ static int lua__luks_load(char* key, size_t* key_len) {
 	}
 
 	g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY2, "plugin/lua", "invoking script '%s' for 'luks_load'", filename );
-	if( luaL_dofile( g_LUA , filename ) == 0 ) {
+	if( luaL_dofile( g_LUA , filename ) == 0 ) { //TODO:identifier as param
 		lua_getglobal( g_LUA, "result" );
 		if( lua_isstring( g_LUA, -1 ) ) {
 			if( lua_rawlen( g_LUA, -1 ) <= *key_len ) {
@@ -98,7 +101,7 @@ static int configure(const char* filename) {
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/lua", "error loading configuration file '%s'", filename );
 		return TT_ERR;
 	}
-	g_self.interface.api.storage.luks_load = lua__luks_load;
+	g_self.interface.api.storage.load = lua__luks_load;
 	return TT_OK;
 }
 

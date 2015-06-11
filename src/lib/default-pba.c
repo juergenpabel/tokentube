@@ -77,7 +77,7 @@ int default__api__pba_install_pre(const char* type, const char* path) {
 
 
 __attribute__ ((visibility ("hidden")))
-int default__api__pba_install(const char* type, const char* path) {
+int default__api__pba_install_run(const char* type, const char* path) {
 	char            buffer[FILENAME_MAX+1] = {0};
 	size_t          buffer_size = sizeof(buffer);
 	char            filename_source[FILENAME_MAX+1] = {0};

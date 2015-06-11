@@ -37,21 +37,29 @@ static cfg_opt_t opt_tokentube_crypto[] = {
 	CFG_END()
 };
 
-static cfg_opt_t opt_tokentube_storage_files[] = {
-        CFG_STR("owner", "", CFGF_NONE),
-        CFG_STR("group", "", CFGF_NONE),
-        CFG_STR("permission",  "", CFGF_NONE),
-        CFG_END()
+static cfg_opt_t opt_tokentube_storage_user_files[] = {
+	CFG_STR("owner", "", CFGF_NONE),
+	CFG_STR("group", "", CFGF_NONE),
+	CFG_STR("permission",  "", CFGF_NONE),
+	CFG_END()
 };
 
-static cfg_opt_t opt_tokentube_storage_lukskey[] = {
-        CFG_STR("file", "", CFGF_NONE),
-        CFG_END()
+static cfg_opt_t opt_tokentube_storage_otp_files[] = {
+	CFG_STR("owner", "", CFGF_NONE),
+	CFG_STR("group", "", CFGF_NONE),
+	CFG_STR("permission",  "", CFGF_NONE),
+	CFG_END()
+};
+
+static cfg_opt_t opt_tokentube_storage_key_files[] = {
+	CFG_STR("directory",  "", CFGF_NONE),
+	CFG_END()
 };
 
 static cfg_opt_t opt_tokentube_storage[] = {
-        CFG_SEC("files", opt_tokentube_storage_files, CFGF_NONE),
-        CFG_SEC("luks-key", opt_tokentube_storage_lukskey, CFGF_NONE),
+	CFG_SEC("user-files", opt_tokentube_storage_user_files, CFGF_NONE),
+	CFG_SEC("otp-files", opt_tokentube_storage_otp_files, CFGF_NONE),
+	CFG_SEC("key-files", opt_tokentube_storage_key_files, CFGF_NONE),
 	CFG_END()
 };
 

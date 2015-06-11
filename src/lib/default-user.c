@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -19,29 +20,70 @@
 
 __attribute__ ((visibility ("hidden")))
 int default__api__user_create(const char* username, const char* password) {
-	tt_user_t	user = TT_USER__UNDEFINED;
+	char       path[FILENAME_MAX+1] = {0};
+	size_t     path_size = sizeof(path);
+	char*      filename_start = NULL;
+	char*      filename_end = NULL;
+	size_t     key_offset = 0;
+	char       buffer[FILENAME_MAX+1] = {0};
+	size_t     buffer_size = sizeof(buffer);
+	tt_user_t  user = TT_USER__UNDEFINED;
 
 	TT_TRACE( "plugin/default", "%s(username='%s',password='%s')", __FUNCTION__, username, password );
 	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	strncpy( user.cipher, libtokentube_crypto_get_cipher(), sizeof(user.cipher)-1 );
-	strncpy( user.hash, libtokentube_crypto_get_hash(), sizeof(user.hash)-1 );
-	strncpy( user.kdf, g_crypto_kdf, sizeof(user.kdf)-1 );
-	user.kdf_iter = g_crypto_kdf_iter;
-	if( libtokentube_plugin__luks_load( user.luks_data, &user.luks_data_len ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__luks_load() failed in %s()", __FUNCTION__ );
-		memset( &user, '\0', sizeof(user) );
+	strncpy( user.crypto.cipher, libtokentube_crypto_get_cipher(), sizeof(user.crypto.cipher)-1 );
+	strncpy( user.crypto.hash, libtokentube_crypto_get_hash(), sizeof(user.crypto.hash)-1 );
+	strncpy( user.crypto.kdf, g_crypto_kdf, sizeof(user.crypto.kdf)-1 );
+	user.crypto.kdf_iter = g_crypto_kdf_iter;
+
+	if( libtokentube_conf_read_str( "storage|key-files|directory", path, &path_size) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_conf_read_str() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__impl__user_key_encrypt( username, password, &user ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__impl__user_key_encrypt() failed in %s()", __FUNCTION__ );
-		memset( &user, '\0', sizeof(user) );
+	if( strnlen( path, sizeof(path) ) == 0 ) {
+		strncpy( path, "/etc/tokentube/keys", sizeof(path) );
+	}
+	TT_DEBUG3( "plugin/default", "loading all keys from '%s' in %s()", path, __FUNCTION__ );
+	if( default__storage_posix_load( TT_FILE__KEY, path, buffer, &buffer_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__storage_posix_load() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__impl__user_verifier_set( username, password, &user ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__impl__user_verifier_set() failed in %s()", __FUNCTION__ );
+
+	filename_start = buffer;
+	filename_end = strchrnul( filename_start+1, '\n' );
+	while( filename_start[0] != '\0' ) {
+		filename_end = strchrnul( filename_start, '\n' );
+		filename_end[0] = '\0';
+		if( filename_start != filename_end ) {
+			TT_DEBUG3( "plugin/default", "loading key from '%s' in %s()", filename_start, __FUNCTION__ );
+			buffer_size = sizeof(user.key[key_offset].data);
+			if( default__storage_posix_load( TT_FILE__KEY, filename_start, user.key[key_offset].data, &buffer_size ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "default__storage_posix_load() failed in %s()", __FUNCTION__ );
+				memset( &user, '\0', sizeof(user) );
+				return TT_ERR;
+			}
+			user.key[key_offset].data_len = buffer_size;
+			if( default__impl__user_key_encrypt( username, password, &user, key_offset ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "default__impl__user_key_encrypt() failed in %s()", __FUNCTION__ );
+				memset( &user, '\0', sizeof(user) );
+				return TT_ERR;
+			}
+			buffer_size = sizeof(user.key[key_offset].uuid);
+			filename_start = strrchr( filename_start, '/' ) + 1;
+			if( libtokentube_crypto_hash_impl( user.crypto.hash, filename_start, strnlen( filename_start, TT_IDENTIFIER_CHAR_MAX ), user.key[key_offset].uuid, &buffer_size) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hash_impl() failed for hash='%s' in %s()", user.crypto.hash, __FUNCTION__ );
+				return TT_ERR;
+			}
+			user.key[key_offset].uuid_len = buffer_size;
+			key_offset++;
+		}
+		filename_start = strchrnul( filename_end+1, '\n' ) + 1;
+	}
+	if( default__impl__user_hmac_set( username, password, &user ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_set() failed in %s()", __FUNCTION__ );
 		memset( &user, '\0', sizeof(user) );
 		return TT_ERR;
 	}
@@ -57,7 +99,8 @@ int default__api__user_create(const char* username, const char* password) {
 
 __attribute__ ((visibility ("hidden")))
 int default__api__user_update(const char* username, const char* old_password, const char* new_password, tt_status_t* status) {
-	tt_user_t	user = TT_USER__UNDEFINED;
+	tt_user_t  user = TT_USER__UNDEFINED;
+	size_t     key_offset = 0;
 
 	TT_TRACE( "plugin/default", "%s(username='%s',old_password='%s',new_password='%s')", __FUNCTION__, username, old_password, new_password );
 	if( username == NULL || username[0] == '\0' || old_password == NULL || old_password[0] == '\0' || new_password == NULL || new_password[0] == '\0' || status == NULL ) {
@@ -68,27 +111,31 @@ int default__api__user_update(const char* username, const char* old_password, co
 		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__user_load() failed for username='%s' in %s()", username, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__impl__user_verifier_test( username, old_password, &user, status ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__impl__user_verifier_test() failed in %s()", __FUNCTION__ );
+	if( default__impl__user_hmac_test( username, old_password, &user, status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_test() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( *status == TT_STATUS__YES ) {
-		if( default__impl__user_key_decrypt( username, old_password, &user ) != TT_OK ) {
-			TT_LOG_ERROR( "plugin/default", "default__impl__user_key_decrypt() failed in %s()", __FUNCTION__ );
-			memset( &user, '\0', sizeof(user) );
-			return TT_ERR;
+		strncpy( user.crypto.cipher, libtokentube_crypto_get_cipher(), sizeof(user.crypto.cipher)-1 );
+		strncpy( user.crypto.hash, libtokentube_crypto_get_hash(), sizeof(user.crypto.hash)-1 );
+		strncpy( user.crypto.kdf, g_crypto_kdf, sizeof(user.crypto.kdf)-1 );
+		user.crypto.kdf_iter = g_crypto_kdf_iter;
+		for( key_offset = 0; key_offset<DEFAULT__KEY_MAX; key_offset++ ) {
+			if( user.key[key_offset].uuid_len != 0 ) {
+				if( default__impl__user_key_decrypt( username, old_password, &user, key_offset ) != TT_OK ) {
+					TT_LOG_ERROR( "plugin/default", "default__impl__user_key_decrypt() failed in %s()", __FUNCTION__ );
+					memset( &user, '\0', sizeof(user) );
+					return TT_ERR;
+				}
+				if( default__impl__user_key_encrypt( username, new_password, &user, key_offset ) != TT_OK ) {
+					TT_LOG_ERROR( "plugin/default", "default__impl__user_key_encrypt() failed in %s()", __FUNCTION__ );
+					memset( &user, '\0', sizeof(user) );
+					return TT_ERR;
+				}
+			}
 		}
-		strncpy( user.cipher, libtokentube_crypto_get_cipher(), sizeof(user.cipher)-1 );
-		strncpy( user.hash, libtokentube_crypto_get_hash(), sizeof(user.hash)-1 );
-		strncpy( user.kdf, g_crypto_kdf, sizeof(user.kdf)-1 );
-		user.kdf_iter = g_crypto_kdf_iter;
-		if( default__impl__user_key_encrypt( username, new_password, &user ) != TT_OK ) {
-			TT_LOG_ERROR( "plugin/default", "default__impl__user_key_encrypt() failed in %s()", __FUNCTION__ );
-			memset( &user, '\0', sizeof(user) );
-			return TT_ERR;
-		}
-		if( default__impl__user_verifier_set( username, new_password, &user ) != TT_OK ) {
-			TT_LOG_ERROR( "plugin/default", "default__impl__user_verifier_set() failed in %s()", __FUNCTION__ );
+		if( default__impl__user_hmac_set( username, new_password, &user ) != TT_OK ) {
+			TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_set() failed in %s()", __FUNCTION__ );
 			memset( &user, '\0', sizeof(user) );
 			return TT_ERR;
 		}
@@ -134,6 +181,131 @@ int default__api__user_exists(const char* username, tt_status_t* status) {
 
 
 __attribute__ ((visibility ("hidden")))
+int default__api__user_key_add(const char* username, const char* password, const char* identifier, tt_status_t* status) {
+	tt_user_t    user = TT_USER__UNDEFINED;
+	char         uuid[TT_DIGEST_BITS_MAX/8] = {0};
+	size_t       uuid_size = sizeof(uuid);
+	char         key[TT_KEY_BITS_MAX/8] = {0};
+	size_t       key_size = sizeof(key);
+	size_t       key_offset = 0;
+	size_t       size = 0;
+
+	TT_TRACE( "plugin/default", "%s(username='%s',password='%s',idenfifier='%s')", __FUNCTION__, username, password, identifier );
+	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || identifier == NULL || identifier[0] == '\0' || status == NULL ) {
+		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	*status = TT_STATUS__UNDEFINED;
+	if( default__impl__user_storage_load( username, &user ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__user_load() failed for username='%s' in %s()", username, __FUNCTION__ );
+		return TT_ERR;
+	}
+	if( default__impl__user_hmac_test( username, password, &user, status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_test() failed in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	if( *status == TT_STATUS__YES ) {
+		*status = TT_STATUS__NO;
+		if( libtokentube_crypto_hash_impl( user.crypto.hash, identifier, strnlen( identifier, TT_IDENTIFIER_CHAR_MAX ), uuid, &uuid_size ) != TT_OK ) {
+			TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hash_impl() failed for hash='%s' in %s()", user.crypto.hash, __FUNCTION__ );
+			return TT_ERR;
+		}
+		for( key_offset = 0; *status == TT_STATUS__NO && key_offset<DEFAULT__KEY_MAX; key_offset++ ) {
+			if( user.key[key_offset].uuid_len == 0 || memcmp( user.key[key_offset].uuid, uuid, uuid_size ) == 0) {
+				if( libtokentube_plugin__file_load( TT_FILE__KEY, identifier, key, &key_size ) != TT_OK ) {
+					TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__file_load() failed in %s()", __FUNCTION__ );
+					memset( &user, '\0', sizeof(user) );
+					return TT_ERR;
+				}
+				memcpy( user.key[key_offset].data, key, key_size );
+				user.key[key_offset].data_len = key_size;
+				if( default__impl__user_key_encrypt( username, password, &user, key_offset ) != TT_OK ) {
+					TT_LOG_ERROR( "plugin/default", "default__impl__user_key_encrypt() failed in %s()", __FUNCTION__ );
+					memset( &user, '\0', sizeof(user) );
+					return TT_ERR;
+				}
+				size = sizeof(user.key[key_offset].uuid);
+				if( libtokentube_crypto_hash_impl( user.crypto.hash, identifier, strnlen( identifier, TT_IDENTIFIER_CHAR_MAX ), user.key[key_offset].uuid, &size) != TT_OK ) {
+					TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hash_impl() failed for hash='%s' in %s()", user.crypto.hash, __FUNCTION__ );
+					return TT_ERR;
+				}
+				user.key[key_offset].uuid_len = size;
+				*status = TT_STATUS__YES;
+			}
+		}
+		if( *status == TT_STATUS__YES ) {
+			if( default__impl__user_hmac_set( username, password, &user ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_set() failed in %s()", __FUNCTION__ );
+				memset( &user, '\0', sizeof(user) );
+				return TT_ERR;
+			}
+			if( default__impl__user_storage_save( username, &user ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "default__impl__user_save() failed in %s()", __FUNCTION__ );
+				memset( &user, '\0', sizeof(user) );
+				return TT_ERR;
+			}
+		}
+	}
+	memset( &user, '\0', sizeof(user) );
+	return TT_OK;
+}
+
+
+__attribute__ ((visibility ("hidden")))
+int default__api__user_key_del(const char* username, const char* password, const char* identifier, tt_status_t* status) {
+	tt_user_t    user = TT_USER__UNDEFINED;
+	char         uuid[TT_DIGEST_BITS_MAX/8] = {0};
+	size_t       uuid_size = sizeof(uuid);
+	size_t       key_offset = 0;
+
+	TT_TRACE( "plugin/default", "%s(username='%s',password='%s',idenfifier='%s')", __FUNCTION__, username, password, identifier );
+	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || identifier == NULL || identifier[0] == '\0' || status == NULL ) {
+		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	*status = TT_STATUS__UNDEFINED;
+	if( default__impl__user_storage_load( username, &user ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__user_load() failed for username='%s' in %s()", username, __FUNCTION__ );
+		return TT_ERR;
+	}
+	if( default__impl__user_hmac_test( username, password, &user, status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_test() failed in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	if( *status == TT_STATUS__YES ) {
+		*status = TT_STATUS__NO;
+		if( libtokentube_crypto_hash_impl( user.crypto.hash, identifier, strnlen( identifier, TT_IDENTIFIER_CHAR_MAX ), uuid, &uuid_size ) != TT_OK ) {
+			TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hash_impl() failed for hash='%s' in %s()", user.crypto.hash, __FUNCTION__ );
+			return TT_ERR;
+		}
+		for( key_offset = 0; *status == TT_STATUS__NO && key_offset<DEFAULT__KEY_MAX; key_offset++ ) {
+			if( memcmp( user.key[key_offset].uuid, uuid, uuid_size ) == 0 ) {
+				memset( user.key[key_offset].uuid, '\0', sizeof(user.key[key_offset].uuid) );
+				user.key[key_offset].uuid_len = 0;
+				memset( user.key[key_offset].data, '\0', sizeof(user.key[key_offset].data) );
+				user.key[key_offset].data_len = 0;
+				*status = TT_STATUS__YES;
+			}
+		}
+		if( *status == TT_STATUS__YES ) {
+			if( default__impl__user_hmac_set( username, password, &user ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_set() failed in %s()", __FUNCTION__ );
+				memset( &user, '\0', sizeof(user) );
+				return TT_ERR;
+			}
+			if( default__impl__user_storage_save( username, &user ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "default__impl__user_save() failed in %s()", __FUNCTION__ );
+				memset( &user, '\0', sizeof(user) );
+				return TT_ERR;
+			}
+		}
+	}
+	memset( &user, '\0', sizeof(user) );
+	return TT_OK;
+}
+
+
+__attribute__ ((visibility ("hidden")))
 int default__api__user_execute_verify(const char* username, const char* password, tt_status_t* status) {
 	tt_user_t	user = TT_USER__UNDEFINED;
 
@@ -146,8 +318,8 @@ int default__api__user_execute_verify(const char* username, const char* password
 		TT_LOG_ERROR( "plugin/default", "default__impl__user_storage_load() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__impl__user_verifier_test( username, password, &user, status ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__impl__user_verifier_test() failed in %s()", __FUNCTION__ );
+	if( default__impl__user_hmac_test( username, password, &user, status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_test() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	return TT_OK;
@@ -155,12 +327,15 @@ int default__api__user_execute_verify(const char* username, const char* password
 
 
 __attribute__ ((visibility ("hidden")))
-int default__api__user_execute_load(const char* username, const char* password, char* key, size_t* key_size) {
-	tt_status_t	status = TT_STATUS__UNDEFINED;
-	tt_user_t	user = TT_USER__UNDEFINED;
+int default__api__user_execute_loadkey(const char* username, const char* password, const char* identifier, char* key, size_t* key_size) {
+	tt_status_t     status = TT_STATUS__UNDEFINED;
+	tt_user_t       user = TT_USER__UNDEFINED;
+	char            uuid[TT_DIGEST_BITS_MAX/8] = {0};
+	size_t		uuid_size = sizeof(uuid);
+	size_t		key_offset = 0;
 
 	TT_TRACE( "plugin/default", "%s(username='%s',password='%s',key=%p,key_size=%p)", __FUNCTION__, username, password, key, key_size );
-	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || key == NULL || key_size == NULL || *key_size == 0) {
+	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || identifier == NULL || identifier[0] == '\0' || key == NULL || key_size == NULL || *key_size == 0) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -168,25 +343,39 @@ int default__api__user_execute_load(const char* username, const char* password, 
 		TT_LOG_ERROR( "plugin/default", "default__impl__user_storage_load() failed for username='%s' in %s()", username, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__impl__user_verifier_test( username, password, &user, &status ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__impl__user_verifier_test() failed for username='%s' in %s()", username, __FUNCTION__ );
+	if( default__impl__user_hmac_test( username, password, &user, &status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_test() failed for username='%s' in %s()", username, __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( status == TT_STATUS__NO ) {
-		TT_DEBUG3( "plugin/default", "default__impl__user_verifier_test() returned TT_STATUS__NO in %s()", __FUNCTION__ );
+		TT_DEBUG3( "plugin/default", "default__impl__user_hmac_test() returned TT_STATUS__NO in %s()", __FUNCTION__ );
 		*key_size = 0;
 		return TT_OK;
 	}
-	if( *key_size < user.luks_data_len ) {
-                TT_LOG_ERROR( "plugin/default", "user loaded but provided buffer too small for username='%s' in %s()", username, __FUNCTION__ );
+	if( libtokentube_crypto_hash_impl( user.crypto.hash, identifier, strnlen( identifier, TT_IDENTIFIER_CHAR_MAX ), uuid, &uuid_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hash_impl() failed for hash='%s' in %s()", user.crypto.hash, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__impl__user_key_decrypt( username, password, &user ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__impl__user_key_decrypt() failed for username='%s' in %s()", username, __FUNCTION__ );
-		return TT_ERR;
+	status = TT_STATUS__NO;
+	for( key_offset=0; status == TT_STATUS__NO && key_offset<DEFAULT__KEY_MAX; key_offset++ ) {
+		if( memcmp( user.key[key_offset].uuid, uuid, uuid_size ) == 0 ) {
+			if( *key_size < user.key[key_offset].data_len ) {
+				TT_LOG_ERROR( "plugin/default", "user loaded but provided buffer too small for username='%s' in %s()", username, __FUNCTION__ );
+				return TT_ERR;
+			}
+			if( default__impl__user_key_decrypt( username, password, &user, key_offset ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "default__impl__user_key_decrypt() failed for username='%s' in %s()", username, __FUNCTION__ );
+				return TT_ERR;
+			}
+			memcpy( key, user.key[key_offset].data, user.key[key_offset].data_len );
+			*key_size = user.key[key_offset].data_len;
+			status = TT_STATUS__YES;
+		}
 	}
-	memcpy( key, user.luks_data, user.luks_data_len );
-	*key_size = user.luks_data_len;
+	if( status == TT_STATUS__NO ) {
+		TT_DEBUG3( "plugin/default", "no matching key found in %s()", __FUNCTION__ );
+		*key_size = 0;
+	}
 	memset( &user, '\0', sizeof(user) );
 	return TT_OK;
 }

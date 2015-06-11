@@ -31,7 +31,7 @@ static cfg_opt_t opt_helpdesk[] = {
 
 __attribute__ ((visibility ("hidden")))
 void default__event__otp_created(const char* identifier) {
-	char            buffer[DEFAULT__FILESIZE_MAX] = { 0 };
+	char            buffer[DEFAULT__FILESIZE_MAX+1] = { 0 };
 	size_t          buffer_size = sizeof(buffer);
 	char            key[TT_KEY_BITS_MAX/8] = { 0 };
 	size_t          key_size = sizeof(key);
@@ -53,8 +53,8 @@ void default__event__otp_created(const char* identifier) {
 		TT_LOG_ERROR( "plugin/default", "API:get_sysid() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return;
 	}
-	if( libtokentube_plugin__luks_load( key, &key_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "API:luks_load() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
+	if( libtokentube_plugin__file_load( TT_FILE__KEY, identifier, key, &key_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__file_load() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return;
 	}
 	cfg = cfg_init( opt_helpdesk, CFGF_NONE );
@@ -143,7 +143,7 @@ int default__api__otp_execute_challenge( const char* identifier, char* challenge
 
 __attribute__ ((visibility ("hidden")))
 int default__api__otp_execute_response(const char* identifier, const char* challenge, char* response, size_t* response_size) {
-	char		buffer[DEFAULT__FILESIZE_MAX] = {0};
+	char		buffer[DEFAULT__FILESIZE_MAX+1] = {0};
 	size_t		buffer_size = sizeof(buffer);
 	char		challenge_raw[2+TT_OTP_BITS_MAX/8] = {0};
 	size_t		challenge_raw_size = sizeof(challenge_raw);

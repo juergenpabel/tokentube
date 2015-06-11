@@ -27,6 +27,18 @@ def init(parser):
 	parser_user_verify.add_argument('--password', '-p', action='store', help='password')
 	parser_user_verify.set_defaults(func=verify)
 
+	parser_user_key_add = parser.add_parser('user-add-key')
+	parser_user_key_add.add_argument('--username', '-u', action='store', help='username')
+	parser_user_key_add.add_argument('--password', '-p', action='store', help='password')
+	parser_user_key_add.add_argument('--identifier', '-i', action='store', help='identifier')
+	parser_user_key_add.set_defaults(func=addkey)
+
+	parser_user_key_del = parser.add_parser('user-del-key')
+	parser_user_key_del.add_argument('--username', '-u', action='store', help='username')
+	parser_user_key_del.add_argument('--password', '-p', action='store', help='password')
+	parser_user_key_del.add_argument('--identifier', '-i', action='store', help='identifier')
+	parser_user_key_del.set_defaults(func=delkey)
+
 
 def get_username():
 	return input( "Enter username: " )
@@ -34,6 +46,10 @@ def get_username():
 
 def get_password():
 	return getpass.getpass( "Enter password: " )
+
+
+def get_identifier():
+	return input( "Enter key identifier: " )
 
 
 def message(args, msg):
@@ -108,5 +124,39 @@ def verify(args):
 		message( args, "FAILURE: user '%s' not verified" % args.username )
 		return -1
 	message( args, "SUCCESS: user '%s' verified" % args.username )
+	return 0
+
+
+def addkey(args):
+	if args.username is None:
+		args.username = get_username()
+	if tokentube.user_exists( args.username ) is False:
+		message( args, "FAILURE: user '%s' does not exist" % args.username )
+		return -1
+	if args.password is None:
+		args.password = get_password()
+	if args.identifier is None:
+		args.identifier = get_identifier()
+	if tokentube.user_key_add( args.username, args.password, args.identifier ) is False:
+		message( args, "FAILURE: key '%s' not added to user '%s'" % ( args.identifier, args.username ) )
+		return -1
+	message( args, "SUCCESS: key '%s' added to user '%s'" % ( args.identifier, args.username ) )
+	return 0
+
+
+def delkey(args):
+	if args.username is None:
+		args.username = get_username()
+	if tokentube.user_exists( args.username ) is False:
+		message( args, "FAILURE: user '%s' does not exist" % args.username )
+		return -1
+	if args.password is None:
+		args.password = get_password()
+	if args.identifier is None:
+		args.identifier = get_identifier()
+	if tokentube.user_key_del( args.username, args.password, args.identifier ) is False:
+		message( args, "FAILURE: key '%s' not delete from user '%s'" % ( args.identifier, args.username ) )
+		return -1
+	message( args, "SUCCESS: key '%s' deleted from user '%s'" % ( args.identifier, args.username ) )
 	return 0
 

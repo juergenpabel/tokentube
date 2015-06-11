@@ -4,6 +4,8 @@ extern PyObject* py_tt_user_create(PyObject* self, PyObject *args);
 extern PyObject* py_tt_user_update(PyObject* self, PyObject *args);
 extern PyObject* py_tt_user_exists(PyObject* self, PyObject *args);
 extern PyObject* py_tt_user_delete(PyObject* self, PyObject *args);
+extern PyObject* py_tt_user_key_add(PyObject* self, PyObject *args);
+extern PyObject* py_tt_user_key_del(PyObject* self, PyObject *args);
 extern PyObject* py_tt_user_execute_verify(PyObject* self, PyObject *args);
 extern PyObject* py_tt_user_execute_load(PyObject* self, PyObject *args);
 extern PyObject* py_tt_user_execute_autoenrollment(PyObject* self, PyObject *args);

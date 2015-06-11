@@ -43,7 +43,7 @@ int default__api__otp_create(const char* identifier) {
 	}
 
 	key_len = sizeof( key );
-	if( libtokentube_plugin__luks_load( key, &key_len ) != TT_OK ) {
+	if( libtokentube_plugin__file_load( TT_FILE__KEY, identifier, key, &key_len ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__luks_load failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
