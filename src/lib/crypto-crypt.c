@@ -9,6 +9,7 @@ int libtokentube_crypto_crypt_impl(tt_cryptmode_t mode, const char* oid, void* d
 	int			cipher_id = 0;
 	gcry_cipher_hd_t	cipher;
 
+	TT_TRACE( "library/crypto", "%s(mode='%d',oid='%s',data=%p,data_size=%d)", __FUNCTION__, mode, oid, data, data_size );
 	if( oid == NULL || data == NULL || data_size == 0 || key == NULL || key_size == 0 || iv == NULL || iv_size == 0 ) {
 		TT_LOG_ERROR( "library/crypto", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
@@ -58,6 +59,7 @@ int libtokentube_crypto_hash_impl(const char* oid, const void* in, size_t in_siz
         void*		digest_result;
 	int		hash_id = 0;
 
+	TT_TRACE( "library/crypto", "%s(oid='%s',data=%p,data_size=%d)", __FUNCTION__, oid, in, in_size );
 	if( in == NULL || in_size == 0 || out == NULL || out_size == NULL || *out_size == 0 ) {
 		TT_LOG_ERROR( "library/crypto", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
@@ -90,6 +92,7 @@ int libtokentube_crypto_hmac_impl(const char* oid, const void* in, size_t in_siz
         void*		digest_result;
 	int		hash_id = 0;
 
+	TT_TRACE( "library/crypto", "%s(oid='%s',data=%p,data_size=%d)", __FUNCTION__, oid, in, in_size );
 	if( in == NULL || in_size == 0 || out == NULL || out_size == NULL || *out_size == 0 ) {
 		TT_LOG_ERROR( "library/crypto", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;

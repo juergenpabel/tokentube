@@ -6,7 +6,7 @@
 
 
 __attribute__ ((visibility ("hidden")))
-int  default__impl__user_key_crypt_impl(tt_cryptmode_t mode, const char* username, const char* password, tt_user_t* user, size_t key_offset) {
+int  default__impl__user_key_crypt_impl(tt_cryptmode_t mode, const char* username, const char* password, dflt_user_t* user, size_t key_offset) {
 	int     cipher_id = 0;
 	char    key[TT_KEY_BITS_MAX/8] = {0};
 	size_t  key_size = sizeof(key);
@@ -47,7 +47,7 @@ int  default__impl__user_key_crypt_impl(tt_cryptmode_t mode, const char* usernam
 		memset( iv, '\0', sizeof(iv) );
 		return TT_ERR;
 	}
-	if( libtokentube_crypto_crypt_impl( mode, user->crypto.cipher, user->key[key_offset].data, user->key[key_offset].data_size, key, key_size, iv, iv_size ) != TT_OK ) {
+	if( libtokentube_crypto_crypt_impl( mode, user->crypto.cipher, user->key[key_offset].data.value, user->key[key_offset].data.value_size, key, key_size, iv, iv_size ) != TT_OK ) {
 		TT_LOG_ERROR( "library/crypto", "libtokentube_crypto_crypt_impl() failed in %s()", __FUNCTION__ );
 		memset( key, '\0', sizeof(key) );
 		memset( iv, '\0', sizeof(iv) );
@@ -60,14 +60,14 @@ int  default__impl__user_key_crypt_impl(tt_cryptmode_t mode, const char* usernam
 
 
 __attribute__ ((visibility ("hidden")))
-int  default__impl__user_key_encrypt(const char* username, const char* password, tt_user_t* user, size_t key_offset) {
+int  default__impl__user_key_encrypt(const char* username, const char* password, dflt_user_t* user, size_t key_offset) {
 	return default__impl__user_key_crypt_impl( CRYPT_ENCRYPT, username, password, user, key_offset );
 }
 
 
 
 __attribute__ ((visibility ("hidden")))
-int  default__impl__user_key_decrypt(const char* username, const char* password, tt_user_t* user, size_t key_offset) {
+int  default__impl__user_key_decrypt(const char* username, const char* password, dflt_user_t* user, size_t key_offset) {
 	return default__impl__user_key_crypt_impl( CRYPT_DECRYPT, username, password, user, key_offset );
 }
 

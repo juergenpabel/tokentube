@@ -3,41 +3,46 @@
 
 
 #define DEFAULT__FILESIZE_MAX 4095
-#define DEFAULT__CRED_MAX 32
 #define DEFAULT__KEY_MAX 32
-
-typedef struct {
-	char      cipher[TT_IDENTIFIER_CHAR_MAX+1];
-	char      hash[TT_IDENTIFIER_CHAR_MAX+1];
-	char      kdf[TT_IDENTIFIER_CHAR_MAX+1];
-	size_t    kdf_iter;
-} tt_user_crypto_t;
+#define DEFAULT__PARAMETER_MAX 8
+#define DEFAULT__CONSTRAINT_MAX 8
 
 typedef struct {
 	char      key[TT_IDENTIFIER_CHAR_MAX+1];
 	size_t    key_size;
 	char      value[TT_IDENTIFIER_CHAR_MAX+1];
 	size_t    value_size;
-} tt_user_cred_t;
+} dflt_user_keyvalue_t;
 
 typedef struct {
-	char      uuid[TT_DIGEST_BITS_MAX/8];
-	size_t    uuid_size;
-	char      data[TT_KEY_BITS_MAX/8];
-	size_t    data_size;
-} tt_user_key_t;
+	char      cipher[TT_IDENTIFIER_CHAR_MAX+1];
+	char      hash[TT_IDENTIFIER_CHAR_MAX+1];
+	char      kdf[TT_IDENTIFIER_CHAR_MAX+1];
+	size_t    kdf_iter;
+} dflt_user_crypto_t;
+
+typedef struct {
+	dflt_user_keyvalue_t  parameter[DEFAULT__PARAMETER_MAX];
+	dflt_user_keyvalue_t  constraint[DEFAULT__CONSTRAINT_MAX];
+} dflt_user_cred_t;
+
+typedef struct {
+	dflt_user_keyvalue_t  data;
+	dflt_user_keyvalue_t  parameter[DEFAULT__PARAMETER_MAX];
+	dflt_user_keyvalue_t  constraint[DEFAULT__CONSTRAINT_MAX];
+} dflt_user_key_t;
 
 typedef struct {
 	char      data[TT_DIGEST_BITS_MAX/8];
 	size_t    data_size;
-} tt_user_hmac_t;
+} dflt_user_hmac_t;
 
 typedef struct {
-	tt_user_crypto_t   crypto;
-	tt_user_cred_t     cred[DEFAULT__CRED_MAX];
-	tt_user_key_t      key[DEFAULT__KEY_MAX];
-	tt_user_hmac_t     hmac;
-} tt_user_t;
+	dflt_user_crypto_t crypto;
+	dflt_user_cred_t   cred;
+	dflt_user_key_t    key[DEFAULT__KEY_MAX];
+	dflt_user_hmac_t   hmac;
+} dflt_user_t;
 
 #define TT_USER__UNDEFINED { {0}, {0}, {0}, {0} }
 
@@ -81,15 +86,15 @@ int  default__api__user_execute_verify(const char* username, const char* passwor
 int  default__api__user_execute_loadkey(const char* username, const char* password, const char* key_name, char* key, size_t* key_size);
 int  default__api__user_execute_autoenrollment(const char* username, const char* password, tt_status_t* status);
 
-int  default__impl__user_storage_load(const char* identifier, tt_user_t* user);
-int  default__impl__user_storage_save(const char* identifier, const tt_user_t* user);
+int  default__impl__user_storage_load(const char* identifier, dflt_user_t* user);
+int  default__impl__user_storage_save(const char* identifier, const dflt_user_t* user);
 int  default__impl__user_storage_exists(const char* identifier, tt_status_t* status);
 int  default__impl__user_storage_delete(const char* identifier, tt_status_t* status);
 
-int  default__impl__user_key_encrypt(const char* username, const char* password, tt_user_t* user, size_t key_offset);
-int  default__impl__user_key_decrypt(const char* username, const char* password, tt_user_t* user, size_t key_offset);
-int  default__impl__user_hmac_set(const char* username, const char* password, tt_user_t* user);
-int  default__impl__user_hmac_test(const char* username, const char* password, tt_user_t* user, tt_status_t* status);
+int  default__impl__user_key_encrypt(const char* username, const char* password, dflt_user_t* user, size_t key_offset);
+int  default__impl__user_key_decrypt(const char* username, const char* password, dflt_user_t* user, size_t key_offset);
+int  default__impl__user_hmac_set(const char* username, const char* password, dflt_user_t* user);
+int  default__impl__user_hmac_test(const char* username, const char* password, dflt_user_t* user, tt_status_t* status);
 
 
 int  default__storage_ext2fs_load(tt_file_t type, const char* filename, char* data, size_t* data_size);

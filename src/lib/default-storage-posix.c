@@ -21,7 +21,7 @@ int default__storage_posix_load(tt_file_t type, const char* filename, char* buff
 	DIR*		dir = NULL;
 	int		pos = 0, fd = -1;
 
-	TT_TRACE( "library/plugin", "%s(filename=%d,buffer=%p,buffer_size='%p')", __FUNCTION__, filename, buffer, buffer_size );
+	TT_TRACE( "library/plugin", "%s(filename='%s',buffer=%p,buffer_size=%p)", __FUNCTION__, filename, buffer, buffer_size );
 	if( type == TT_FILE__UNDEFINED || filename == NULL || filename[0] == '\0' || buffer == NULL || buffer_size == NULL || *buffer_size == 0 ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
