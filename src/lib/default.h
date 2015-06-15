@@ -3,6 +3,7 @@
 
 
 #define DEFAULT__FILESIZE_MAX 4095
+#define DEFAULT__CRED_MAX 32
 #define DEFAULT__KEY_MAX 32
 
 typedef struct {
@@ -13,9 +14,11 @@ typedef struct {
 } tt_user_crypto_t;
 
 typedef struct {
-	char      data[TT_DIGEST_BITS_MAX/8];
-	size_t    data_size;
-} tt_user_hmac_t;
+	char      key[TT_IDENTIFIER_CHAR_MAX+1];
+	size_t    key_size;
+	char      value[TT_IDENTIFIER_CHAR_MAX+1];
+	size_t    value_size;
+} tt_user_cred_t;
 
 typedef struct {
 	char      uuid[TT_DIGEST_BITS_MAX/8];
@@ -25,12 +28,18 @@ typedef struct {
 } tt_user_key_t;
 
 typedef struct {
+	char      data[TT_DIGEST_BITS_MAX/8];
+	size_t    data_size;
+} tt_user_hmac_t;
+
+typedef struct {
 	tt_user_crypto_t   crypto;
+	tt_user_cred_t     cred[DEFAULT__CRED_MAX];
 	tt_user_key_t      key[DEFAULT__KEY_MAX];
 	tt_user_hmac_t     hmac;
 } tt_user_t;
 
-#define TT_USER__UNDEFINED { { "", "", "", 0 }, {0} }
+#define TT_USER__UNDEFINED { {0}, {0}, {0}, {0} }
 
 
 typedef struct {

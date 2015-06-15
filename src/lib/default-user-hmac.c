@@ -9,13 +9,13 @@ static int default__impl__user_hmac_calc(const char* username, const char* passw
         char       buffer[DEFAULT__FILESIZE_MAX+1] =  {0};
 	size_t     buffer_size = 0;
 	size_t     buffer_pos = 0;
-	size_t     key_offset = 0;
+	size_t     offset = 0;
 
 	buffer_pos += snprintf( buffer, sizeof(buffer)-1, "%s\n%s\n%s\n%s\n%zd\n", username, user->crypto.hash, user->crypto.cipher, user->crypto.kdf, user->crypto.kdf_iter );
-	for( key_offset=0; key_offset<DEFAULT__KEY_MAX; key_offset++ ) {
-		if( user->key[key_offset].uuid_size > 0 ) {
+	for( offset=0; offset<DEFAULT__CRED_MAX; offset++ ) {
+		if( user->cred[offset].key_size > 0 ) {
 			buffer_size = sizeof(buffer) - buffer_pos - 1;
-			if( libtokentube_util_hex_encode( user->key[key_offset].uuid, user->key[key_offset].uuid_size, buffer+buffer_pos, &buffer_size ) != TT_OK ) {
+			if( libtokentube_util_hex_encode( user->cred[offset].key, user->cred[offset].key_size, buffer+buffer_pos, &buffer_size ) != TT_OK ) {
 				TT_LOG_ERROR( "plugin/default", "libtokentube_util_hex_encode() failed in %s()", __FUNCTION__ );
 				return TT_ERR;
 			}
@@ -23,7 +23,27 @@ static int default__impl__user_hmac_calc(const char* username, const char* passw
 			buffer[buffer_pos] = '=';
 			buffer_pos++;
 			buffer_size = sizeof(buffer) - buffer_pos - 1;
-			if( libtokentube_util_hex_encode( user->key[key_offset].data, user->key[key_offset].data_size, buffer+buffer_pos, &buffer_size ) != TT_OK ) {
+			if( libtokentube_util_hex_encode( user->cred[offset].value, user->cred[offset].value_size, buffer+buffer_pos, &buffer_size ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "libtokentube_util_hex_encode() failed in %s()", __FUNCTION__ );
+				return TT_ERR;
+			}
+			buffer_pos += buffer_size;
+			buffer[buffer_pos] = '\n';
+			buffer_pos++;
+		}
+	}
+	for( offset=0; offset<DEFAULT__KEY_MAX; offset++ ) {
+		if( user->key[offset].uuid_size > 0 ) {
+			buffer_size = sizeof(buffer) - buffer_pos - 1;
+			if( libtokentube_util_hex_encode( user->key[offset].uuid, user->key[offset].uuid_size, buffer+buffer_pos, &buffer_size ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "libtokentube_util_hex_encode() failed in %s()", __FUNCTION__ );
+				return TT_ERR;
+			}
+			buffer_pos += buffer_size;
+			buffer[buffer_pos] = '=';
+			buffer_pos++;
+			buffer_size = sizeof(buffer) - buffer_pos - 1;
+			if( libtokentube_util_hex_encode( user->key[offset].data, user->key[offset].data_size, buffer+buffer_pos, &buffer_size ) != TT_OK ) {
 				TT_LOG_ERROR( "plugin/default", "libtokentube_util_hex_encode() failed in %s()", __FUNCTION__ );
 				return TT_ERR;
 			}
