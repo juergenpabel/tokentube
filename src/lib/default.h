@@ -9,19 +9,19 @@ typedef struct {
 	char      cipher[TT_IDENTIFIER_CHAR_MAX+1];
 	char      hash[TT_IDENTIFIER_CHAR_MAX+1];
 	char      kdf[TT_IDENTIFIER_CHAR_MAX+1];
-	uint32_t  kdf_iter;
+	size_t    kdf_iter;
 } tt_user_crypto_t;
 
 typedef struct {
 	char      data[TT_DIGEST_BITS_MAX/8];
-	uint32_t  data_len;
+	size_t    data_size;
 } tt_user_hmac_t;
 
 typedef struct {
 	char      uuid[TT_DIGEST_BITS_MAX/8];
-	uint32_t  uuid_len;
+	size_t    uuid_size;
 	char      data[TT_KEY_BITS_MAX/8];
-	uint32_t  data_len;
+	size_t    data_size;
 } tt_user_key_t;
 
 typedef struct {
@@ -37,7 +37,7 @@ typedef struct {
 	char	hash[TT_IDENTIFIER_CHAR_MAX+1];
 	size_t	bits;
 	char	data[TT_DIGEST_BITS_MAX/8];
-	size_t	data_len;
+	size_t	data_size;
 } tt_otp_t;
 
 #define TT_OTP__UNDEFINED { "", 0, "", 0 }
@@ -57,8 +57,8 @@ int  default__api__pba_install_pre(const char* type, const char* path);
 int  default__api__pba_install_run(const char* type, const char* path);
 int  default__api__pba_install_post(const char* type, const char* path);
 
-int  default__api__storage_file_load(tt_file_t type, const char* identifier, char* buffer, size_t* buffer_len);
-int  default__api__storage_file_save(tt_file_t type, const char* identifier, const char* buffer, size_t buffer_len);
+int  default__api__storage_file_load(tt_file_t type, const char* identifier, char* buffer, size_t* buffer_size);
+int  default__api__storage_file_save(tt_file_t type, const char* identifier, const char* buffer, size_t buffer_size);
 int  default__api__storage_file_exists(tt_file_t type, const char* identifier, tt_status_t* status);
 int  default__api__storage_file_delete(tt_file_t type, const char* identifier, tt_status_t* status);
 
@@ -97,9 +97,9 @@ int  default__storage_get_filename(tt_file_t type, const char* identifier, char*
 int  default__api__otp_create(const char* identifier);
 int  default__api__otp_exists(const char* identifier, tt_status_t* status);
 int  default__api__otp_delete(const char* identifier, tt_status_t* status);
-int  default__api__otp_execute_challenge(const char* identifier, char* challenge, size_t* challenge_len);
-int  default__api__otp_execute_response(const char* identifier, const char* challenge, char* response, size_t* response_len);
-int  default__api__otp_execute_apply(const char* identifier, const char* challenge_text, const char* response_text, char* key, size_t* key_len);
+int  default__api__otp_execute_challenge(const char* identifier, char* challenge, size_t* challenge_size);
+int  default__api__otp_execute_response(const char* identifier, const char* challenge, char* response, size_t* response_size);
+int  default__api__otp_execute_apply(const char* identifier, const char* challenge_text, const char* response_text, char* key, size_t* key_size);
 void default__event__otp_created(const char* identifier);
 void default__event__otp_deleted(const char* identifier);
 

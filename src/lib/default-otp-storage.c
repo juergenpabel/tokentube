@@ -45,8 +45,8 @@ int default__impl__otp_load(const char* identifier, tt_otp_t* otp) {
 	}
 	strncpy( otp->hash, cfg_getstr( cfg, "otp|hash" ), sizeof(otp->hash)-1 );
 	otp->bits = cfg_getint( cfg, "otp|bits" );
-	otp->data_len =  sizeof(otp->data);
-	if( libtokentube_util_base64_decode( cfg_getstr( cfg, "otp|data" ), 0, otp->data, &otp->data_len ) != TT_OK ) {
+	otp->data_size =  sizeof(otp->data);
+	if( libtokentube_util_base64_decode( cfg_getstr( cfg, "otp|data" ), 0, otp->data, &otp->data_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_util_base64_decode() failed for otp|data in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;
@@ -76,7 +76,7 @@ int default__impl__otp_save(const char* identifier, tt_otp_t* otp) {
 	cfg_setstr( cfg, "api", data );
 	cfg_setstr( cfg, "otp|hash", otp->hash );
 	cfg_setint( cfg, "otp|bits", otp->bits );
-	if( libtokentube_util_base64_encode( otp->data, otp->data_len, data, &data_size ) != TT_OK ) {
+	if( libtokentube_util_base64_encode( otp->data, otp->data_size, data, &data_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_util_base64_encode() failed for otp|data in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;

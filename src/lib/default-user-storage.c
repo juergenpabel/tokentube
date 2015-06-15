@@ -92,14 +92,14 @@ int default__impl__user_storage_load(const char* username, tt_user_t* user) {
 			cfg_free( cfg );
 			return TT_ERR;
 		}
-		user->key[key_offset].uuid_len = size;
+		user->key[key_offset].uuid_size = size;
 		size = sizeof(user->key[key_offset].data);
 		if( libtokentube_util_base64_decode( cfg_getstr( section, "value" ), 0, user->key[key_offset].data, &size ) != TT_OK ) {
 			TT_LOG_ERROR( "plugin/default", "libtokentube_util_base64_decode() failed for user|key in %s()", __FUNCTION__ );
 			cfg_free( cfg );
 			return TT_ERR;
 		}
-		user->key[key_offset].data_len = size;
+		user->key[key_offset].data_size = size;
 		key_offset++;
 		section = cfg_getnsec( cfg, "user|key", key_offset );
 	}
@@ -109,7 +109,7 @@ int default__impl__user_storage_load(const char* username, tt_user_t* user) {
 		cfg_free( cfg );
 		return TT_ERR;
 	}
-	user->hmac.data_len = size;
+	user->hmac.data_size = size;
 	cfg_free( cfg );
 	return TT_OK;
 }
@@ -141,7 +141,7 @@ int default__impl__user_storage_save(const char* username, const tt_user_t* user
 	cfg_setstr( cfg, "user|crypto|hash", user->crypto.hash );
 	cfg_setstr( cfg, "user|crypto|kdf", user->crypto.kdf );
 	cfg_setint( cfg, "user|crypto|kdf-iterations", user->crypto.kdf_iter );
-	while( key_offset < 64 && user->key[key_offset].uuid_len != 0 ) {
+	while( key_offset < 64 && user->key[key_offset].uuid_size != 0 ) {
 		section = cfg_getsec( cfg, "user" );
 		option = cfg_getopt( section, "key" );
 		if( option == NULL ) {
@@ -151,7 +151,7 @@ int default__impl__user_storage_save(const char* username, const tt_user_t* user
 		}
 		buffer_size = sizeof(buffer);
 		memset( buffer,'\0', sizeof(buffer) );
-		if( libtokentube_util_hex_encode( user->key[key_offset].uuid, user->key[key_offset].uuid_len, buffer, &buffer_size ) != TT_OK ) {
+		if( libtokentube_util_hex_encode( user->key[key_offset].uuid, user->key[key_offset].uuid_size, buffer, &buffer_size ) != TT_OK ) {
 			TT_LOG_ERROR( "plugin/default", "libtokentube_util_hex_encode() failed for uuid in %s()", __FUNCTION__ );
 			cfg_free( cfg );
 			return TT_ERR;
@@ -170,7 +170,7 @@ int default__impl__user_storage_save(const char* username, const tt_user_t* user
 		}
 		buffer_size = sizeof(buffer);
 		memset( buffer,'\0', sizeof(buffer) );
-		if( libtokentube_util_base64_encode( user->key[key_offset].data, user->key[key_offset].data_len, buffer, &buffer_size ) != TT_OK ) {
+		if( libtokentube_util_base64_encode( user->key[key_offset].data, user->key[key_offset].data_size, buffer, &buffer_size ) != TT_OK ) {
 			TT_LOG_ERROR( "plugin/default", "libtokentube_util_base64_encode() failed for user|key in %s()", __FUNCTION__ );
 			cfg_free( cfg );
 			return TT_ERR;
@@ -180,7 +180,7 @@ int default__impl__user_storage_save(const char* username, const tt_user_t* user
 	}
 	buffer_size = sizeof(buffer);
 	memset( buffer,'\0', buffer_size );
-	if( libtokentube_util_base64_encode( user->hmac.data, user->hmac.data_len, buffer, &buffer_size ) != TT_OK ) {
+	if( libtokentube_util_base64_encode( user->hmac.data, user->hmac.data_size, buffer, &buffer_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_util_base64_encode() failed for user-hmac in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;

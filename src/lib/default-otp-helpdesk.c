@@ -320,8 +320,8 @@ int default__api__otp_execute_apply(const char* identifier, const char* challeng
 		TT_LOG_ERROR( "plugin/default", "default__impl__otp_load() failed for '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( otp.data_len % (challenge_raw_size-2) || otp.data_len % (response_raw_size-2) ) {
-		TT_LOG_ERROR( "plugin/default", "otp.data_len=%d, challenge_raw_size=%d, response_raw_size=%d", otp.data_len, challenge_raw_size, response_raw_size );
+	if( otp.data_size % (challenge_raw_size-2) || otp.data_size % (response_raw_size-2) ) {
+		TT_LOG_ERROR( "plugin/default", "otp.data_size=%d, challenge_raw_size=%d, response_raw_size=%d", otp.data_size, challenge_raw_size, response_raw_size );
 		return TT_ERR;
 	}
 	hash_size = gcry_md_get_algo_dlen( gcry_md_map_name( libtokentube_crypto_get_hash() ) );
@@ -329,7 +329,7 @@ int default__api__otp_execute_apply(const char* identifier, const char* challeng
 		TT_LOG_ERROR( "plugin/default", "hash_size > sizeof(hash) for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
-	for( i=0; i<otp.data_len; i++ ) {
+	for( i=0; i<otp.data_size; i++ ) {
 		key[i] = challenge_raw[2+i%(otp.bits/8)] ^ response_raw[2+i%(otp.bits/8)] ^ otp.data[i];
 	}
 	if( libtokentube_crypto_hash( otp.data, otp.bits/8, hash, &hash_size ) != TT_OK ) {
@@ -347,10 +347,10 @@ int default__api__otp_execute_apply(const char* identifier, const char* challeng
 	for( i=0; i<otp.bits/8; i++ ) {
 		xor[i] = key[i] ^ hash[i];
 	}
-	for( i=0; i<otp.data_len; i++ ) {
+	for( i=0; i<otp.data_size; i++ ) {
 		otp.data[i] = key[i] ^ xor[i%(otp.bits/8)];
 	}
-	*key_size = otp.data_len;
+	*key_size = otp.data_size;
 	if( default__impl__otp_save( identifier, &otp ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "default__impl__otp_save() failed for '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
