@@ -42,7 +42,7 @@ static int default__impl__user_hmac_calc(const char* username, const char* passw
 	size_t     buffer_pos = 0;
 	size_t     offset = 0;
 
-	buffer_pos += snprintf( buffer, sizeof(buffer)-1, "%s\n%s\n%s\n%s\n%zd\n", username, user->crypto.hash, user->crypto.cipher, user->crypto.kdf, user->crypto.kdf_iter );
+	buffer_pos += snprintf( buffer, sizeof(buffer)-1, "username\n%s\ncrypto\n%s\n%s\n%s\n%zd\n", username, user->crypto.hash, user->crypto.cipher, user->crypto.kdf, user->crypto.kdf_iter );
 	buffer_size = sizeof(buffer) - buffer_pos - 1;
 	if( default__impl__user_kv_serialize( "credentials:parameters", user->cred.parameter, DEFAULT__PARAMETER_MAX, buffer+buffer_pos, &buffer_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "default__impl__user_kv_serialize() failed in %s()", __FUNCTION__ );
@@ -57,26 +57,28 @@ static int default__impl__user_hmac_calc(const char* username, const char* passw
 	buffer_pos += buffer_size;
 	buffer_size = sizeof(buffer) - buffer_pos - 1;
 	for( offset=0; offset<DEFAULT__KEY_MAX; offset++ ) {
-		buffer_pos += snprintf( buffer+buffer_pos, buffer_size, "key[%zd]\n", offset );
-		buffer_size = sizeof(buffer) - buffer_pos - 1;
-		if( default__impl__user_kv_serialize( "key:constraints", user->key[offset].constraint, DEFAULT__CONSTRAINT_MAX, buffer+buffer_pos, &buffer_size ) != TT_OK ) {
-			TT_LOG_ERROR( "plugin/default", "default__impl__user_kv_serialize() failed in %s()", __FUNCTION__ );
-			return TT_ERR;
+		if( user->key[offset].data.key_size > 0 ) {
+			buffer_pos += snprintf( buffer+buffer_pos, buffer_size, "key\n" );
+			buffer_size = sizeof(buffer) - buffer_pos - 1;
+			if( default__impl__user_kv_serialize( "key:constraints", user->key[offset].constraint, DEFAULT__CONSTRAINT_MAX, buffer+buffer_pos, &buffer_size ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "default__impl__user_kv_serialize() failed in %s()", __FUNCTION__ );
+				return TT_ERR;
+			}
+			buffer_pos += buffer_size;
+			buffer_size = sizeof(buffer) - buffer_pos - 1;
+			if( default__impl__user_kv_serialize( "key:parameters", user->key[offset].parameter, DEFAULT__PARAMETER_MAX, buffer+buffer_pos, &buffer_size ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "default__impl__user_kv_serialize() failed in %s()", __FUNCTION__ );
+				return TT_ERR;
+			}
+			buffer_pos += buffer_size;
+			buffer_size = sizeof(buffer) - buffer_pos - 1;
+			if( default__impl__user_kv_serialize( "key:data", &user->key[offset].data, 1, buffer+buffer_pos, &buffer_size ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "default__impl__user_kv_serialize() failed in %s()", __FUNCTION__ );
+				return TT_ERR;
+			}
+			buffer_pos += buffer_size;
+			buffer_size = sizeof(buffer) - buffer_pos - 1;
 		}
-		buffer_pos += buffer_size;
-		buffer_size = sizeof(buffer) - buffer_pos - 1;
-		if( default__impl__user_kv_serialize( "key:parameters", user->key[offset].parameter, DEFAULT__PARAMETER_MAX, buffer+buffer_pos, &buffer_size ) != TT_OK ) {
-			TT_LOG_ERROR( "plugin/default", "default__impl__user_kv_serialize() failed in %s()", __FUNCTION__ );
-			return TT_ERR;
-		}
-		buffer_pos += buffer_size;
-		buffer_size = sizeof(buffer) - buffer_pos - 1;
-		if( default__impl__user_kv_serialize( "key:data", &user->key[offset].data, 1, buffer+buffer_pos, &buffer_size ) != TT_OK ) {
-			TT_LOG_ERROR( "plugin/default", "default__impl__user_kv_serialize() failed in %s()", __FUNCTION__ );
-			return TT_ERR;
-		}
-		buffer_pos += buffer_size;
-		buffer_size = sizeof(buffer) - buffer_pos - 1;
 	}
 	if( libtokentube_crypto_hmac_impl( user->crypto.hash, buffer, buffer_pos, password, strlen(password), hmac, hmac_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hmac_impl() failed in %s()", __FUNCTION__ );
@@ -88,7 +90,6 @@ static int default__impl__user_hmac_calc(const char* username, const char* passw
 
 __attribute__ ((visibility ("hidden")))
 int default__impl__user_hmac_set(const char* username, const char* password, dflt_user_t* user) {
-
 	TT_TRACE( "plugin/default", "%s(username='%s',password='%s',user=%p)", __FUNCTION__, username, password, user );
 	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || user == NULL ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );

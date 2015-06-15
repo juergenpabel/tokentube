@@ -51,7 +51,6 @@ int default__api__user_create(const char* username, const char* password) {
 		TT_LOG_ERROR( "plugin/default", "default__storage_posix_load() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-
 	filename_start = buffer;
 	filename_end = strchrnul( filename_start+1, '\n' );
 	while( filename_start[0] != '\0' ) {
@@ -78,7 +77,7 @@ int default__api__user_create(const char* username, const char* password) {
 			}
 			key_offset++;
 		}
-		filename_start = strchrnul( filename_end+1, '\n' ) + 1;
+		filename_start = filename_end + 1;
 	}
 	if( default__impl__user_hmac_set( username, password, &user ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "default__impl__user_hmac_set() failed in %s()", __FUNCTION__ );
