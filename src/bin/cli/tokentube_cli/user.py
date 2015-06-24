@@ -138,8 +138,8 @@ def addkey(args):
 	if args.identifier is None:
 		args.identifier = get_identifier()
 	if tokentube.user_key_add( args.username, args.password, args.identifier ) is False:
-		message( args, "FAILURE: key '%s' not added to user '%s'" % ( args.identifier, args.username ) )
-		return -1
+		message( args, "WARNING: key '%s' not added to user '%s' (key was already present)" % ( args.identifier, args.username ) )
+		return 0
 	message( args, "SUCCESS: key '%s' added to user '%s'" % ( args.identifier, args.username ) )
 	return 0
 
@@ -155,8 +155,8 @@ def delkey(args):
 	if args.identifier is None:
 		args.identifier = get_identifier()
 	if tokentube.user_key_del( args.username, args.password, args.identifier ) is False:
-		message( args, "FAILURE: key '%s' not delete from user '%s'" % ( args.identifier, args.username ) )
-		return -1
+		message( args, "WARNING: key '%s' not deleted from user '%s' (key was not present)" % ( args.identifier, args.username ) )
+		return 0
 	message( args, "SUCCESS: key '%s' deleted from user '%s'" % ( args.identifier, args.username ) )
 	return 0
 
