@@ -9,42 +9,42 @@
 
 
 __attribute__ ((visibility ("hidden")))
-int python__storage_load(tt_file_t file, const char* identifier, char* key, size_t* key_size) {
+int python__storage_load(tt_file_t file, const char* identifier, char* data, size_t* data_size) {
 	PyObject*	result = NULL;
-	char*		data = NULL;
-	ssize_t		data_size = 0;
+	char*		buffer = NULL;
+	ssize_t		buffer_size = 0;
 
+	g_self.library.api.runtime.debug( TT_DEBUG__TRACE, "plugin/python", "%s(file=%zd,identifier=%p,data=%p,data_size=%p)", __FUNCTION__, file, identifier, data, data_size );
 	if( file != TT_FILE__KEY ) {
 		return TT_IGN;
 	}
-	if( identifier == NULL || key == NULL || key_size == NULL || *key_size == 0) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "invalid parameter in python__luks_load()'" );
+	if( identifier == NULL || data == NULL || data_size == NULL || *data_size == 0) {
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "invalid parameter in %s()'", __FUNCTION__ );
 		return TT_ERR;
 	}
-//TODO: identifier as param to exec
-	if( python__exec_script( g_cfg, "luks-load", &result ) != TT_OK ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "no script configured for 'luks_load'" );
+	if( python__exec_script( g_cfg, "hooks|hook", "storage-load", identifier, &result ) != TT_OK ) {
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "no script configured for 'storage-load'" );
 		return TT_ERR;
 	}
 	if( result == NULL ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "script failed for 'luks_load'" );
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "script failed for 'storage-load'" );
 		return TT_ERR;
 	}
 	if( !PyBytes_Check( result ) ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "script returned invalid result for 'luks_load'" );
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "script returned invalid result for 'storage-load'" );
 		return TT_ERR;
 	}
-	PyBytes_AsStringAndSize( result, &data, &data_size );
-	if( data == NULL ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "PyBytes_AsStringAndSize() failed for 'luks_load'" );
+	PyBytes_AsStringAndSize( result, &buffer, &buffer_size );
+	if( buffer == NULL ) {
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "PyBytes_AsStringAndSize() failed for 'storage-load'" );
 		return TT_ERR;
 	}
-	if( (size_t)data_size > *key_size ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "not enough key_size for 'luks_load'" );
+	if( (size_t)buffer_size > *data_size ) {
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "not enough data_size for 'storage-load'" );
 		return TT_ERR;
 	}
-	memcpy( key, data, data_size );
-	*key_size = (size_t)data_size;
+	memcpy( data, buffer, buffer_size );
+	*data_size = (size_t)buffer_size;
 	return TT_OK;
 }
 
