@@ -41,25 +41,25 @@ static cfg_opt_t opt_lua[] = {
 };
 
 
-static int lua__luks_load(tt_file_t file, const char* identifier, char* key, size_t* key_len) {
-	char	filename[1024] = {0};
+static int lua__storage_load(tt_file_t file, const char* identifier, char* key, size_t* key_len) {
+	char	filename[FILENAME_MAX+1] = {0};
 	int	result = TT_ERR;
 
 	if( file != TT_FILE__KEY ) {
 		return TT_IGN;
 	}
 	if( identifier == NULL || key == NULL || key_len == NULL || *key_len == 0) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/lua", "invalid parameter in lua__luks_load()'" );
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/lua", "invalid parameter in %s()'", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( lua__get_script( g_cfg, "luks-load", filename, sizeof(filename) ) != TT_OK ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/lua", "no script configured for 'luks_load'" );
+	if( lua__get_script( g_cfg, "storage-load", filename, sizeof(filename) ) != TT_OK ) {
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/lua", "no script configured for 'storage_load'" );
 		return TT_ERR;
 	}
 
-	g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY2, "plugin/lua", "invoking script '%s' for 'luks_load'", filename );
+	g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY2, "plugin/lua", "invoking script '%s' for 'storage_load'", filename );
 	if( luaL_dofile( g_LUA , filename ) == 0 ) { //TODO:identifier as param
-		lua_getglobal( g_LUA, "result" );
+		lua_getglobal( g_LUA, "data" );
 		if( lua_isstring( g_LUA, -1 ) ) {
 			if( lua_rawlen( g_LUA, -1 ) <= *key_len ) {
 				*key_len = lua_rawlen( g_LUA, -1 );
@@ -73,7 +73,7 @@ static int lua__luks_load(tt_file_t file, const char* identifier, char* key, siz
 		}
 		lua_pop( g_LUA, 1 );
 	} else {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/lua", "error in script '%s' for 'luks_load'", filename );
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/lua", "error in script '%s' for 'storage_load'", filename );
 	}
 	return result;
 }
@@ -101,7 +101,7 @@ static int configure(const char* filename) {
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/lua", "error loading configuration file '%s'", filename );
 		return TT_ERR;
 	}
-	g_self.interface.api.storage.load = lua__luks_load;
+	g_self.interface.api.storage.load = lua__storage_load;
 	return TT_OK;
 }
 
