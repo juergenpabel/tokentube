@@ -92,7 +92,7 @@ int default__api__pba_install(const char* type, const char* path) {
 		return TT_ERR;
 	}
 	if( strncasecmp( TT_PBA__INITRD, type, strlen(TT_PBA__INITRD) ) != 0 && strncasecmp( TT_PBA__INITRAMFS, type, strlen(TT_PBA__INITRAMFS) ) != 0 ) {
-		TT_LOG_ERROR( "plugin/default", "unsupported PBA-type in %s()", __FUNCTION__ );
+		TT_LOG_INFO( "plugin/default", "unsupported PBA-type in %s()", __FUNCTION__ );
 		return TT_IGN;
 	}
 	if( libtokentube_conf_serialize( buffer, &buffer_size ) != TT_OK ) {
@@ -161,13 +161,29 @@ int default__api__pba_install(const char* type, const char* path) {
 
 __attribute__ ((visibility ("hidden")))
 int default__api__pba_install_post(const char* type, const char* path) {
+	char            filename[FILENAME_MAX+1] = {0};
+	size_t          filename_size = sizeof(filename);
+	struct stat     st;
 
 	TT_TRACE( "library/conf", "%s(type='%s',path='%s')", __FUNCTION__, type, path );
 	if( type == NULL || type[0] == '\0' || path == NULL || path[0] == '\0' ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-//TODO:sanity checks
+	if( strncasecmp( TT_PBA__INITRD, type, strlen(TT_PBA__INITRD) ) != 0 && strncasecmp( TT_PBA__INITRAMFS, type, strlen(TT_PBA__INITRAMFS) ) != 0 ) {
+		TT_LOG_INFO( "plugin/default", "unsupported PBA-type in %s()", __FUNCTION__ );
+		return TT_IGN;
+	}
+	snprintf( filename, filename_size-1, "%s%s", path, TT_FILENAME__BOOT_CONF );
+	if( stat ( filename, &st ) < 0 || st.st_size == 0 ) {
+		TT_LOG_ERROR( "plugin/default", "sanity-check failed for '%s' in %s()", filename, __FUNCTION__ );
+		return TT_ERR;
+	}
+	snprintf( filename, filename_size-1, "%s%s", path, TT_FILENAME__TOKENTUBE_CONF );
+	if( stat ( filename, &st ) < 0 || st.st_size == 0 ) {
+		TT_LOG_ERROR( "plugin/default", "sanity-check failed for '%s' in %s()", filename, __FUNCTION__ );
+		return TT_ERR;
+	}
 	return TT_OK;
 }
 
