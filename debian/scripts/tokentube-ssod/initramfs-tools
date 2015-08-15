@@ -1,0 +1,20 @@
+#!/bin/sh -e
+
+PREREQ="tokentube"
+
+prereqs()
+{
+	echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+	prereqs
+	exit 0
+	;;
+esac
+
+. /usr/share/initramfs-tools/hook-functions
+
+mkdir ${DESTDIR}/lib/tokentube/
+copy_exec /usr/lib/tokentube/libexec/ssod /lib/tokentube/ssod

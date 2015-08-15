@@ -1,0 +1,64 @@
+Source: tokentube
+Section: admin
+Priority: optional
+Maintainer: Juergen Pabel <juergen@pabel.net>
+Build-Depends: debhelper (>= 7), po-debconf, autotools-dev, libscrypt-dev, libgcrypt20-dev, libgpgme11-dev, libgpg-error-dev, libpam0g-dev, e2fslibs-dev, libconfuse-dev, libesmtp-dev, libpython3.4-dev, liblua5.2-dev, libplymouth-dev, libglib2.0-dev, libgtk-3-dev, liblightdm-gobject-1-dev
+Standards-Version: 3.8.3
+Vcs-Git: git://github.com/juergenpabel/tokentube/tokentube.git -b release-1.0
+Vcs-Browser: http://github.com/juergenpabel/tokentube/tokentube.git;a=shortlog;h=refs/heads/release-1.0
+Homepage: http://github.com/juergenpabel/tokentube/
+
+Package: tokentube
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, cryptsetup, openssl, libconfuse0, python3.4
+Description: integration component between LUKS/dm-crypt and PAM
+ It allows for username based logins at the Pre-Boot-Authentication screen for
+ encrypted systems. An optional component allows for automatic credential passing
+ to GNOME/KDE desktops for automatic logins.
+
+Package: tokentube-ssod
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, tokentube
+Description: TokenTube Single-Sign-On daemon
+ Tokentube Pre-Boot-Authentication SSO daemon for pass-through to login manager
+
+Package: tokentube-sso-lightdm
+Section: x11
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, tokentube-ssod, lightdm, liblightdm-gobject-1-0
+Description: TokenTube Single-Sign-On for LightDM
+ Tokentube Pre-Boot-Authentication SSO pass-through to LightDM Window-Manager
+
+Package: tokentube-plugin-python
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, tokentube, libpython3.4
+Description: PYTHON plugin for TokenTube
+ Plugins allow for implementing custom functionality using PYTHON
+
+Package: tokentube-plugin-lua
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, tokentube, liblua5.2-0
+Description: LUA plugin for TokenTube
+ Plugins allow for implementing custom functionality using LUA
+
+Package: tokentube-plugin-misc
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, tokentube
+Description: Test plugins for TokenTube (for unit-tests and such, almost a development package)
+ The packaged plugin 'test' implements mostly storage related APIs so that files are stored 
+ in subdirectories of the current directory. Mostly useful for unit-tests and such. The other
+ plugins are demo plugins that log events.
+
+Package: tokentube-dev
+Architecture: any
+Depends: tokentube (= ${binary:Version}), libc6-dev | libc-dev
+Description: Development package for tokentube
+ Not yet implemented
+
+Package: tokentube-udeb
+Section: debian-installer
+XC-Package-Type: udeb
+Architecture: any
+Depends: cryptsetup-udeb
+Description: Debian-Installer package for TokenTube
+ Not yet implemented

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Tokentube SSO LightDM-Greeter
+Comment=Tokentube SSO LightDM-Greeter
+Exec=tokentube-sso-lightdm-greeter
+Type=Application
+X-Ubuntu-Gettext-Domain=tokentube-sso-lightdm-greeter
