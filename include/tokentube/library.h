@@ -22,16 +22,16 @@ typedef struct {
 	int (*encrypt)(void* data, const size_t data_size, const void* key, const size_t key_size, const void* iv, const size_t iv_size);
 	int (*decrypt)(void* data, const size_t data_size, const void* key, const size_t key_size, const void* iv, const size_t iv_size);
 	int (*hash)(const void* in, size_t in_size, void* out, size_t* out_size);
+	int (*hmac)(const void* in, size_t in_size, const void* key, size_t key_size, void* out, size_t* out_size);
 	int (*kdf)(const void* salt, size_t salt_size, const void* in, size_t in_size, void* out, size_t* out_size);
 } tt_library_api_crypto_t;
 
 
 typedef struct {
-	int (*file_load)(tt_file_t type, const char* identifier, char* data, size_t* data_size);
-	int (*file_save)(tt_file_t type, const char* identifier, char* data, size_t data_size);
-	int (*file_exists)(tt_file_t type, const char* identifier, tt_status_t* status);
-	int (*file_delete)(tt_file_t type, const char* identifier, tt_status_t* status);
-	int (*luks_load)(char* data, size_t* data_size);
+	int (*load)(tt_file_t type, const char* identifier, char* data, size_t* data_size);
+	int (*save)(tt_file_t type, const char* identifier, const char* data, size_t data_size);
+	int (*exists)(tt_file_t type, const char* identifier, tt_status_t* status);
+	int (*delete)(tt_file_t type, const char* identifier, tt_status_t* status);
 } tt_library_api_storage_t;
 
 
@@ -40,8 +40,10 @@ typedef struct {
 	int (*update)(const char* username, const char* password, const char* new_password, tt_status_t* status);
 	int (*exists)(const char* username, tt_status_t* status);
 	int (*delete)(const char* username, tt_status_t* status);
+	int (*key_add)(const char* username, const char* password, const char* identifier, tt_status_t* status);
+	int (*key_del)(const char* username, const char* password, const char* identifier, tt_status_t* status);
 	int (*execute_verify)(const char* username, const char* password, tt_status_t* status);
-	int (*execute_load)(const char* username, const char* password, char* key, size_t* key_size);
+	int (*execute_loadkey)(const char* username, const char* password, const char* key_name, char* key, size_t* key_size);
 	int (*execute_autoenrollment)(const char* username, const char* password, tt_status_t* status);
 } tt_library_api_user_t;
 

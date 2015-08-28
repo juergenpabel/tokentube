@@ -54,8 +54,10 @@ int default__identifier2uuid(const char* identifier, char* out, size_t out_size)
 
 
 __attribute__ ((visibility ("hidden")))
-int default__get_filename(tt_file_t file, const char* identifier, char* buffer, const size_t buffer_size) {
+int default__storage_get_filename(tt_file_t file, const char* identifier, char* buffer, const size_t buffer_size) {
 	char	uuid[TT_DIGEST_BITS_MAX/8*2+1] = { 0 };
+	char	path[FILENAME_MAX] = { 0 };
+	size_t  path_size = sizeof(path);
 	size_t	pos = 0;
 
 	TT_TRACE( "library/plugin", "%s(file=%d,identifier='%s',buffer=%p, buffer_size=%zd)", __FUNCTION__, file, identifier, buffer, buffer_size );
@@ -67,6 +69,14 @@ int default__get_filename(tt_file_t file, const char* identifier, char* buffer, 
 	memset( buffer, '\0', buffer_size );
 	if( file == TT_FILE__CONFIG_STANDARD || file == TT_FILE__CONFIG_PBA ) {
 		strncpy( buffer, identifier, buffer_size-1 );
+		return TT_OK;
+	}
+	if( file == TT_FILE__KEY ) {
+		if( libtokentube_conf_read_str( "storage|key-files|directory", path, &path_size) != TT_OK ) {
+			TT_LOG_ERROR( "plugin/default", "libtokentube_conf_read_str() failed for 'storage|key-files|directory' in %s()", __FUNCTION__ );
+			return TT_ERR;
+		}
+		snprintf( buffer, buffer_size-1, "%s/%s", path, identifier );
 		return TT_OK;
 	}
 	if( 17+5+strnlen(identifier,TT_DIGEST_BITS_MAX/8*2+1)+5 >= buffer_size ) {

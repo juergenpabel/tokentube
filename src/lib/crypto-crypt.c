@@ -9,6 +9,7 @@ int libtokentube_crypto_crypt_impl(tt_cryptmode_t mode, const char* oid, void* d
 	int			cipher_id = 0;
 	gcry_cipher_hd_t	cipher;
 
+	TT_TRACE( "library/crypto", "%s(mode='%d',oid='%s',data=%p,data_size=%d)", __FUNCTION__, mode, oid, data, data_size );
 	if( oid == NULL || data == NULL || data_size == 0 || key == NULL || key_size == 0 || iv == NULL || iv_size == 0 ) {
 		TT_LOG_ERROR( "library/crypto", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
@@ -58,6 +59,7 @@ int libtokentube_crypto_hash_impl(const char* oid, const void* in, size_t in_siz
         void*		digest_result;
 	int		hash_id = 0;
 
+	TT_TRACE( "library/crypto", "%s(oid='%s',data=%p,data_size=%d)", __FUNCTION__, oid, in, in_size );
 	if( in == NULL || in_size == 0 || out == NULL || out_size == NULL || *out_size == 0 ) {
 		TT_LOG_ERROR( "library/crypto", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
@@ -74,6 +76,44 @@ int libtokentube_crypto_hash_impl(const char* oid, const void* in, size_t in_siz
 	}
         if( gcry_md_open( &digest, hash_id, 0 ) != GPG_ERR_NO_ERROR ) {
 		TT_LOG_ERROR( "library/crypto", "gcry_md_open() failed for '%s' in %s()", oid, __FUNCTION__ );
+		return TT_ERR;
+	}
+	gcry_md_write( digest, in, in_size );
+	digest_result = gcry_md_read( digest, 0 );
+	memcpy( out, digest_result, *out_size );
+	gcry_md_close( digest );
+	return TT_OK;
+}
+
+
+__attribute__ ((visibility ("hidden")))
+int libtokentube_crypto_hmac_impl(const char* oid, const void* in, size_t in_size, const void* key, size_t key_size, void* out, size_t* out_size) {
+        gcry_md_hd_t	digest = NULL;
+        void*		digest_result;
+	int		hash_id = 0;
+
+	TT_TRACE( "library/crypto", "%s(oid='%s',data=%p,data_size=%d)", __FUNCTION__, oid, in, in_size );
+	if( in == NULL || in_size == 0 || out == NULL || out_size == NULL || *out_size == 0 ) {
+		TT_LOG_ERROR( "library/crypto", "invalid parameter in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	hash_id = gcry_md_map_name( oid );
+	if( hash_id < 0 ) {
+		TT_LOG_ERROR( "library/crypto", "invalid hash='%s' in %s()", oid, __FUNCTION__ );
+		return TT_ERR;
+	}
+	if( *out_size >= gcry_md_get_algo_dlen(hash_id) ) {
+		*out_size = gcry_md_get_algo_dlen(hash_id);
+	} else {
+		TT_LOG_WARN( "library/crypto", "truncating to %d bytes due to insufficient buffer in %s()", *out_size, __FUNCTION__ );
+	}
+        if( gcry_md_open( &digest, hash_id, GCRY_MD_FLAG_HMAC ) != GPG_ERR_NO_ERROR ) {
+		TT_LOG_ERROR( "library/crypto", "gcry_md_open() failed for '%s' in %s()", oid, __FUNCTION__ );
+		return TT_ERR;
+	}
+        if( gcry_md_setkey( digest, key, key_size ) != GPG_ERR_NO_ERROR ) {
+		TT_LOG_ERROR( "library/crypto", "gcry_md_setkey() failed for '%s' in %s()", oid, __FUNCTION__ );
+		gcry_md_close( digest );
 		return TT_ERR;
 	}
 	gcry_md_write( digest, in, in_size );
@@ -196,6 +236,12 @@ int libtokentube_crypto_decrypt(void* data, const size_t data_size, const void* 
 __attribute__ ((visibility ("hidden")))
 int libtokentube_crypto_hash(const void* in, size_t in_size, void* out, size_t* out_size) {
 	return libtokentube_crypto_hash_impl( libtokentube_crypto_get_hash(), in, in_size, out, out_size );
+}
+
+
+__attribute__ ((visibility ("hidden")))
+int libtokentube_crypto_hmac(const void* in, size_t in_size, const void* key, size_t key_size, void* out, size_t* out_size) {
+	return libtokentube_crypto_hmac_impl( libtokentube_crypto_get_hash(), in, in_size, key, key_size, out, out_size );
 }
 
 

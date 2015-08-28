@@ -1,6 +1,6 @@
 int pba_initialize(tt_library_t*, const char*, const char*);
 
-int pba_user_loadkey(tt_library_t* api, const char*, size_t, const char*, size_t, char*, size_t*);
+int pba_user_loadkey(tt_library_t* api, const char*, size_t, const char*, size_t, const char*, char*, size_t*);
 
 int pba_plymouth(const char*, const char*, char*, size_t*, char*, size_t*);
 

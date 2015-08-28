@@ -1,7 +1,9 @@
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -54,7 +56,8 @@ static cfg_opt_t opt_exec[] = {
 static int exec__exec( cfg_t* cfg, const char* event, const char* identifier ) {
         cfg_t*		section = NULL;
 	char*		exec = NULL;
-	char* const	argv[2] = { (char*)identifier, NULL };
+	char*           argv[6] = { NULL, "tokentube", "plugin/exec", (char*)event, (char*)identifier, NULL };
+	char*           envp[1] = { NULL };
 	struct stat	st;
 	int		fd, pid = 0;
 	int		result = TT_ERR;
@@ -89,6 +92,7 @@ static int exec__exec( cfg_t* cfg, const char* event, const char* identifier ) {
 		close( fd );
 		return TT_ERR;
 	}
+	argv[0] = exec;
 	pid = fork();
 	switch( pid ) {
 		case -1:
@@ -105,14 +109,24 @@ static int exec__exec( cfg_t* cfg, const char* event, const char* identifier ) {
 				setsid();
 			}
 			g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY3, "plugin/exec", "executing '%s' as child in exec__exec()", exec );
-			fexecve( fd, argv, NULL );
+			if( fexecve( fd, argv, envp ) < 0 )  {
+				switch( errno ) {
+					case EINVAL:
+						g_self.library.api.runtime.log( TT_LOG__WARN, "plugin/exec", "fexecve(%s) failed with EINVAL in exec__exec()", exec );
+						break;
+					case ENOSYS:
+						g_self.library.api.runtime.log( TT_LOG__WARN, "plugin/exec", "fexecve(%s) failed with ENOSYS in exec__exec()", exec );
+						break;
+					default:
+						g_self.library.api.runtime.log( TT_LOG__WARN, "plugin/exec", "fexecve(%s) failed with %d in exec__exec()", exec, errno );
+					}
+			}
 			close( fd );
-			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/exec", "fexecve(%s) failed in exec__exec()", exec );
-			execl( exec, identifier, NULL );
-			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/exec", "execl(%s) failed in exec__exec()", exec );
+			execve( argv[0], argv, envp );
+			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/exec", "execve(%s) failed in exec__exec()", exec );
 			exit( -1 );
 		default:
-			g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY3, "plugin/exec", "fork()ed as parent in exec__exec()" );
+			g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY5, "plugin/exec", "fork()ed as parent in exec__exec()" );
 			close( fd );
 			if( cfg_getbool( section, "detach" ) == cfg_false ) {
 				g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY3, "plugin/exec", "waiting on child (pid=%d) in exec__exec()...", pid );

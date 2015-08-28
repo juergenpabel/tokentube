@@ -122,7 +122,7 @@ libtokentube_plugin_python_la_LIBADD =
 am_libtokentube_plugin_python_la_OBJECTS =  \
 	libtokentube_plugin_python_la-plugin.lo \
 	libtokentube_plugin_python_la-python.lo \
-	libtokentube_plugin_python_la-luks.lo
+	libtokentube_plugin_python_la-storage.lo
 libtokentube_plugin_python_la_OBJECTS =  \
 	$(am_libtokentube_plugin_python_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -322,7 +322,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 lib_LTLIBRARIES = libtokentube-plugin-python.la
-libtokentube_plugin_python_la_SOURCES = plugin.c python.c luks.c
+libtokentube_plugin_python_la_SOURCES = plugin.c python.c storage.c
 libtokentube_plugin_python_la_CFLAGS = -I../../../include -I/usr/include/python3.4
 libtokentube_plugin_python_la_LDFLAGS = -L../../../src/lib/.libs -ltokentube -lconfuse -lpython3.4m
 all: all-am
@@ -404,9 +404,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_plugin_python_la-luks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_plugin_python_la-plugin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_plugin_python_la-python.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_plugin_python_la-storage.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -443,12 +443,12 @@ libtokentube_plugin_python_la-python.lo: python.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_python_la_CFLAGS) $(CFLAGS) -c -o libtokentube_plugin_python_la-python.lo `test -f 'python.c' || echo '$(srcdir)/'`python.c
 
-libtokentube_plugin_python_la-luks.lo: luks.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_python_la_CFLAGS) $(CFLAGS) -MT libtokentube_plugin_python_la-luks.lo -MD -MP -MF $(DEPDIR)/libtokentube_plugin_python_la-luks.Tpo -c -o libtokentube_plugin_python_la-luks.lo `test -f 'luks.c' || echo '$(srcdir)/'`luks.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_plugin_python_la-luks.Tpo $(DEPDIR)/libtokentube_plugin_python_la-luks.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='luks.c' object='libtokentube_plugin_python_la-luks.lo' libtool=yes @AMDEPBACKSLASH@
+libtokentube_plugin_python_la-storage.lo: storage.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_python_la_CFLAGS) $(CFLAGS) -MT libtokentube_plugin_python_la-storage.lo -MD -MP -MF $(DEPDIR)/libtokentube_plugin_python_la-storage.Tpo -c -o libtokentube_plugin_python_la-storage.lo `test -f 'storage.c' || echo '$(srcdir)/'`storage.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_plugin_python_la-storage.Tpo $(DEPDIR)/libtokentube_plugin_python_la-storage.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='storage.c' object='libtokentube_plugin_python_la-storage.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_python_la_CFLAGS) $(CFLAGS) -c -o libtokentube_plugin_python_la-luks.lo `test -f 'luks.c' || echo '$(srcdir)/'`luks.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_python_la_CFLAGS) $(CFLAGS) -c -o libtokentube_plugin_python_la-storage.lo `test -f 'storage.c' || echo '$(srcdir)/'`storage.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

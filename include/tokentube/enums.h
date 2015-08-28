@@ -40,9 +40,10 @@ typedef enum {
 	TT_FILE__UNDEFINED = 0,
 	TT_FILE__CONFIG_PBA = 1,
 	TT_FILE__CONFIG_STANDARD = 2,
-	TT_FILE__USER = 3,
-	TT_FILE__OTP = 4,
-	TT_FILE__HELPDESK = 5
+	TT_FILE__KEY = 3,
+	TT_FILE__USER = 4,
+	TT_FILE__OTP = 5,
+	TT_FILE__HELPDESK = 6
 } tt_file_t;
 
 

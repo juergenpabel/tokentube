@@ -135,7 +135,7 @@ int helpdesk__api__file_save(tt_file_t file, const char* identifier, const char*
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "error reading host-id" );
 		return TT_ERR;
 	}
-	if( g_self.library.api.storage.luks_load( key, &key_size ) != TT_OK ) {
+	if( g_self.library.api.storage.load( TT_FILE__KEY, identifier, key, &key_size ) != TT_OK ) {
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "error loading luks-key" );
 		return TT_ERR;
 	}

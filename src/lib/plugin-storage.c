@@ -24,9 +24,9 @@ int libtokentube_plugin__file_load(tt_file_t type, const char* identifier, char*
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "checking 'file_load' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.storage.file_load != NULL ) {
+			if( module->plugin->interface.api.storage.load != NULL ) {
 				TT_DEBUG4( "library/plugin", "invoking 'file_load' for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.storage.file_load(type, identifier, buffer, buffer_len) ) {
+				switch( module->plugin->interface.api.storage.load(type, identifier, buffer, buffer_len) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'file_load'", module->name );
 						return TT_OK;
@@ -45,7 +45,7 @@ int libtokentube_plugin__file_load(tt_file_t type, const char* identifier, char*
 
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_plugin__file_save(tt_file_t type, const char* identifier, char* buffer, size_t buffer_len) {
+int libtokentube_plugin__file_save(tt_file_t type, const char* identifier, const char* buffer, size_t buffer_len) {
 	tt_module_t* module;
 	size_t i;
 
@@ -59,8 +59,8 @@ int libtokentube_plugin__file_save(tt_file_t type, const char* identifier, char*
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "checking 'file_save' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.storage.file_save != NULL ) {
-				switch( module->plugin->interface.api.storage.file_save(type, identifier, buffer, buffer_len) ) {
+			if( module->plugin->interface.api.storage.save != NULL ) {
+				switch( module->plugin->interface.api.storage.save(type, identifier, buffer, buffer_len) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'file_save'", module->name );
 						return TT_OK;
@@ -94,8 +94,8 @@ int libtokentube_plugin__file_exists(tt_file_t type, const char* identifier, tt_
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "checking 'file_exists' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.storage.file_exists != NULL ) {
-				switch( module->plugin->interface.api.storage.file_exists(type, identifier, status) ) {
+			if( module->plugin->interface.api.storage.exists != NULL ) {
+				switch( module->plugin->interface.api.storage.exists(type, identifier, status) ) {
 					case TT_OK:
 						if( *status == TT_YES ) {
 							TT_DEBUG4( "library/plugin", "plugin '%s' return TT_YES for 'file_exists'", module->name );
@@ -138,8 +138,8 @@ int libtokentube_plugin__file_delete(tt_file_t type, const char* identifier, tt_
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "checking 'file_exists' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.storage.file_delete != NULL ) {
-				switch( module->plugin->interface.api.storage.file_delete(type, identifier, status) ) {
+			if( module->plugin->interface.api.storage.delete != NULL ) {
+				switch( module->plugin->interface.api.storage.delete(type, identifier, status) ) {
 					case TT_OK:
 						if( *status == TT_YES ) {
 							TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'file_delete'", module->name );
