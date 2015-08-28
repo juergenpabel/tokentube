@@ -145,6 +145,52 @@ static void test_user_verify_failure(void **state) {
 }
 
 
+static void test_user_keys_success(void **state) {
+	tt_status_t	status = TT_STATUS__UNDEFINED;
+	tt_library_t*	library;
+
+	library = (tt_library_t*)*state;
+
+	/* positive tests */
+	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
+	assert_true( library->api.user.key_del( "user", "pass", "test", &status ) == TT_OK );
+	assert_true( status == TT_YES );
+	assert_true( library->api.user.key_del( "user", "pass", "test", &status ) == TT_OK );
+	assert_true( status == TT_NO );
+	assert_true( library->api.user.key_add( "user", "pass", "test", &status ) == TT_OK );
+	assert_true( status == TT_YES );
+	assert_true( library->api.user.key_add( "user", "pass", "test", &status ) == TT_OK );
+	assert_true( status == TT_NO );
+
+	assert_true( library->api.user.delete( "user", &status ) == TT_OK );
+	assert_true( status == TT_YES );
+}
+
+
+static void test_user_keys_failure(void **state) {
+	tt_status_t	status = TT_STATUS__UNDEFINED;
+	tt_library_t*	library;
+
+	library = (tt_library_t*)*state;
+
+	/* negative tests */
+	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
+	assert_true( library->api.user.key_del( "user", "pass", "test", &status ) == TT_OK );
+	assert_true( status == TT_YES );
+	assert_true( library->api.user.key_add( "user", "fail", "test", &status ) == TT_ERR );
+	assert_true( library->api.user.key_add( "user", "pass", "fail", &status ) == TT_ERR );
+	assert_true( library->api.user.key_add( "fail", "pass", "test", &status ) == TT_ERR );
+
+	assert_true( library->api.user.key_del( "fail", "pass", "test", &status ) == TT_ERR );
+	assert_true( library->api.user.key_del( "user", "fail", "test", &status ) == TT_ERR );
+	assert_true( library->api.user.key_del( "user", "pass", "fail", &status ) == TT_OK );
+	assert_true( status == TT_NO );
+
+	assert_true( library->api.user.delete( "user", &status ) == TT_OK );
+	assert_true( status == TT_YES );
+}
+
+
 static void test_user_reconf_success(void **state) {
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 	tt_library_t*	library;
@@ -205,6 +251,8 @@ int main(void) {
 		unit_test_setup_teardown(test_user_delete_failure, self_setup, self_teardown),
 		unit_test_setup_teardown(test_user_verify_success, self_setup, self_teardown),
 		unit_test_setup_teardown(test_user_verify_failure, self_setup, self_teardown),
+		unit_test_setup_teardown(test_user_keys_success, self_setup, self_teardown),
+		unit_test_setup_teardown(test_user_keys_failure, self_setup, self_teardown),
 		unit_test_setup_teardown(test_user_reconf_success, self_setup, self_teardown),
 	};
 	return run_tests(tests);

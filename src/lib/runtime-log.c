@@ -87,6 +87,8 @@ int libtokentube_log_initialize() {
 			} else {
 				g_env_log_level = TT_LOG__UNDEFINED;
 			}
+		} else {
+			g_env_log_fd = STDERR_FILENO;
 		}
 	}
 	return TT_OK;

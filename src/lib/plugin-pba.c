@@ -67,7 +67,7 @@ int libtokentube_plugin__pba_install(const char* type, const char* path) {
 	}
 	TT_DEBUG3( "library/plugin", "invoking 'pba_install' handlers" );
 	TT_DEBUG4( "library/plugin", "invoking 'pba_install' for plugin '%s'", g_modules[MAX_PLUGINS]->name );
-	switch( g_modules[MAX_PLUGINS]->plugin->interface.api.pba.install( type, path ) ) {
+	switch( g_modules[MAX_PLUGINS]->plugin->interface.api.pba.install_run( type, path ) ) {
 		case TT_OK:
 			TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'pba_install'", g_modules[MAX_PLUGINS]->name );
 			break;
@@ -82,9 +82,9 @@ int libtokentube_plugin__pba_install(const char* type, const char* path) {
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "checking 'pba_install' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.pba.install != NULL ) {
-				TT_DEBUG4( "library/plugin", "invoking 'pba_install' for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.pba.install( type, path ) ) {
+			if( module->plugin->interface.api.pba.install_run != NULL ) {
+				TT_DEBUG4( "library/plugin", "invoking 'pba_install_run' for plugin '%s'", module->name );
+				switch( module->plugin->interface.api.pba.install_run( type, path ) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'pba_install'", module->name );
 						break;

@@ -3,6 +3,6 @@ extern cfg_t*		g_cfg;
 extern PyThreadState*	g_python;
 
 
-int python__exec_script(cfg_t* cfg, const char* hook, PyObject**);
+int python__exec_script(cfg_t* cfg, const char* action, const char* name, const char* identifier, PyObject**);
 
-int python__luks_load(char* key, size_t* key_len);
+int python__storage_load(tt_file_t file, const char* identifier, char* key, size_t* key_len);

@@ -28,12 +28,23 @@ static cfg_opt_t opt_python_hooks_hook[] = {
 	CFG_END()
 };
 
+static cfg_opt_t opt_python_events_event[] = {
+	CFG_STR("script",  NULL, CFGF_NODEFAULT),
+	CFG_END()
+};
+
+static cfg_opt_t opt_python_events[] = {
+	CFG_SEC("event", opt_python_events_event, CFGF_MULTI|CFGF_TITLE),
+	CFG_END()
+};
+
 static cfg_opt_t opt_python_hooks[] = {
 	CFG_SEC("hook", opt_python_hooks_hook, CFGF_MULTI|CFGF_TITLE),
 	CFG_END()
 };
 
 static cfg_opt_t opt_python[] = {
+	CFG_SEC("events", opt_python_events, CFGF_NONE),
 	CFG_SEC("hooks", opt_python_hooks, CFGF_NONE),
 	CFG_END()
 };
@@ -62,7 +73,7 @@ static int configure(const char* filename) {
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "error loading configuration file '%s'", filename );
 		return TT_ERR;
 	}
-	g_self.interface.api.storage.luks_load = python__luks_load;
+	g_self.interface.api.storage.load = python__storage_load;
 	return TT_OK;
 }
 
