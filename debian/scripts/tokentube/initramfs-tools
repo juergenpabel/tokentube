@@ -18,6 +18,8 @@ esac
 
 /usr/sbin/tokentube pba-install -T initramfs -P ${DESTDIR}
 
+copy_exec /lib/cryptsetup/scripts/tokentube
+
 echo '#!/bin/sh'                                     > ${DESTDIR}/lib/cryptsetup/scripts/tokentube.fallback
 echo 'exec plymouth ask-for-password --prompt "$1"' >> ${DESTDIR}/lib/cryptsetup/scripts/tokentube.fallback
 chmod +x  ${DESTDIR}/lib/cryptsetup/scripts/tokentube.fallback

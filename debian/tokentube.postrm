@@ -13,8 +13,7 @@ case "$1" in
     ;;
 
     remove|failed-upgrade|abort-install|abort-upgrade|disappear)
-	CRYPTTAB=`cat /etc/crypttab | sed -e 's/\bluks,keyscript=tokentube\b/luks/g'`
-	echo "$CRYPTTAB" > /etc/crypttab
+	sed -i -e 's/^\(.*\) \(.*\) \(LUKS:[0-9a-f-]*\) \(.*\)\(\bluks,keyscript=tokentube\b\)\(.*\)$/\1 \2 none \4luks\6/g' /etc/crypttab
 	update-initramfs -u -k all
     ;;
 
