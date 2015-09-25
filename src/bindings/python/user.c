@@ -216,7 +216,7 @@ __attribute__ ((visibility ("hidden")))
 PyObject* py_tt_user_execute_load(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	char*		py_password = NULL;
-	char*		py_keyname = NULL;
+	char*		py_identifier = NULL;
 	char*		py_key = NULL;
 	ssize_t		py_key_size = 0;
 	char		data[TT_KEY_BITS_MAX/8] = {0};
@@ -226,18 +226,18 @@ PyObject* py_tt_user_execute_load(PyObject* self __attribute__((unused)), PyObje
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "ssss#", &py_username, &py_password, &py_keyname, &py_key, &py_key_size ) ) {
+	if( !PyArg_ParseTuple( args, "ssss#", &py_username, &py_password, &py_identifier, &py_key, &py_key_size ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.user.execute_loadkey( py_username, py_password, py_keyname, data, &data_size ) != TT_OK ) {
+	if( g_library->api.user.execute_loadkey( py_username, py_password, py_identifier, data, &data_size ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.user.execute_load failed" );
 		return NULL;
 	}
 	if( data_size == 0 || data_size > (size_t)py_key_size ) {
 		Py_RETURN_FALSE;
 	}
-	if( strncpy( py_key, data, data_size ) == NULL ) {
+	if( memcpy( py_key, data, data_size ) == NULL ) {
 		Py_RETURN_FALSE;
 	}
 	Py_RETURN_TRUE;

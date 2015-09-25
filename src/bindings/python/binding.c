@@ -64,7 +64,7 @@ static PyMethodDef g_tokentube_funcs[] = {
 	{ "user_key_add", (PyCFunction)py_tt_user_key_add, METH_VARARGS, "user add-key function" },
 	{ "user_key_del", (PyCFunction)py_tt_user_key_del, METH_VARARGS, "user del-key function" },
 	{ "user_execute_verify", (PyCFunction)py_tt_user_execute_verify, METH_VARARGS, "user verify function" },
-	{ "user_execute_load", (PyCFunction)py_tt_user_execute_load, METH_VARARGS, "user load function" },
+	{ "user_execute_load", (PyCFunction)py_tt_user_execute_load, METH_VARARGS, "user load-key function" },
 	{ "user_execute_autoenrollment", (PyCFunction)py_tt_user_execute_autoenrollment, METH_VARARGS, "user autoenrollment function" },
 	{ "otp_create", (PyCFunction)py_tt_otp_create, METH_VARARGS, "otp create function" },
 	{ "otp_delete", (PyCFunction)py_tt_otp_delete, METH_VARARGS, "otp delete function" },
@@ -94,6 +94,7 @@ PyMODINIT_FUNC PyInit_tokentube(void) {
 	if( module == NULL ) {
 		return NULL;
 	}
+	PyModule_AddIntConstant( module, "TT_KEY_BITS_MAX", TT_KEY_BITS_MAX );
 	PyModule_AddIntConstant( module, "TT_OTP_TEXT_MAX", TT_OTP_TEXT_MAX );
 	return module;
 }

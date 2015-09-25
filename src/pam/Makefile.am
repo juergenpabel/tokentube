@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = foreign
 
 securelib_LTLIBRARIES = pam_tokentube.la
-securelibdir = $(prefix)/lib/security
+securelibdir = /lib/security
 
 pam_tokentube_la_CFLAGS = -I../../include -I../lib
 pam_tokentube_la_LDFLAGS = -L../lib -lpam -ltokentube -module -avoid-version

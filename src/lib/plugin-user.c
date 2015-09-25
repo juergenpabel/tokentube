@@ -256,7 +256,7 @@ int libtokentube_plugin__user_key_del(const char* username, const char* password
 
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_plugin__user_execute_loadkey( const char* username, const char* password, const char* key_name, char* key, size_t* key_size ) {
+int libtokentube_plugin__user_execute_loadkey( const char* username, const char* password, const char* identifier, char* key, size_t* key_size ) {
 	tt_module_t*	module;
 	size_t		i;
 
@@ -272,14 +272,9 @@ int libtokentube_plugin__user_execute_loadkey( const char* username, const char*
 			TT_DEBUG5( "library/plugin", "checking 'user_execute_load' for plugin '%s'", module->name );
 			if( module->plugin->interface.api.user.execute_loadkey != NULL ) {
 				TT_DEBUG4( "library/plugin", "invoking 'user_execute_loadkey' handler for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.user.execute_loadkey( username, password, key_name, key, key_size ) ) {
+				switch( module->plugin->interface.api.user.execute_loadkey( username, password, identifier, key, key_size ) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_execute_loadkey'", module->name );
-						if( *key_size > 0 ) {
-							if( libtokentube_runtime_broadcast( TT_EVENT__USER_VERIFIED, username ) != TT_OK ) {
-								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
-							}
-						}
 						return TT_OK;
 					case TT_IGN:
 						TT_DEBUG4( "library/plugin", "plugin '%s' ignored 'user_execute_load'", module->name );
