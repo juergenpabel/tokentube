@@ -137,10 +137,10 @@ int main (int argc, char *argv[]) {
 	char		c;
 
 	opterr = 0;
-	while((c = getopt_long(argc, argv, "f:b:d:c:u:p:i:vh", long_options, NULL)) != -1) {
+	while((c = getopt_long(argc, argv, "f:b:d:c:u:p:s:vh", long_options, NULL)) != -1) {
 		switch(c) {
  			case 'h':
-				printf("Usage: pba <parameter>\n");
+				printf("Usage: pba <parameter> IDENTIFIER\n");
 				printf("\n");
 				printf("       -c|--config      CONFIGURATION_FILENAME\n");
 				printf("       -b|--bootdevice  BOOT_DEVICE\n");
@@ -153,6 +153,12 @@ int main (int argc, char *argv[]) {
 				printf("       -s|--sso         [yes|no]\n");
 				printf("\n");
   				exit(0);
+			case 'c':
+				strncpy( configuration, optarg, sizeof(configuration)-1 );
+				break;
+			case 'b':
+				strncpy( bootdevice, optarg, sizeof(bootdevice)-1 );
+				break;
  			case 'x':
 				strncpy( fallback, optarg, sizeof(fallback)-1 );
 				break;
@@ -164,34 +170,24 @@ int main (int argc, char *argv[]) {
 				strncpy( password, optarg, sizeof(password)-1 );
 				password_size = strnlen( password, sizeof(password) );
 				break;
-			case 'i':
-				strncpy( identifier, optarg, sizeof(identifier)-1 );
-				break;
- 			case 'c':
-				strncpy( configuration, optarg, sizeof(configuration)-1 );
-				break;
- 			case 'b':
-				strncpy( bootdevice, optarg, sizeof(bootdevice)-1 );
-				break;
- 			case 'v':
-				verbose++;
-				break;
  			case 's':
 				if( strncmp( "yes", optarg, 4 ) == 0) {
 					g_conf_sso = TT_YES;
 				}
 				break;
+			case 'v':
+				verbose++;
+				break;
 			default:
 				break;
   		}
 	}
-	if( identifier[0] == '\0' ) {
-		if( optind < 0 || optind >= argc ) {
-			fprintf( stderr, "TokenTube[pba]: terminating\n");
-			exit(-1);
-		}
-		strncpy( identifier, argv[optind], sizeof(identifier)-1 );
+	if( optind < 0 || optind >= argc ) {
+		fprintf( stderr, "TokenTube[pba]: missing IDENTIFIER\n");
+		exit(-1);
 	}
+	strncpy( identifier, argv[optind], sizeof(identifier)-1 );
+
 	if( verbose ) {
 		if( verbose >= 3 ) {
 			setenv( "TT_LOG_LEVEL", "debug", 0 );
@@ -221,14 +217,7 @@ int main (int argc, char *argv[]) {
 		fprintf( stderr, "TokenTube[pba]: terminating\n");
 		exit(-1);
 	}
-	if( g_library.api.storage.load != NULL ) {
-		if( g_library.api.storage.load( TT_FILE__KEY, identifier, key, &key_size ) == TT_OK ) {
-			write( STDOUT_FILENO, key, key_size );
-			memset( key, '\0', key_size );
-			tt_finalize();
-			exit(0);
-		}
-	}
+//TODO: option to specify pba.conf
 	if( g_library.api.storage.load( TT_FILE__CONFIG_PBA, "/boot/tokentube/pba.conf", buffer, &buffer_size ) != TT_OK ) {
 		g_library.api.runtime.log( TT_LOG__ERROR, "pba", "API:storage.load() failed for [boot]/tokentube/pba.conf" );
 		if( fallback[0] != '\0' ) {
@@ -242,6 +231,7 @@ int main (int argc, char *argv[]) {
 	}
 	cfg = cfg_init( opt_pba, CFGF_NONE );
 	if( cfg == NULL ) {
+		fprintf( stderr, "TokenTube[pba]: cfg_init() failed\n");
 		g_library.api.runtime.log( TT_LOG__ERROR, "pba", "cfg_init() failed in %s()", __FUNCTION__ );
 		tt_finalize();
 		if( fallback[0] != '\0' ) {
@@ -253,6 +243,7 @@ int main (int argc, char *argv[]) {
 		exit(-1);
 	}
 	if( cfg_parse_buf( cfg, buffer ) != 0 ) {
+		fprintf( stderr, "TokenTube[pba]: cfg_parse_buf() failed\n");
 		g_library.api.runtime.log( TT_LOG__ERROR, "pba", "cfg_parse_buf() failed for [boot]/tokentube/pba.conf" );
 		cfg_free( cfg );
 		tt_finalize();

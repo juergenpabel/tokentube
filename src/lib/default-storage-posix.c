@@ -82,6 +82,9 @@ int default__storage_posix_save(tt_file_t type, const char* filename, const char
 	size_t		groupname_size = sizeof(groupname);
 	char		permission[5] = {0};
 	size_t		permission_size = sizeof(permission);
+	const char*     conf_owner = NULL;
+	const char*     conf_group = NULL;
+	const char*     conf_perm = NULL;
 	struct passwd*	owner = NULL;
 	struct group*	group = NULL;
 	uid_t		uid = -1;
@@ -94,16 +97,31 @@ int default__storage_posix_save(tt_file_t type, const char* filename, const char
         	TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_conf_read_str( "storage|files|owner", username, &username_size ) != TT_OK ) {
-        	TT_LOG_ERROR( "plugin/default", "reading storage|files|owner failed in %s()", __FUNCTION__ );
+	switch( type ) {
+		case TT_FILE__USER:
+			conf_owner = "storage|user-files|owner";
+			conf_group = "storage|user-files|group";
+			conf_perm  = "storage|user-files|permission";
+			break;
+		case TT_FILE__OTP:
+			conf_owner = "storage|otp-files|owner";
+			conf_group = "storage|otp-files|group";
+			conf_perm  = "storage|otp-files|permission";
+			break;
+		default:
+			break;
+	}
+
+	if( libtokentube_conf_read_str( conf_owner, username, &username_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "reading %s failed in %s()", conf_owner, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_conf_read_str( "storage|files|group", groupname, &groupname_size ) != TT_OK ) {
-        	TT_LOG_ERROR( "plugin/default", "reading storage|files|group failed in %s()", __FUNCTION__ );
+	if( libtokentube_conf_read_str( conf_group, groupname, &groupname_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "reading %s failed in %s()", conf_group, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_conf_read_str( "storage|files|permission", permission, &permission_size ) != TT_OK ) {
-        	TT_LOG_ERROR( "plugin/default", "reading storage|files|permission failed in %s()", __FUNCTION__ );
+	if( libtokentube_conf_read_str( conf_perm, permission, &permission_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "reading %s failed in %s()", conf_perm, __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( username[0] != '\0' ) {

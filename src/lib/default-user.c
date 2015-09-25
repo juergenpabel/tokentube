@@ -322,7 +322,7 @@ int default__api__user_execute_verify(const char* username, const char* password
 __attribute__ ((visibility ("hidden")))
 int default__api__user_execute_loadkey(const char* username, const char* password, const char* identifier, char* key, size_t* key_size) {
 	tt_status_t     status = TT_STATUS__UNDEFINED;
-	dflt_user_t       user = TT_USER__UNDEFINED;
+	dflt_user_t     user = TT_USER__UNDEFINED;
 	char            uuid[TT_DIGEST_BITS_MAX/8] = {0};
 	size_t		uuid_size = sizeof(uuid);
 	size_t		key_offset = 0;
@@ -360,8 +360,8 @@ int default__api__user_execute_loadkey(const char* username, const char* passwor
 				TT_LOG_ERROR( "plugin/default", "default__impl__user_key_decrypt() failed for username='%s' in %s()", username, __FUNCTION__ );
 				return TT_ERR;
 			}
-			memcpy( key, user.key[key_offset].data.key, user.key[key_offset].data.key_size );
-			*key_size = user.key[key_offset].data.key_size;
+			memcpy( key, user.key[key_offset].data.value, user.key[key_offset].data.value_size );
+			*key_size = user.key[key_offset].data.value_size;
 			status = TT_STATUS__YES;
 		}
 	}
