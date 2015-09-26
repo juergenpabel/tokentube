@@ -49,6 +49,7 @@ static cfg_opt_t opt_pba_splash[] = {
 };
 
 static cfg_opt_t opt_pba_sso[] = {
+	CFG_BOOL("enabled", 0, CFGF_NONE),
 	CFG_STR("executable", NULL, CFGF_NONE),
 	CFG_STR("socket", NULL, CFGF_NONE),
 	CFG_END()
@@ -258,6 +259,9 @@ int main (int argc, char *argv[]) {
 	g_conf_user_userprompt = cfg_getstr( cfg, "user|prompt-username" );
 	g_conf_user_passprompt = cfg_getstr( cfg, "user|prompt-password" );
 	g_conf_otp_identifier  = cfg_getstr( cfg, "otp|default-identifier" );
+	if( cfg_getbool( cfg, "sso|enabled" ) == cfg_true ) {
+		g_conf_sso = TT_YES;
+	}
 	g_conf_sso_exec = cfg_getstr( cfg, "sso|executable" );
 	g_conf_sso_socket = cfg_getstr( cfg, "sso|socket" );
 	if( g_conf_sso_socket == NULL ) {

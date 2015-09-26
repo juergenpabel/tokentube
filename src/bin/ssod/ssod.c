@@ -39,6 +39,7 @@ static cfg_opt_t opt_sso_greeters[] = {
 };
 
 static cfg_opt_t opt_sso_ssod[] = {
+	CFG_BOOL("enabled", 0, CFGF_NONE),
 	CFG_STR("executable", NULL, CFGF_NONE),
 	CFG_STR("socket", NULL, CFGF_NONE),
 	CFG_END()
