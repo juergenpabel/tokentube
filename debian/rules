@@ -114,17 +114,17 @@ install: build
 	ln -sf /usr/lib/python3.4/site-packages/tokentube_cli $(CURDIR)/debian/tokentube/usr/lib/python3/dist-packages/tokentube_cli
 
 	# tokentube-plugin-python
-	mkdir -p  $(CURDIR)/debian/tokentube-plugin-python/etc/tokentube/conf.d
-	chmod 755 $(CURDIR)/debian/tokentube-plugin-python/etc/tokentube/conf.d
-#TODO	install -m 0644 $(CURDIR)/conf/etc_tokentube_conf.d_plugin-python.conf $(CURDIR)/debian/tokentube-plugin-python/etc/tokentube/conf.d/plugin-python.conf
-
 	mkdir -p  $(CURDIR)/debian/tokentube-plugin-python/usr/lib/tokentube/plugins.d
 	chmod 755 $(CURDIR)/debian/tokentube-plugin-python/usr/lib/tokentube/plugins.d
 	mv $(CURDIR)/debian/tokentube/usr/lib/tokentube/plugins.d/libtokentube-plugin-python.* $(CURDIR)/debian/tokentube-plugin-python/usr/lib/tokentube/plugins.d
 
+	mkdir -p  $(CURDIR)/debian/tokentube-plugin-python/etc/tokentube/conf.d
+	chmod 755 $(CURDIR)/debian/tokentube-plugin-python/etc/tokentube/conf.d
+	install -m 0644 $(CURDIR)/conf/etc_tokentube_conf.d_plugin-python.conf $(CURDIR)/debian/tokentube-plugin-python/etc/tokentube/conf.d/plugin-python.conf
+
 	mkdir -p  $(CURDIR)/debian/tokentube-plugin-python/usr/lib/tokentube/libexec/python
 	chmod 755 $(CURDIR)/debian/tokentube-plugin-python/usr/lib/tokentube/libexec/python
-#TODO	install -m 0644 $(CURDIR)/debian/scripts/tokentube-plugin-python/luks-loadkey.py $(CURDIR)/debian/tokentube-plugin-python/usr/lib/tokentube/libexec/python/luks-loadkey.py
+	install -m 0644 $(CURDIR)/conf/usr_lib_tokentube_libexec_python_storage-load.py $(CURDIR)/debian/tokentube-plugin-python/usr/lib/tokentube/libexec/python/storage-load.py
 
 	# tokentube-plugin-lua
 	mkdir -p  $(CURDIR)/debian/tokentube-plugin-lua/etc/tokentube/conf.d
