@@ -22,7 +22,7 @@
 static tt_library_t	g_library;
 static char* 		g_conf_user_userprompt = NULL;
 static char*		g_conf_user_passprompt = NULL;
-static int   		g_conf_sso = TT_NO;
+static int   		g_conf_sso = TT_UNDEFINED;
 static char*		g_conf_sso_exec = NULL;
 static char*		g_conf_sso_socket = NULL;
 static char*		g_conf_otp_identifier = NULL;
@@ -150,7 +150,6 @@ int main (int argc, char *argv[]) {
 				printf("Parameter:\n");
 				printf("       -u|--user        USERNAME\n");
 				printf("       -p|--pass        PASSWORD\n");
-				printf("       -i|--identifier  IDENTIFIER\n");
 				printf("       -s|--sso         [yes|no]\n");
 				printf("\n");
   				exit(0);
@@ -258,8 +257,10 @@ int main (int argc, char *argv[]) {
 	g_conf_user_userprompt = cfg_getstr( cfg, "user|prompt-username" );
 	g_conf_user_passprompt = cfg_getstr( cfg, "user|prompt-password" );
 	g_conf_otp_identifier  = cfg_getstr( cfg, "otp|default-identifier" );
-	if( cfg_getbool( cfg, "sso|enabled" ) == cfg_true ) {
-		g_conf_sso = TT_YES;
+	if( g_conf_sso == TT_UNDEFINED ) {
+		if( cfg_getbool( cfg, "sso|enabled" ) == cfg_true ) {
+			g_conf_sso = TT_YES;
+		}
 	}
 	g_conf_sso_exec = cfg_getstr( cfg, "sso|executable" );
 	g_conf_sso_socket = cfg_getstr( cfg, "sso|socket" );
