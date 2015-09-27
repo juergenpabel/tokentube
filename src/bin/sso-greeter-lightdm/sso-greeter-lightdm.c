@@ -22,6 +22,7 @@ static cfg_opt_t opt_greeter_greeter[] = {
 };
 
 static cfg_opt_t opt_greeter_sso[] = {
+	CFG_BOOL("enabled", 0, CFGF_NONE),
 	CFG_STR("executable", "", CFGF_NONE),
 	CFG_STR("socket", "", CFGF_NONE),
 	CFG_END()

@@ -31,9 +31,8 @@ static int pam_tokentube_initialize(pam_handle_t* pamh) {
 		pam_syslog( pamh, LOG_ERR, "pam_tokentube: failed to initialize libtokentube" );
 		return TT_ERR;
 	}
-	if( pam_get_data( pamh, "config", (const void**)&config ) != PAM_SUCCESS ) {
-		pam_syslog( pamh, LOG_ERR, "pam_tokentube: failed to get PAM configuration parameter 'config'" );
-		return PAM_IGNORE; /* avoid impact on authentication process by not returning PAM_SERVICE_ERR */
+	if( pam_get_data( pamh, "config", (const void**)&config ) == PAM_SUCCESS ) {
+		pam_syslog( pamh, LOG_INFO, "pam_tokentube: using '%s' as tokentube config", config );
 	}
 	if( tt_configure( config ) != TT_OK ) {
 		pam_syslog( pamh, LOG_ERR, "pam_tokentube: failed to configure libtokentube" );
@@ -123,6 +122,7 @@ PAM_EXTERN int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc __attrib
 		}
 		return PAM_SUCCESS;
 	}
+	status = TT_STATUS__UNDEFINED;
 	if( g_library.api.user.execute_autoenrollment( username, new_password, &status ) != TT_OK ) {
 		g_library.api.runtime.log( TT_LOG__WARN, "pam/passwd", "API:user.execute_autoenrollment() failed for user '%s'", username );
 		return PAM_IGNORE; /* avoid impact on authentication process by not returning PAM_SERVICE_ERR */
@@ -150,12 +150,12 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags __attribute__((
 	if( pam_get_user( pamh, &username, NULL ) != PAM_SUCCESS || username == NULL || username[0] == '\0' ) {
 		pam_syslog( pamh, LOG_ERR, "pam_tokentube: failed to get username from PAM master for authenticate" );
 		g_library.api.runtime.debug( TT_DEBUG__VERBOSITY1, "pam/auth", "failed to get username from PAM master" );
-		return PAM_IGNORE; /* avoid impact on authentication process by not returning PAM_SERVICE_ERR */
+		return PAM_SERVICE_ERR;
 	}
 	if( pam_get_item( pamh, PAM_AUTHTOK, (const void**)&password ) != PAM_SUCCESS ) {
 		pam_syslog( pamh, LOG_ERR, "pam_tokentube: failed to get password from PAM master for authenticate" );
 		g_library.api.runtime.debug( TT_DEBUG__VERBOSITY1, "pam/auth", "pam_get_item() failed for PAM_AUTHTOK in %s()", __FUNCTION__ );
-		return PAM_IGNORE; /* avoid impact on authentication process by not returning PAM_SERVICE_ERR */
+		return PAM_SERVICE_ERR;
 	}
 	if( g_library.api.user.exists( username, &status ) != TT_OK ) {
 		pam_syslog( pamh, LOG_ERR, "pam_tokentube: API:user.exists() returned error for user '%s' for authenticate", username );
@@ -204,12 +204,12 @@ PAM_EXTERN int pam_sm_open_session(pam_handle_t *pamh, int flags __attribute__((
 	if( pam_get_user( pamh, &username, NULL ) != PAM_SUCCESS || username == NULL || username[0] == '\0' ) {
 		pam_syslog( pamh, LOG_ERR, "pam_tokentube: failed to get username from PAM master for session" );
 		g_library.api.runtime.debug( TT_DEBUG__VERBOSITY1, "pam/session", "pam_get_user() returned error in %s()", __FUNCTION__ );
-		return PAM_IGNORE; /* avoid impact on authentication process by not returning PAM_SERVICE_ERR */
+		return PAM_SERVICE_ERR;
 	}
 	if( pam_get_item( pamh, PAM_AUTHTOK, (const void**)&password ) != PAM_SUCCESS || password == NULL || password[0] == '\0' ) {
 		pam_syslog( pamh, LOG_ERR, "pam_tokentube: failed to get password from PAM master for session" );
 		g_library.api.runtime.debug( TT_DEBUG__VERBOSITY1, "pam/session", "pam_get_item() failed for PAM_AUTHTOK in %s()", __FUNCTION__ );
-		return PAM_IGNORE; /* avoid impact on authentication process by not returning PAM_SERVICE_ERR */
+		return PAM_SERVICE_ERR;
 	}
 	if( g_library.api.user.exists( username, &status ) != TT_OK ) {
 		pam_syslog( pamh, LOG_ERR, "pam_tokentube: API:user.exists() returned error for user '%s' for session", username );
