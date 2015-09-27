@@ -218,7 +218,6 @@ int main (int argc, char *argv[]) {
 		fprintf( stderr, "TokenTube[pba]: terminating\n");
 		exit(-1);
 	}
-//TODO: option to specify pba.conf
 	if( g_library.api.storage.load( TT_FILE__CONFIG_PBA, "/boot/tokentube/pba.conf", buffer, &buffer_size ) != TT_OK ) {
 		g_library.api.runtime.log( TT_LOG__ERROR, "pba", "API:storage.load() failed for [boot]/tokentube/pba.conf" );
 		if( fallback[0] != '\0' ) {
