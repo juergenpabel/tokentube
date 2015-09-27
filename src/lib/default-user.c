@@ -58,6 +58,8 @@ int default__api__user_create(const char* username, const char* password) {
 		filename_end[0] = '\0';
 		if( filename_start != filename_end ) {
 			TT_DEBUG3( "plugin/default", "loading key from '%s' in %s()", filename_start, __FUNCTION__ );
+			strncpy( user.key[key_offset].data.key, basename( filename_start ), sizeof(user.key[key_offset].data.key) );
+			user.key[key_offset].data.key_size = strnlen( user.key[key_offset].data.key, TT_IDENTIFIER_CHAR_MAX );
 			user.key[key_offset].data.value_size = sizeof(user.key[key_offset].data.value);
 			if( default__storage_posix_load( TT_FILE__KEY, filename_start, user.key[key_offset].data.value, &user.key[key_offset].data.value_size ) != TT_OK ) {
 				TT_LOG_ERROR( "plugin/default", "default__storage_posix_load() failed in %s()", __FUNCTION__ );
@@ -70,11 +72,6 @@ int default__api__user_create(const char* username, const char* password) {
 				return TT_ERR;
 			}
 			filename_start = strrchr( filename_start, '/' ) + 1;
-			user.key[key_offset].data.key_size = sizeof(user.key[key_offset].data.key);
-			if( libtokentube_crypto_hash_impl( user.crypto.hash, filename_start, strnlen( filename_start, TT_IDENTIFIER_CHAR_MAX ), user.key[key_offset].data.key, &user.key[key_offset].data.key_size) != TT_OK ) {
-				TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hash_impl() failed for hash='%s' in %s()", user.crypto.hash, __FUNCTION__ );
-				return TT_ERR;
-			}
 			key_offset++;
 		}
 		filename_start = filename_end + 1;
