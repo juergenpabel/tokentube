@@ -36,27 +36,28 @@ int default__identifier2uuid(tt_file_t file, const char* identifier, char* out, 
 			config = "storage|otp-files|filename-hash";
 			break;
 		default:
+			TT_LOG_ERROR( "plugin/default", "unsupported type=%d in %s()", file, __FUNCTION__ );
 			return TT_ERR;
 	}
 	if( libtokentube_conf_read_str( config, hash, &hash_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_conf_read_str() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	hash_size = gcry_md_get_algo_dlen( gcry_md_map_name( hash ) );
+	hash_size = gcry_md_get_algo_dlen( gcry_md_map_name( libtokentube_name2oid( hash ) ) );
 	if( hash_size == 0 ) {
-		TT_LOG_ERROR( "plugin/default", "unsupported hash algorithm '%s' in %s()", libtokentube_crypto_get_hash(), __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "unsupported hash algorithm '%s' in %s()", libtokentube_name2oid( hash ), __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( hash_size > sizeof(hash) ) {
-		TT_LOG_ERROR( "plugin/default", "hash algorithm '%s' too many bits in %s()", libtokentube_crypto_get_hash(), __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "hash algorithm '%s' too many bits in %s()", libtokentube_name2oid( hash ), __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( out_size < hash_size*2+1 ) {
-		TT_LOG_ERROR( "plugin/default", "buffer too small for hash algorithm '%s' in %s()", libtokentube_crypto_get_hash(), __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "buffer too small for hash algorithm '%s' in %s()", libtokentube_name2oid( hash ), __FUNCTION__ );
 		return TT_ERR;
 	}
 	memset( out, '\0', out_size );
-	if( libtokentube_crypto_hash( identifier, strlen(identifier), hash, &hash_size ) != TT_OK ) {
+	if( libtokentube_crypto_hash_impl( libtokentube_name2oid( hash ), identifier, strnlen( identifier, TT_IDENTIFIER_CHAR_MAX ), hash, &hash_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
 		return TT_ERR;
 	}
