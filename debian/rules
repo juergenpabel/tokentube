@@ -82,7 +82,6 @@ install: build
 	chmod 775 $(CURDIR)/debian/tokentube/boot/tokentube/user/
 	mkdir -p  $(CURDIR)/debian/tokentube/boot/tokentube/otp/
 	chmod 775 $(CURDIR)/debian/tokentube/boot/tokentube/otp/
-	install -m 0644 $(CURDIR)/conf/boot_tokentube_crypto.conf	$(CURDIR)/debian/tokentube/boot/tokentube/crypto.conf
 	install -m 0644 $(CURDIR)/conf/boot_tokentube_pba.conf		$(CURDIR)/debian/tokentube/boot/tokentube/pba.conf
 	install -m 0644 $(CURDIR)/conf/boot_tokentube_pba_user.conf	$(CURDIR)/debian/tokentube/boot/tokentube/pba/user.conf
 	touch 								$(CURDIR)/debian/tokentube/boot/tokentube/pba/user-default.conf
