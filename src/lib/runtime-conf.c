@@ -38,6 +38,7 @@ static cfg_opt_t opt_tokentube_crypto[] = {
 };
 
 static cfg_opt_t opt_tokentube_storage_user_files[] = {
+	CFG_STR("filename-hash", "", CFGF_NONE),
 	CFG_STR("owner", "", CFGF_NONE),
 	CFG_STR("group", "", CFGF_NONE),
 	CFG_STR("permission",  "", CFGF_NONE),
@@ -45,6 +46,7 @@ static cfg_opt_t opt_tokentube_storage_user_files[] = {
 };
 
 static cfg_opt_t opt_tokentube_storage_otp_files[] = {
+	CFG_STR("filename-hash", "", CFGF_NONE),
 	CFG_STR("owner", "", CFGF_NONE),
 	CFG_STR("group", "", CFGF_NONE),
 	CFG_STR("permission",  "", CFGF_NONE),
