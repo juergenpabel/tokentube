@@ -121,7 +121,10 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libtokentube_plugin_helpdesk_la_LIBADD =
 am_libtokentube_plugin_helpdesk_la_OBJECTS =  \
 	libtokentube_plugin_helpdesk_la-plugin.lo \
-	libtokentube_plugin_helpdesk_la-smtp.lo
+	libtokentube_plugin_helpdesk_la-storage.lo \
+	libtokentube_plugin_helpdesk_la-storage-file.lo \
+	libtokentube_plugin_helpdesk_la-storage-smtp.lo \
+	libtokentube_plugin_helpdesk_la-storage-rest.lo
 libtokentube_plugin_helpdesk_la_OBJECTS =  \
 	$(am_libtokentube_plugin_helpdesk_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -321,7 +324,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 lib_LTLIBRARIES = libtokentube-plugin-helpdesk.la
-libtokentube_plugin_helpdesk_la_SOURCES = plugin.c smtp.c
+libtokentube_plugin_helpdesk_la_SOURCES = plugin.c storage.c storage-file.c storage-smtp.c storage-rest.c
 libtokentube_plugin_helpdesk_la_CFLAGS = -I../../../include 
 libtokentube_plugin_helpdesk_la_LDFLAGS = -L../../../src/lib/.libs -ltokentube -lgcrypt -lconfuse -lgpgme -lesmtp -lresolv
 all: all-am
@@ -404,7 +407,10 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_plugin_helpdesk_la-plugin.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_plugin_helpdesk_la-smtp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_plugin_helpdesk_la-storage-file.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_plugin_helpdesk_la-storage-rest.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_plugin_helpdesk_la-storage-smtp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_plugin_helpdesk_la-storage.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -434,12 +440,33 @@ libtokentube_plugin_helpdesk_la-plugin.lo: plugin.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_helpdesk_la_CFLAGS) $(CFLAGS) -c -o libtokentube_plugin_helpdesk_la-plugin.lo `test -f 'plugin.c' || echo '$(srcdir)/'`plugin.c
 
-libtokentube_plugin_helpdesk_la-smtp.lo: smtp.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_helpdesk_la_CFLAGS) $(CFLAGS) -MT libtokentube_plugin_helpdesk_la-smtp.lo -MD -MP -MF $(DEPDIR)/libtokentube_plugin_helpdesk_la-smtp.Tpo -c -o libtokentube_plugin_helpdesk_la-smtp.lo `test -f 'smtp.c' || echo '$(srcdir)/'`smtp.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_plugin_helpdesk_la-smtp.Tpo $(DEPDIR)/libtokentube_plugin_helpdesk_la-smtp.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='smtp.c' object='libtokentube_plugin_helpdesk_la-smtp.lo' libtool=yes @AMDEPBACKSLASH@
+libtokentube_plugin_helpdesk_la-storage.lo: storage.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_helpdesk_la_CFLAGS) $(CFLAGS) -MT libtokentube_plugin_helpdesk_la-storage.lo -MD -MP -MF $(DEPDIR)/libtokentube_plugin_helpdesk_la-storage.Tpo -c -o libtokentube_plugin_helpdesk_la-storage.lo `test -f 'storage.c' || echo '$(srcdir)/'`storage.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_plugin_helpdesk_la-storage.Tpo $(DEPDIR)/libtokentube_plugin_helpdesk_la-storage.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='storage.c' object='libtokentube_plugin_helpdesk_la-storage.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_helpdesk_la_CFLAGS) $(CFLAGS) -c -o libtokentube_plugin_helpdesk_la-smtp.lo `test -f 'smtp.c' || echo '$(srcdir)/'`smtp.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_helpdesk_la_CFLAGS) $(CFLAGS) -c -o libtokentube_plugin_helpdesk_la-storage.lo `test -f 'storage.c' || echo '$(srcdir)/'`storage.c
+
+libtokentube_plugin_helpdesk_la-storage-file.lo: storage-file.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_helpdesk_la_CFLAGS) $(CFLAGS) -MT libtokentube_plugin_helpdesk_la-storage-file.lo -MD -MP -MF $(DEPDIR)/libtokentube_plugin_helpdesk_la-storage-file.Tpo -c -o libtokentube_plugin_helpdesk_la-storage-file.lo `test -f 'storage-file.c' || echo '$(srcdir)/'`storage-file.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_plugin_helpdesk_la-storage-file.Tpo $(DEPDIR)/libtokentube_plugin_helpdesk_la-storage-file.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='storage-file.c' object='libtokentube_plugin_helpdesk_la-storage-file.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_helpdesk_la_CFLAGS) $(CFLAGS) -c -o libtokentube_plugin_helpdesk_la-storage-file.lo `test -f 'storage-file.c' || echo '$(srcdir)/'`storage-file.c
+
+libtokentube_plugin_helpdesk_la-storage-smtp.lo: storage-smtp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_helpdesk_la_CFLAGS) $(CFLAGS) -MT libtokentube_plugin_helpdesk_la-storage-smtp.lo -MD -MP -MF $(DEPDIR)/libtokentube_plugin_helpdesk_la-storage-smtp.Tpo -c -o libtokentube_plugin_helpdesk_la-storage-smtp.lo `test -f 'storage-smtp.c' || echo '$(srcdir)/'`storage-smtp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_plugin_helpdesk_la-storage-smtp.Tpo $(DEPDIR)/libtokentube_plugin_helpdesk_la-storage-smtp.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='storage-smtp.c' object='libtokentube_plugin_helpdesk_la-storage-smtp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_helpdesk_la_CFLAGS) $(CFLAGS) -c -o libtokentube_plugin_helpdesk_la-storage-smtp.lo `test -f 'storage-smtp.c' || echo '$(srcdir)/'`storage-smtp.c
+
+libtokentube_plugin_helpdesk_la-storage-rest.lo: storage-rest.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_helpdesk_la_CFLAGS) $(CFLAGS) -MT libtokentube_plugin_helpdesk_la-storage-rest.lo -MD -MP -MF $(DEPDIR)/libtokentube_plugin_helpdesk_la-storage-rest.Tpo -c -o libtokentube_plugin_helpdesk_la-storage-rest.lo `test -f 'storage-rest.c' || echo '$(srcdir)/'`storage-rest.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_plugin_helpdesk_la-storage-rest.Tpo $(DEPDIR)/libtokentube_plugin_helpdesk_la-storage-rest.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='storage-rest.c' object='libtokentube_plugin_helpdesk_la-storage-rest.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_plugin_helpdesk_la_CFLAGS) $(CFLAGS) -c -o libtokentube_plugin_helpdesk_la-storage-rest.lo `test -f 'storage-rest.c' || echo '$(srcdir)/'`storage-rest.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

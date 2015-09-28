@@ -110,7 +110,7 @@ static int helpdesk__impl__send(const char* data) {
 
 
 __attribute__ ((visibility ("hidden")))
-int helpdesk__api__storage_save(tt_file_t file, const char* identifier, const char* data, size_t data_size) {
+int helpdesk__impl__smtp(const char* identifier, const char* data, size_t data_size) {
 	char*			ciphertext = NULL;
 	size_t			ciphertext_size = 0;
 	char			key[TT_KEY_BITS_MAX/8] = { 0 };
@@ -123,9 +123,6 @@ int helpdesk__api__storage_save(tt_file_t file, const char* identifier, const ch
 	gpgme_key_t		gpg_key[2] = { NULL, NULL };
 	gpgme_encrypt_result_t	gpg_result;
 
-	if( file != TT_FILE__HELPDESK ) {
-		return TT_IGN;
-	}
 	if( identifier == NULL ) {
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "invoked helpdesk__api__storage_save() without identifier" );
 		return TT_ERR;
