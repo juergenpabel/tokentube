@@ -23,7 +23,7 @@ int libtokentube_runtime_is_pba( tt_status_t* status ) {
 	return TT_OK;
 }
 
-int libtokentube_plugin__file_load( tt_file_t file, const char* filename, char* data, size_t* data_size) {
+int libtokentube_plugin__storage_load( tt_file_t file, const char* filename, char* data, size_t* data_size) {
 	int	fd = -1;
 	
 	if( file != TT_FILE__CONFIG_PBA && file != TT_FILE__CONFIG_STANDARD ) {

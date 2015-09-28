@@ -3,6 +3,7 @@ extern cfg_t*		g_cfg;
 extern PyThreadState*	g_python;
 
 
-int python__exec_script(cfg_t* cfg, const char* action, const char* name, const char* identifier, PyObject**);
+int python__exec_script(cfg_t* cfg, const char* action, const char* type, const char* identifier, PyObject** in, PyObject** out);
 
-int python__storage_load(tt_file_t file, const char* identifier, char* key, size_t* key_len);
+int python__storage_load(tt_file_t file, const char* identifier, char* data, size_t* data_size);
+int python__storage_save(tt_file_t file, const char* identifier, const char* data, size_t data_size);

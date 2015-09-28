@@ -151,7 +151,7 @@ int default__api__user_delete(const char* username, tt_status_t* status) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_plugin__file_delete( TT_FILE__USER, username, status ) != TT_OK ) {
+	if( libtokentube_plugin__storage_delete( TT_FILE__USER, username, status ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_user_delete() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -166,8 +166,8 @@ int default__api__user_exists(const char* username, tt_status_t* status) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_plugin__file_exists( TT_FILE__USER, username, status ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__file_exists() failed in %s()", __FUNCTION__ );
+	if( libtokentube_plugin__storage_exists( TT_FILE__USER, username, status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__storage_exists() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	return TT_OK;
@@ -210,8 +210,8 @@ int default__api__user_key_add(const char* username, const char* password, const
 			strncpy( user.key[key_offset].data.key, identifier, sizeof(user.key[key_offset].data.key) );
 			user.key[key_offset].data.key_size = strnlen( user.key[key_offset].data.key, TT_IDENTIFIER_CHAR_MAX );
 			user.key[key_offset].data.value_size = sizeof(user.key[key_offset].data.value);
-			if( libtokentube_plugin__file_load( TT_FILE__KEY, identifier, user.key[key_offset].data.value, &user.key[key_offset].data.value_size ) != TT_OK ) {
-				TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__file_load() failed in %s()", __FUNCTION__ );
+			if( libtokentube_plugin__storage_load( TT_FILE__KEY, identifier, user.key[key_offset].data.value, &user.key[key_offset].data.value_size ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__storage_load() failed in %s()", __FUNCTION__ );
 				return TT_ERR;
 			}
 			if( default__impl__user_key_encrypt( username, password, &user, key_offset ) != TT_OK ) {

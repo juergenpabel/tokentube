@@ -25,10 +25,10 @@ int default__initialize(tt_plugin_t* plugin) {
 	plugin->interface.api.runtime.get_sysid = default__api__runtime_get_sysid;
 	plugin->interface.api.runtime.get_type = default__api__runtime_get_type;
 	plugin->interface.api.runtime.get_bootdevice = default__api__runtime_get_bootdevice;
-	plugin->interface.api.storage.load = default__api__storage_file_load;
-	plugin->interface.api.storage.save = default__api__storage_file_save;
-	plugin->interface.api.storage.exists = default__api__storage_file_exists;
-	plugin->interface.api.storage.delete = default__api__storage_file_delete;
+	plugin->interface.api.storage.load = default__api__storage_load;
+	plugin->interface.api.storage.save = default__api__storage_save;
+	plugin->interface.api.storage.exists = default__api__storage_exists;
+	plugin->interface.api.storage.delete = default__api__storage_delete;
 	plugin->interface.api.user.create = default__api__user_create;
 	plugin->interface.api.user.update = default__api__user_update;
 	plugin->interface.api.user.delete = default__api__user_delete;

@@ -125,7 +125,7 @@ int libtokentube_conf_configure(const char* filename) {
 		filename = TT_FILENAME__TOKENTUBE_CONF;
 	}
 	g_configuration_filename = strndup( filename, FILENAME_MAX+1 );
-	if( libtokentube_plugin__file_load( TT_FILE__CONFIG_STANDARD, g_configuration_filename, buffer, &buffer_size ) != TT_OK ) {
+	if( libtokentube_plugin__storage_load( TT_FILE__CONFIG_STANDARD, g_configuration_filename, buffer, &buffer_size ) != TT_OK ) {
 		TT_LOG_FATAL( "library/runtime", "could not load configuration file '%s'", g_configuration_filename );
 		free( g_configuration_filename );
 		g_configuration_filename = NULL;

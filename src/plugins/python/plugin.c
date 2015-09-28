@@ -74,6 +74,7 @@ static int configure(const char* filename) {
 		return TT_ERR;
 	}
 	g_self.interface.api.storage.load = python__storage_load;
+	g_self.interface.api.storage.save = python__storage_save;
 	return TT_OK;
 }
 
