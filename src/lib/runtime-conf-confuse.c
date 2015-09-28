@@ -31,7 +31,7 @@ int libtokentube_runtime_conf__include(cfg_t* cfg, cfg_opt_t* opt, int argc, con
 		} else {
 			filetype = TT_FILE__CONFIG_STANDARD;
 		}
-		if( libtokentube_plugin__file_load( filetype, argv[0], buffer, &buffer_size ) != TT_OK ) {
+		if( libtokentube_plugin__storage_load( filetype, argv[0], buffer, &buffer_size ) != TT_OK ) {
 			TT_LOG_ERROR( "library/conf", "internal error in %s at %d", __FUNCTION__, __LINE__ );
 			return 1;
 		}
@@ -80,8 +80,8 @@ int libtokentube_runtime_conf__include(cfg_t* cfg, cfg_opt_t* opt, int argc, con
 	gcry_md_close( digest );
 
 	buffer_size = sizeof(buffer);
-	if( libtokentube_plugin__file_load( TT_FILE__CONFIG_STANDARD, argv[0], buffer, &buffer_size ) != TT_OK ) {
-		TT_LOG_ERROR( "library/conf", "libtokentube_plugin__file_load('%s') failed in %s()", argv[0], __FUNCTION__ );
+	if( libtokentube_plugin__storage_load( TT_FILE__CONFIG_STANDARD, argv[0], buffer, &buffer_size ) != TT_OK ) {
+		TT_LOG_ERROR( "library/conf", "libtokentube_plugin__storage_load('%s') failed in %s()", argv[0], __FUNCTION__ );
 		return 1;
 	}
 	return cfg_parse_buf( cfg, buffer );

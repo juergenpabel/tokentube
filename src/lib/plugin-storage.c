@@ -10,7 +10,7 @@
 
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_plugin__file_load(tt_file_t type, const char* identifier, char* buffer, size_t* buffer_len) {
+int libtokentube_plugin__storage_load(tt_file_t type, const char* identifier, char* buffer, size_t* buffer_len) {
 	tt_module_t*	module;
 	size_t		i;
 
@@ -45,7 +45,7 @@ int libtokentube_plugin__file_load(tt_file_t type, const char* identifier, char*
 
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_plugin__file_save(tt_file_t type, const char* identifier, const char* buffer, size_t buffer_len) {
+int libtokentube_plugin__storage_save(tt_file_t type, const char* identifier, const char* buffer, size_t buffer_len) {
 	tt_module_t* module;
 	size_t i;
 
@@ -79,7 +79,7 @@ int libtokentube_plugin__file_save(tt_file_t type, const char* identifier, const
 
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_plugin__file_exists(tt_file_t type, const char* identifier, tt_status_t* status) {
+int libtokentube_plugin__storage_exists(tt_file_t type, const char* identifier, tt_status_t* status) {
 	tt_module_t* module;
 	size_t	i;
 
@@ -123,7 +123,7 @@ int libtokentube_plugin__file_exists(tt_file_t type, const char* identifier, tt_
 
 
 __attribute__ ((visibility ("hidden")))
-int libtokentube_plugin__file_delete(tt_file_t type, const char* identifier, tt_status_t* status) {
+int libtokentube_plugin__storage_delete(tt_file_t type, const char* identifier, tt_status_t* status) {
 	tt_module_t*	module;
 	size_t		i;
 

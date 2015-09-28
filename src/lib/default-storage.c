@@ -14,7 +14,7 @@
 
 
 __attribute__ ((visibility ("hidden")))
-int default__api__storage_file_load(tt_file_t type, const char* identifier, char* buffer, size_t* buffer_size) {
+int default__api__storage_load(tt_file_t type, const char* identifier, char* buffer, size_t* buffer_size) {
 	char		filename[FILENAME_MAX+1] = {0};
 	tt_runtime_t	runtime = TT_RUNTIME__UNDEFINED;
 	size_t		pos = 0;
@@ -64,7 +64,7 @@ int default__api__storage_file_load(tt_file_t type, const char* identifier, char
 
 
 __attribute__ ((visibility ("hidden")))
-int default__api__storage_file_save(tt_file_t type, const char* identifier, const char* buffer, size_t buffer_size) {
+int default__api__storage_save(tt_file_t type, const char* identifier, const char* buffer, size_t buffer_size) {
 	char		filename[FILENAME_MAX+1] = {0};
 	tt_runtime_t	runtime = TT_RUNTIME__UNDEFINED;
 	size_t		pos = 0;
@@ -114,7 +114,7 @@ int default__api__storage_file_save(tt_file_t type, const char* identifier, cons
 
 
 __attribute__ ((visibility ("hidden")))
-int default__api__storage_file_exists(tt_file_t type, const char* identifier, tt_status_t* status) {
+int default__api__storage_exists(tt_file_t type, const char* identifier, tt_status_t* status) {
 	char		filename[FILENAME_MAX+1] = {0};
 	tt_runtime_t	runtime = TT_RUNTIME__UNDEFINED;
 	size_t		pos = 0;
@@ -164,7 +164,7 @@ int default__api__storage_file_exists(tt_file_t type, const char* identifier, tt
 
 
 __attribute__ ((visibility ("hidden")))
-int default__api__storage_file_delete(tt_file_t type, const char* identifier, tt_status_t* status) {
+int default__api__storage_delete(tt_file_t type, const char* identifier, tt_status_t* status) {
 	char		filename[FILENAME_MAX+1] = {0};
 	tt_runtime_t	runtime = TT_RUNTIME__UNDEFINED;
 	size_t		pos = 0;

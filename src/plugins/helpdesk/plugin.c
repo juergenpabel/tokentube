@@ -66,7 +66,7 @@ cfg_opt_t opt_config[] = {
 
 
 static int initialize() {
-	g_self.interface.api.storage.save = helpdesk__api__file_save;
+	g_self.interface.api.storage.save = helpdesk__api__storage_save;
 	return TT_OK;
 }
 

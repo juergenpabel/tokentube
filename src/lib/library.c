@@ -37,10 +37,10 @@ int libtokentube_library_configure() {
 	g_library_api.crypto.hash = libtokentube_crypto_hash;
 	g_library_api.crypto.hmac = libtokentube_crypto_hmac;
 	g_library_api.crypto.kdf = libtokentube_crypto_kdf;
-	g_library_api.storage.load = libtokentube_plugin__file_load;
-	g_library_api.storage.save = libtokentube_plugin__file_save;
-	g_library_api.storage.exists = libtokentube_plugin__file_exists;
-	g_library_api.storage.delete = libtokentube_plugin__file_delete;
+	g_library_api.storage.load = libtokentube_plugin__storage_load;
+	g_library_api.storage.save = libtokentube_plugin__storage_save;
+	g_library_api.storage.exists = libtokentube_plugin__storage_exists;
+	g_library_api.storage.delete = libtokentube_plugin__storage_delete;
 	g_library_api.user.create = libtokentube_plugin__user_create;
 	g_library_api.user.update = libtokentube_plugin__user_update;
 	g_library_api.user.delete = libtokentube_plugin__user_delete;

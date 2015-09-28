@@ -71,10 +71,10 @@ int  default__api__pba_install_pre(const char* type, const char* path);
 int  default__api__pba_install_run(const char* type, const char* path);
 int  default__api__pba_install_post(const char* type, const char* path);
 
-int  default__api__storage_file_load(tt_file_t type, const char* identifier, char* buffer, size_t* buffer_size);
-int  default__api__storage_file_save(tt_file_t type, const char* identifier, const char* buffer, size_t buffer_size);
-int  default__api__storage_file_exists(tt_file_t type, const char* identifier, tt_status_t* status);
-int  default__api__storage_file_delete(tt_file_t type, const char* identifier, tt_status_t* status);
+int  default__api__storage_load(tt_file_t type, const char* identifier, char* buffer, size_t* buffer_size);
+int  default__api__storage_save(tt_file_t type, const char* identifier, const char* buffer, size_t buffer_size);
+int  default__api__storage_exists(tt_file_t type, const char* identifier, tt_status_t* status);
+int  default__api__storage_delete(tt_file_t type, const char* identifier, tt_status_t* status);
 
 int  default__api__user_create(const char* username, const char* password);
 int  default__api__user_update(const char* username, const char* old_password, const char* new_password, tt_status_t* status);

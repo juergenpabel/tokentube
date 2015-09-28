@@ -60,8 +60,8 @@ int default__impl__user_storage_load(const char* username, dflt_user_t* user) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_plugin__file_load( TT_FILE__USER, username, buffer, &buffer_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__file_load() failed for username='%s' in %s()", username, __FUNCTION__ );
+	if( libtokentube_plugin__storage_load( TT_FILE__USER, username, buffer, &buffer_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__storage_load() failed for username='%s' in %s()", username, __FUNCTION__ );
 		return TT_ERR;
 	}
 	cfg = cfg_init( opt, CFGF_NONE );
@@ -193,8 +193,8 @@ int default__impl__user_storage_save(const char* username, const dflt_user_t* us
 		return TT_ERR;
 	}
 	cfg_free( cfg );
-	if( libtokentube_plugin__file_save( TT_FILE__USER, username, buffer, buffer_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__file_save() failed for username '%s' in %s()", username, __FUNCTION__ );
+	if( libtokentube_plugin__storage_save( TT_FILE__USER, username, buffer, buffer_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__storage_save() failed for username '%s' in %s()", username, __FUNCTION__ );
 		return TT_ERR;
 	}
 	return TT_OK;
@@ -208,7 +208,7 @@ int default__impl__user_storage_delete(const char* username, tt_status_t* status
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	return libtokentube_plugin__file_delete( TT_FILE__USER, username, status );
+	return libtokentube_plugin__storage_delete( TT_FILE__USER, username, status );
 }
 
 
@@ -219,6 +219,6 @@ int default__impl__user_storage_exists(const char* username, tt_status_t* status
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	return libtokentube_plugin__file_exists( TT_FILE__USER, username, status );
+	return libtokentube_plugin__storage_exists( TT_FILE__USER, username, status );
 }
 
