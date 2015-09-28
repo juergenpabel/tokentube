@@ -19,27 +19,27 @@ int libtokentube_plugin__storage_load(tt_file_t type, const char* identifier, ch
 		TT_LOG_ERROR( "library/plugin", "invalid parameters in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	TT_DEBUG3( "library/plugin", "invoking 'file_load' handlers" );
+	TT_DEBUG3( "library/plugin", "invoking 'storage_load' handlers" );
 	for( i=0; i<MAX_PLUGINS+1; i++ ) {
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
-			TT_DEBUG5( "library/plugin", "checking 'file_load' for plugin '%s'", module->name );
+			TT_DEBUG5( "library/plugin", "checking 'storage_load' for plugin '%s'", module->name );
 			if( module->plugin->interface.api.storage.load != NULL ) {
-				TT_DEBUG4( "library/plugin", "invoking 'file_load' for plugin '%s'", module->name );
+				TT_DEBUG4( "library/plugin", "invoking 'storage_load' for plugin '%s'", module->name );
 				switch( module->plugin->interface.api.storage.load(type, identifier, buffer, buffer_len) ) {
 					case TT_OK:
-						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'file_load'", module->name );
+						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'storage_load'", module->name );
 						return TT_OK;
 					case TT_IGN:
-						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'file_load'", module->name );
+						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'storage_load'", module->name );
 						break;
 					default:
-						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'file_load'", module->name );
+						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'storage_load'", module->name );
 				}
 			}
 		}
 	}
-	TT_LOG_ERROR( "library/plugin", "no plugin handled 'file_load', returning TT_ERR" );
+	TT_LOG_ERROR( "library/plugin", "no plugin handled 'storage_load', returning TT_ERR" );
 	return TT_ERR;
 }
 
@@ -54,26 +54,26 @@ int libtokentube_plugin__storage_save(tt_file_t type, const char* identifier, co
 		TT_LOG_ERROR( "library/plugin", "invalid parameters in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	TT_DEBUG3( "library/plugin", "invoking 'file_save' handlers" );
+	TT_DEBUG3( "library/plugin", "invoking 'storage_save' handlers" );
 	for( i=0; i<MAX_PLUGINS+1; i++ ) {
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
-			TT_DEBUG5( "library/plugin", "checking 'file_save' for plugin '%s'", module->name );
+			TT_DEBUG5( "library/plugin", "checking 'storage_save' for plugin '%s'", module->name );
 			if( module->plugin->interface.api.storage.save != NULL ) {
 				switch( module->plugin->interface.api.storage.save(type, identifier, buffer, buffer_len) ) {
 					case TT_OK:
-						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'file_save'", module->name );
+						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'storage_save'", module->name );
 						return TT_OK;
 					case TT_IGN:
-						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'file_save'", module->name );
+						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'storage_save'", module->name );
 						break;
 					default:
-						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'file_save'", module->name );
+						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'storage_save'", module->name );
 				}
 			}
 		}
 	}
-	TT_LOG_ERROR( "library/plugin", "no plugin handled 'file_save', returning TT_ERR" );
+	TT_LOG_ERROR( "library/plugin", "no plugin handled 'storage_save', returning TT_ERR" );
 	return TT_ERR;
 }
 
@@ -88,36 +88,36 @@ int libtokentube_plugin__storage_exists(tt_file_t type, const char* identifier, 
 		TT_LOG_ERROR( "library/plugin", "invalid parameters in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	TT_DEBUG3( "library/plugin", "invoking 'file_exists' handlers" );
+	TT_DEBUG3( "library/plugin", "invoking 'storage_exists' handlers" );
 	*status = TT_STATUS__UNDEFINED;
 	for( i=0; i<MAX_PLUGINS+1; i++ ) {
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
-			TT_DEBUG5( "library/plugin", "checking 'file_exists' for plugin '%s'", module->name );
+			TT_DEBUG5( "library/plugin", "checking 'storage_exists' for plugin '%s'", module->name );
 			if( module->plugin->interface.api.storage.exists != NULL ) {
 				switch( module->plugin->interface.api.storage.exists(type, identifier, status) ) {
 					case TT_OK:
 						if( *status == TT_YES ) {
-							TT_DEBUG4( "library/plugin", "plugin '%s' return TT_YES for 'file_exists'", module->name );
+							TT_DEBUG4( "library/plugin", "plugin '%s' return TT_YES for 'storage_exists'", module->name );
 							return TT_OK;
 						} else {
-							TT_DEBUG4( "library/plugin", "plugin '%s' return TT_NO for 'file_exists'", module->name );
+							TT_DEBUG4( "library/plugin", "plugin '%s' return TT_NO for 'storage_exists'", module->name );
 						}
 						break;
 					case TT_IGN:
-						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'file_exists'", module->name );
+						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'storage_exists'", module->name );
 						break;
 					default:
-						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'file_exists'", module->name );
+						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'storage_exists'", module->name );
 				}
 			}
 		}
 	}
 	if( *status == TT_NO ) {
-		TT_DEBUG3( "library/plugin", "returning TT_NO for 'file_exists'" );
+		TT_DEBUG3( "library/plugin", "returning TT_NO for 'storage_exists'" );
 		return TT_OK;
 	}
-	TT_LOG_ERROR( "library/plugin", "no plugin handled 'file_exists', returning TT_ERR" );
+	TT_LOG_ERROR( "library/plugin", "no plugin handled 'storage_exists', returning TT_ERR" );
 	return TT_ERR;
 }
 
@@ -132,36 +132,36 @@ int libtokentube_plugin__storage_delete(tt_file_t type, const char* identifier, 
 		TT_LOG_ERROR( "library/plugin", "invalid parameters in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	TT_DEBUG3( "library/plugin", "invoking 'file_delete' handlers" );
+	TT_DEBUG3( "library/plugin", "invoking 'storage_delete' handlers" );
 	*status = TT_STATUS__UNDEFINED;
 	for( i=0; i<MAX_PLUGINS+1; i++ ) {
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
-			TT_DEBUG5( "library/plugin", "checking 'file_exists' for plugin '%s'", module->name );
+			TT_DEBUG5( "library/plugin", "checking 'storage_exists' for plugin '%s'", module->name );
 			if( module->plugin->interface.api.storage.delete != NULL ) {
 				switch( module->plugin->interface.api.storage.delete(type, identifier, status) ) {
 					case TT_OK:
 						if( *status == TT_YES ) {
-							TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'file_delete'", module->name );
+							TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'storage_delete'", module->name );
 							return TT_OK;
 						} else {
-							TT_DEBUG4( "library/plugin", "plugin '%s' return TT_NO for 'file_delete'", module->name );
+							TT_DEBUG4( "library/plugin", "plugin '%s' return TT_NO for 'storage_delete'", module->name );
 						}
 						break;
 					case TT_IGN:
-						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'file_delete'", module->name );
+						TT_DEBUG5( "library/plugin", "plugin '%s' ignored 'storage_delete'", module->name );
 						break;
 					default:
-						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'file_delete'", module->name );
+						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'storage_delete'", module->name );
 				}
 			}
 		}
 	}
 	if( *status == TT_NO ) {
-		TT_DEBUG3( "library/plugin", "returning TT_NO for 'file_delete'", module->name );
+		TT_DEBUG3( "library/plugin", "returning TT_NO for 'storage_delete'", module->name );
 		return TT_OK;
 	}
-	TT_LOG_ERROR( "library/plugin", "no plugin handled 'file_delete', returning TT_ERR" );
+	TT_LOG_ERROR( "library/plugin", "no plugin handled 'storage_delete', returning TT_ERR" );
 	return TT_ERR;
 }
 

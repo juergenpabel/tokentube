@@ -108,7 +108,7 @@ int default__impl__otp_delete(const char* identifier) {
 		return TT_ERR;
 	}
 	if( libtokentube_plugin__storage_delete( TT_FILE__OTP, identifier, &status ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "api:file_delete() failed for '%s' in %s()", identifier, __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "api:storage_delete() failed for '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( status == TT_YES ) {
