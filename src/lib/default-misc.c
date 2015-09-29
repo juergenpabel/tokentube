@@ -19,15 +19,18 @@
 
 __attribute__ ((visibility ("hidden")))
 int default__identifier2uuid(tt_file_t file, const char* identifier, char* out, size_t out_size) {
-	char*   config = NULL;
-	char	hash[TT_DIGEST_BITS_MAX/8] = {0};
+	char	hash[TT_IDENTIFIER_CHAR_MAX] = {0};
 	size_t	hash_size = sizeof(hash);
+	char	data[TT_DIGEST_BITS_MAX/8] = {0};
+	size_t	data_size = sizeof(data);
+	char*   config = NULL;
 
 	TT_TRACE( "library/plugin", "%s(identifier='%s',out=%p, out_size=%zd)", __FUNCTION__, identifier, out, out_size );
 	if( identifier == NULL || identifier[0] == '\0' || out == NULL || out_size == 0 ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
+	memset( out, '\0', out_size );
 	switch( file ) {
 		case TT_FILE__USER:
 			config = "storage|user-files|filename-hash";
@@ -43,25 +46,15 @@ int default__identifier2uuid(tt_file_t file, const char* identifier, char* out, 
 		TT_LOG_ERROR( "plugin/default", "libtokentube_conf_read_str() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	hash_size = gcry_md_get_algo_dlen( gcry_md_map_name( libtokentube_name2oid( hash ) ) );
-	if( hash_size == 0 ) {
-		TT_LOG_ERROR( "plugin/default", "unsupported hash algorithm '%s' in %s()", libtokentube_name2oid( hash ), __FUNCTION__ );
-		return TT_ERR;
+	if( strncasecmp( hash, "null", TT_IDENTIFIER_CHAR_MAX ) == 0 ) {
+		strncpy( out, identifier, out_size );
+		return TT_OK;
 	}
-	if( hash_size > sizeof(hash) ) {
-		TT_LOG_ERROR( "plugin/default", "hash algorithm '%s' too many bits in %s()", libtokentube_name2oid( hash ), __FUNCTION__ );
-		return TT_ERR;
-	}
-	if( out_size < hash_size*2+1 ) {
-		TT_LOG_ERROR( "plugin/default", "buffer too small for hash algorithm '%s' in %s()", libtokentube_name2oid( hash ), __FUNCTION__ );
-		return TT_ERR;
-	}
-	memset( out, '\0', out_size );
-	if( libtokentube_crypto_hash_impl( libtokentube_name2oid( hash ), identifier, strnlen( identifier, TT_IDENTIFIER_CHAR_MAX ), hash, &hash_size ) != TT_OK ) {
+	if( libtokentube_crypto_hash_impl( libtokentube_name2oid( hash ), identifier, strnlen( identifier, TT_IDENTIFIER_CHAR_MAX ), data, &data_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
 		return TT_ERR;
 	}
-	if( libtokentube_util_hex_encode( hash, hash_size, out, &out_size ) != TT_OK ) {
+	if( libtokentube_util_hex_encode( data, data_size, out, &out_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
 		return TT_ERR;
 	}

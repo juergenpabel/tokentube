@@ -18,7 +18,8 @@ static cfg_opt_t opt_helpdesk_data[] = {
 	CFG_STR("otp-hash", NULL, CFGF_NODEFAULT),
 	CFG_INT("otp-iterations", 0, CFGF_NODEFAULT),
 	CFG_INT("otp-bits", 0, CFGF_NODEFAULT),
-	CFG_STR("luks-key", NULL, CFGF_NODEFAULT),
+	CFG_STR("key-id", NULL, CFGF_NODEFAULT),
+	CFG_STR("key-data", NULL, CFGF_NODEFAULT),
 	CFG_END()
 };
 
@@ -68,13 +69,14 @@ void default__event__otp_created(const char* identifier) {
 	cfg_setstr( cfg, "helpdesk|otp-hash", otp.hash );
 	cfg_setint( cfg, "helpdesk|otp-iterations", 1 );
 	cfg_setint( cfg, "helpdesk|otp-bits", (int)otp.bits );
+	cfg_setstr( cfg, "helpdesk|key-id", identifier );
 	memset( buffer,'\0', sizeof(buffer) );
 	if( libtokentube_util_base64_encode( key, key_size, buffer, &buffer_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "API:base64_encode failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		cfg_free( cfg );
 		return;
 	}
-	cfg_setstr( cfg, "helpdesk|luks-key", buffer );
+	cfg_setstr( cfg, "helpdesk|key-data", buffer );
 	buffer_size = sizeof(buffer);
 	if( libtokentube_runtime_conf__serialize( cfg, buffer, &buffer_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_cfg_serialize() failed in %s()", __FUNCTION__ );
@@ -148,21 +150,15 @@ int default__api__otp_execute_response(const char* identifier, const char* chall
 	char		challenge_raw[2+TT_OTP_BITS_MAX/8] = {0};
 	size_t		challenge_raw_size = sizeof(challenge_raw);
 	char		response_raw[2+TT_OTP_BITS_MAX/8] = {0};
-	char		key_bytes[TT_KEY_BITS_MAX/8] = {0};
-	size_t		key_bytes_size = sizeof(key_bytes);
-	char		hash_bytes[TT_DIGEST_BITS_MAX/8] = {0};
-	char		helpdesk_otp_hash[64];
-	size_t		helpdesk_otp_iterations = 0;
-	size_t		helpdesk_otp_bits = 0;
+	char		key[TT_KEY_BITS_MAX/8] = {0};
+	size_t		key_size = sizeof(key);
 	char		helpdesk_luks_key[TT_KEY_BITS_MAX/8/6*8+3+1] = {0};
+	size_t		helpdesk_otp_iter = 0;
 	int		challenge_size = 0;
 	cfg_t*		cfg = NULL;
-	gcry_error_t	err = 0;
-	gcry_md_hd_t	digest = NULL;
-	void*		digest_result;
 	size_t		i = 0;
-	int		hash_id;
 	unsigned short	crc;
+	tt_otp_t	otp = {0};
 
 
 	TT_TRACE( "plugin/default", "%s(identifier='%s',challenge='%s')", __FUNCTION__, identifier, challenge );
@@ -181,47 +177,49 @@ int default__api__otp_execute_response(const char* identifier, const char* chall
 	}
 	if( cfg_parse_buf( cfg, buffer ) != CFG_SUCCESS ) {
 		TT_LOG_ERROR( "plugin/default", "cfg_parse() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
+		cfg_free( cfg );
 		return TT_ERR;
 	}
-	strncpy( helpdesk_otp_hash, cfg_getstr( cfg, "helpdesk|otp-hash" ), sizeof(helpdesk_otp_hash)-1 );
-	helpdesk_otp_bits = cfg_getint( cfg, "helpdesk|otp-bits" );
-	helpdesk_otp_iterations = cfg_getint( cfg, "helpdesk|otp-iterations" );
-	strncpy( helpdesk_luks_key, cfg_getstr( cfg, "helpdesk|luks-key" ), sizeof(helpdesk_luks_key)-1 );
-	if( helpdesk_otp_hash[0] == '\0' || helpdesk_otp_iterations == 0 || helpdesk_otp_bits == 0 || helpdesk_luks_key[0] == '\0' ) {
+	if( strncmp( cfg_getstr( cfg, "helpdesk|key-id" ), identifier, TT_IDENTIFIER_CHAR_MAX ) != 0 ) {
+		TT_LOG_ERROR( "plugin/default", "API:storage_load() for identifier '%s' returned non-matching record in %s()", identifier, __FUNCTION__ );
+		cfg_free( cfg );
+		return TT_ERR;
+	}
+	strncpy( otp.hash, cfg_getstr( cfg, "helpdesk|otp-hash" ), sizeof(otp.hash)-1 );
+	otp.bits = cfg_getint( cfg, "helpdesk|otp-bits" );
+	helpdesk_otp_iter = cfg_getint( cfg, "helpdesk|otp-iterations" );
+	strncpy( helpdesk_luks_key, cfg_getstr( cfg, "helpdesk|key-data" ), sizeof(helpdesk_luks_key)-1 );
+	if( otp.hash[0] == '\0' || helpdesk_otp_iter == 0 || otp.bits == 0 || helpdesk_luks_key[0] == '\0' ) {
 		TT_LOG_ERROR( "plugin/default", "error while parsing helpdesk file for identifier '%s'", identifier );
 		cfg_free( cfg );
 		return TT_ERR;
 	}
-	if( libtokentube_util_base64_decode( helpdesk_luks_key, strlen(helpdesk_luks_key), key_bytes, &key_bytes_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "base64_decode() failed for luks-key for identifier '%s'", identifier );
+	if( libtokentube_util_base64_decode( helpdesk_luks_key, strlen(helpdesk_luks_key), key, &key_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "base64_decode() failed for key-data for identifier '%s'", identifier );
 		cfg_free( cfg );
 		return TT_ERR;
 	}
-	if( key_bytes_size < TT_CIPHER_BITS_MIN/8 || key_bytes_size > TT_CIPHER_BITS_MAX/8 ) {
-		TT_LOG_ERROR( "plugin/default", "data too large for identifier '%s'", identifier );
+	if( key_size < TT_CIPHER_BITS_MIN/8 || key_size > TT_CIPHER_BITS_MAX/8 ) {
+		TT_LOG_ERROR( "plugin/default", "data too small or too arge for identifier '%s'", identifier );
 		cfg_free( cfg );
 		return TT_ERR;
 	}
-
-	memcpy( hash_bytes, key_bytes, key_bytes_size );
-	hash_id = gcry_md_map_name( helpdesk_otp_hash );
-	if( gcry_md_get_algo_dlen(hash_id) > TT_DIGEST_BITS_MAX/8 ) {
-		TT_LOG_ERROR( "plugin/default", "size of configured hash ('%s') too big (max=%d)", helpdesk_otp_hash, TT_DIGEST_BITS_MAX/8 );
-		cfg_free( cfg );
-		return TT_ERR;
-	}
-	for( i=0; i<helpdesk_otp_iterations; i++ ) {
-		err = gcry_md_open( &digest, hash_id, 0 );
-		if( err == 0 ) {
-			gcry_md_write( digest, hash_bytes, helpdesk_otp_bits/8 );
-			digest_result = gcry_md_read( digest, 0 );
-			memcpy( hash_bytes, digest_result, helpdesk_otp_bits/8 );
-			gcry_md_close( digest );
-		} else {
-			TT_LOG_ERROR( "plugin/default", "gcry_md_open() failed in %s()", __FUNCTION__ );
+	memcpy( otp.data, key, key_size );
+	for( i=0; i<helpdesk_otp_iter; i++ ) {
+		otp.data_size = sizeof(otp.data);
+		if( libtokentube_crypto_hash_impl( otp.hash, otp.data, otp.bits/8, otp.data, &otp.data_size ) != TT_OK ) {
+			TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hash_impl() failed in %s()", __FUNCTION__ );
 			cfg_free( cfg );
 			return TT_ERR;
 		}
+	}
+	for( i=key_size; i>0; i-- ) {
+		otp.data[i-1] = key[i-1] ^ otp.data[(i-1)%(g_crypto_otp_bits/8)];
+	}
+	if( libtokentube_util_crc16( otp.data, otp.bits/8, &crc ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "crc16() failed in %s()", __FUNCTION__ );
+		cfg_free( cfg );
+		return TT_ERR;
 	}
 	challenge_size = strlen(challenge);
 	if( libtokentube_util_base32_decode( challenge, challenge_size, challenge_raw, &challenge_raw_size ) != TT_OK) {
@@ -229,13 +227,8 @@ int default__api__otp_execute_response(const char* identifier, const char* chall
 		cfg_free( cfg );
 		return TT_ERR;
 	}
-	if( challenge_raw_size != (2+helpdesk_otp_bits/8) ) {
+	if( challenge_raw_size != (2+otp.bits/8) ) {
 		TT_LOG_ERROR( "plugin/default", "challenge and reponse are of different length" );
-		cfg_free( cfg );
-		return TT_ERR;
-	}
-	if( libtokentube_util_crc16( hash_bytes, helpdesk_otp_bits/8, &crc ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "crc16() failed in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;
 	}
@@ -244,35 +237,36 @@ int default__api__otp_execute_response(const char* identifier, const char* chall
 		cfg_free( cfg );
 		return TT_ERR;
 	}
-	for( i=0; i<helpdesk_otp_bits/8; i++ ) {
-		response_raw[2+i] = challenge_raw[2+i] ^ key_bytes[i] ^ hash_bytes[i];
+	for( i=0; i<otp.bits/8; i++ ) {
+		response_raw[2+i] = challenge_raw[2+i] ^ key[i] ^ otp.data[i];
 	}
-	err = gcry_md_open( &digest, hash_id, 0 );
-	if( err == 0 ) {
-		gcry_md_write( digest, hash_bytes, helpdesk_otp_bits/8 );
-		digest_result = gcry_md_read( digest, 0 );
-		memcpy( hash_bytes, digest_result, helpdesk_otp_bits/8 );
-		gcry_md_close( digest );
-	} else {
-		TT_LOG_ERROR( "plugin/default", "gcry_md_open() failed in %s()", __FUNCTION__ );
+	for( i=0; i<key_size; i++ ) {
+		otp.data[i] = otp.data[i] ^ key[i];
+	}
+	otp.data_size = sizeof(otp.data);
+	if( libtokentube_crypto_hash_impl( otp.hash, otp.data, otp.bits/8, otp.data, &otp.data_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hash_impl() failed in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;
 	}
-	if( libtokentube_util_crc16( hash_bytes, helpdesk_otp_bits/8, &crc ) != TT_OK ) {
+	for( i=key_size; i>0; i-- ) {
+		otp.data[i-1] = key[i-1] ^ otp.data[(i-1)%(g_crypto_otp_bits/8)];
+	}
+	if( libtokentube_util_crc16( otp.data, otp.bits/8, &crc ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "API:crc16() failed in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;
 	}
 	response_raw[0] = (crc>>0) & 0xff;
 	response_raw[1] = (crc>>8) & 0xff;
-	if( libtokentube_util_base32_encode(response_raw, 2+helpdesk_otp_bits/8, response, response_size) != TT_OK ) {
+	if( libtokentube_util_base32_encode(response_raw, 2+otp.bits/8, response, response_size) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "API:base32_encode() failed in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;
 	}
 	snprintf( buffer, sizeof(buffer)-1, "plugin/default (%d.%d.%d)", TT_VERSION_MAJOR, TT_VERSION_MINOR, TT_VERSION_PATCH );
 	cfg_setstr( cfg, "api", buffer );
-	cfg_setint( cfg, "helpdesk|otp-iterations", helpdesk_otp_iterations+1 );
+	cfg_setint( cfg, "helpdesk|otp-iterations", helpdesk_otp_iter+1 );
 	buffer_size = sizeof(buffer);
 	if( libtokentube_runtime_conf__serialize( cfg, buffer, &buffer_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_cfg_serialize() failed in %s()", __FUNCTION__ );
@@ -294,9 +288,6 @@ int default__api__otp_execute_apply(const char* identifier, const char* challeng
 	size_t		challenge_raw_size = sizeof(challenge_raw);
 	char		response_raw[TT_OTP_TEXT_MAX+1] = {0};
 	size_t		response_raw_size = sizeof(response_raw);
-	char		hash[TT_DIGEST_BITS_MAX/8] = {0};
-	size_t		hash_size = sizeof(hash);
-	char		xor[TT_OTP_BITS_MAX/8] = {0};
 	size_t		i = 0;
 	unsigned short	crc = 0;
 	tt_otp_t	otp = {0};
@@ -306,6 +297,7 @@ int default__api__otp_execute_apply(const char* identifier, const char* challeng
 		TT_LOG_ERROR( "plugin/default", "invalid parameters in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
+	memset( key, '\0', *key_size );
 	if( libtokentube_util_base32_decode( challenge, strnlen(challenge, TT_OTP_TEXT_MAX), challenge_raw, &challenge_raw_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "base32_decode() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
@@ -315,42 +307,47 @@ int default__api__otp_execute_apply(const char* identifier, const char* challeng
 		return TT_ERR;
 	}
 
-	memset( key, '\0', *key_size );
 	if( default__impl__otp_load( identifier, &otp ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "default__impl__otp_load() failed for '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( otp.data_size % (challenge_raw_size-2) || otp.data_size % (response_raw_size-2) ) {
-		TT_LOG_ERROR( "plugin/default", "otp.data_size=%d, challenge_raw_size=%d, response_raw_size=%d", otp.data_size, challenge_raw_size, response_raw_size );
+	if( otp.data_size == 0 || otp.data_size > sizeof(otp.data) || otp.data_size > *key_size ) {
+		TT_LOG_ERROR( "plugin/default", "invalid otp.data_size for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
-	hash_size = gcry_md_get_algo_dlen( gcry_md_map_name( libtokentube_crypto_get_hash() ) );
-	if( hash_size == 0 || hash_size > sizeof(hash) ) {
-		TT_LOG_ERROR( "plugin/default", "hash_size > sizeof(hash) for identifier '%s' in %s()", identifier, __FUNCTION__ );
+	if( otp.bits/8 == 0 || otp.bits/8 > sizeof(otp.data) || otp.bits/8 > *key_size ) {
+		TT_LOG_ERROR( "plugin/default", "invalid otp.bits for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
-	for( i=0; i<otp.data_size; i++ ) {
+	if( otp.bits/8 != (challenge_raw_size-2) || otp.bits/8 != (response_raw_size-2) ) {
+		TT_LOG_ERROR( "plugin/default", "otp.bits=%d, challenge_raw_size=%d, response_raw_size=%d", otp.bits, challenge_raw_size-2, response_raw_size-2 );
+		return TT_ERR;
+	}
+	*key_size = otp.data_size;
+	for( i=0; i<*key_size; i++ ) {
 		key[i] = challenge_raw[2+i%(otp.bits/8)] ^ response_raw[2+i%(otp.bits/8)] ^ otp.data[i];
 	}
-	if( libtokentube_crypto_hash( otp.data, otp.bits/8, hash, &hash_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "API:crypto_hash() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
+	for( i=0; i<*key_size; i++ ) {
+		otp.data[i] = otp.data[i] ^ key[i];
+	}
+	otp.data_size = sizeof(otp.data);
+	if( libtokentube_crypto_hash_impl( otp.hash, otp.data, otp.bits/8, otp.data, &otp.data_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hash_impl() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_util_crc16( hash, otp.bits/8, &crc ) != TT_OK ) {
+	for( i=*key_size; i>0; i-- ) {
+		otp.data[i-1] = otp.data[(i-1)%(otp.bits/8)] ^ key[i-1];
+	}
+
+	if( libtokentube_util_crc16( otp.data, otp.bits/8, &crc ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "API:crc16() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( (response_raw[0] & 0xff) != ((crc >> 0) & 0xff) || (response_raw[1] & 0xff) != ((crc >> 8) & 0xff) ) {
-		TT_LOG_ERROR( "plugin/default", "crc(response_raw)[%x%x] != hash(data)[%x%x] in %s()", ((crc >> 0) & 0xff), ((crc >> 8) & 0xff), response_raw[0] & 0xff, response_raw[1] & 0xff, __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "crc(response)[%x%x] != hash(otp.data)[%x%x] in %s()", ((crc >> 0) & 0xff), ((crc >> 8) & 0xff), response_raw[0] & 0xff, response_raw[1] & 0xff, __FUNCTION__ );
 		return TT_ERR;
 	}
-	for( i=0; i<otp.bits/8; i++ ) {
-		xor[i] = key[i] ^ hash[i];
-	}
-	for( i=0; i<otp.data_size; i++ ) {
-		otp.data[i] = key[i] ^ xor[i%(otp.bits/8)];
-	}
-	*key_size = otp.data_size;
+	otp.data_size = *key_size;
 	if( default__impl__otp_save( identifier, &otp ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "default__impl__otp_save() failed for '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;

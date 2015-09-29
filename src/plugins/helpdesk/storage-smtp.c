@@ -25,7 +25,7 @@
 extern tt_plugin_t 	g_self;
 
 
-static int helpdesk__impl__mx(const char *name, char *mx, size_t mx_size) {
+static int helpdesk__impl__storage_smtp_mx(const char *name, char *mx, size_t mx_size) {
 	unsigned char response[NS_PACKETSZ];
 	char dispbuf[4096];
 	ns_msg handle;
@@ -59,7 +59,7 @@ static int helpdesk__impl__mx(const char *name, char *mx, size_t mx_size) {
 }
 
 
-static int helpdesk__impl__send(const char* data) {
+static int helpdesk__impl__storage_smtp_send(const char* data) {
 	char			mx[256] = { 0 };
 	char*			server;
 	smtp_session_t		session;
@@ -71,7 +71,7 @@ static int helpdesk__impl__send(const char* data) {
 	if( server == NULL ) {
 		server = strchr( g_conf_smtp_to, '@' ) + 1;
 		g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY4, "plugins/helpdesk", "resolving MX for '%s'...", server );
-		if( helpdesk__impl__mx( server, mx, sizeof(mx)-3-1 ) != TT_OK ) {
+		if( helpdesk__impl__storage_smtp_mx( server, mx, sizeof(mx)-3-1 ) != TT_OK ) {
 			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugins/helpdesk", "failed to resolve MX for '%s'", server );
 			return TT_ERR;
 		}
@@ -96,7 +96,7 @@ static int helpdesk__impl__send(const char* data) {
 		switch( status->code ) {
 			case 250:
 				result = TT_OK;
-				g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY2,  "plugin/helpdesk", "E-Mail send in helpdesk__impl__send()" );
+				g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY2,  "plugin/helpdesk", "E-Mail send in %s()", __FUNCTION__ );
 				break;
 			default:
 				g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "MTA return error:%d %s", status->code, status->text ); 
@@ -110,85 +110,102 @@ static int helpdesk__impl__send(const char* data) {
 
 
 __attribute__ ((visibility ("hidden")))
-int helpdesk__impl__smtp(const char* identifier, const char* data, size_t data_size) {
+int helpdesk__impl__storage_smtp_save(const char* identifier, const char* data, size_t data_size) {
 	char*			ciphertext = NULL;
 	size_t			ciphertext_size = 0;
-	char			key[TT_KEY_BITS_MAX/8] = { 0 };
-	size_t			key_size = sizeof(key);
-	char			sysid[64] = { 0 };
-	size_t			sysid_size = sizeof(sysid);
 	off_t			offset = 0;
 	gpgme_ctx_t		gpg_ctx;
 	gpgme_data_t		gpg_in, gpg_out;
 	gpgme_key_t		gpg_key[2] = { NULL, NULL };
 	gpgme_encrypt_result_t	gpg_result;
 
-	if( identifier == NULL ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "invoked helpdesk__api__storage_save() without identifier" );
+	if( identifier == NULL || identifier[0] == '\0' || data == NULL || data_size == 0 ) {
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY2, "plugin/helpdesk", "invoked helpdesk__api__storage_save('%s')", identifier );
-	if( g_self.library.api.runtime.sysid( sysid, &sysid_size ) != TT_OK ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "error reading host-id" );
-		return TT_ERR;
-	}
-	if( g_self.library.api.storage.load( TT_FILE__KEY, identifier, key, &key_size ) != TT_OK ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "error loading luks-key" );
-		return TT_ERR;
-	}
-
 	gpgme_check_version( NULL );      
 	if( gpgme_new( &gpg_ctx ) != 0 ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_new() failed in helpdesk__api__storage_save()" );
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_new() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	gpgme_set_armor( gpg_ctx, 1 );
 	if( gpgme_data_new_from_mem( &gpg_in, data, data_size, 0 ) != 0 ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_data_new_from_mem() failed in helpdesk__api__storage_save()" );
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_data_new_from_mem() failed in %s()", __FUNCTION__ );
+		gpgme_release( gpg_ctx );
+		return TT_ERR;
 	}
 	if( gpgme_data_new( &gpg_out ) != 0 ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_data_new() failed in helpdesk__api__storage_save()" );
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_data_new() failed in %s()", __FUNCTION__ );
+		gpgme_data_release( gpg_in );
+		gpgme_release( gpg_ctx );
+		return TT_ERR;
 	}
 	if( gpgme_get_key( gpg_ctx, g_conf_smtp_to, &gpg_key[0], 0 ) != 0 ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_get_key() failed in helpdesk__api__storage_save()" );
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_get_key() failed in %s()", __FUNCTION__ );
+		gpgme_data_release( gpg_in );
+		gpgme_data_release( gpg_out );
+		gpgme_release( gpg_ctx );
 		return TT_ERR;
 	}
 	if( gpgme_op_encrypt( gpg_ctx, gpg_key, GPGME_ENCRYPT_ALWAYS_TRUST, gpg_in, gpg_out ) != 0 ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_op_encrypt() failed in helpdesk__api__storage_save()" );
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_op_encrypt() failed in %s()", __FUNCTION__ );
+		gpgme_key_unref( gpg_key[0] );
+		gpgme_data_release( gpg_in );
+		gpgme_data_release( gpg_out );
+		gpgme_release( gpg_ctx );
 		return TT_ERR;
 	}
 	gpg_result = gpgme_op_encrypt_result( gpg_ctx );
 	if( gpg_result == NULL ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_op_encrypt_result() failed in helpdesk__api__storage_save()" );
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_op_encrypt_result() failed in %s()", __FUNCTION__ );
+		gpgme_key_unref( gpg_key[0] );
+		gpgme_data_release( gpg_in );
+		gpgme_data_release( gpg_out );
+		gpgme_release( gpg_ctx );
 		return TT_ERR;
 	}
 	if( gpg_result->invalid_recipients ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_op_encrypt_result() has invalid recipients in helpdesk__api__storage_save()" );
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_op_encrypt_result() has invalid recipients in %s()", __FUNCTION__ );
+		gpgme_key_unref( gpg_key[0] );
+		gpgme_data_release( gpg_in );
+		gpgme_data_release( gpg_out );
+		gpgme_release( gpg_ctx );
 		return TT_ERR;
 	}
 	ciphertext_size = gpgme_data_seek( gpg_out, 0, SEEK_END );
 	ciphertext = malloc( 2+ciphertext_size+1 );
-	if( ciphertext != NULL ) {
-		memset( ciphertext, '\0', 2+ciphertext_size+1 );
-		gpgme_data_seek( gpg_out, 0, SEEK_SET );
-		offset = gpgme_data_read( gpg_out, ciphertext+2, ciphertext_size );
-		if( (long)offset == (long)ciphertext_size ) {
-			ciphertext[0] = '\r';
-			ciphertext[1] = '\n';
-			if( helpdesk__impl__send( ciphertext ) != TT_OK ) {
-				g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "helpdesk__impl__send failed in helpdesk__api__storage_save()" );
-			}
-		} else {
-			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_data_read() failed at position %lu in helpdesk__api__storage_save()", (unsigned long)offset );
-		}
-	} else {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "malloc() failed in helpdesk__api__storage_save()" );
+	if( ciphertext == NULL ) {
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "malloc() failed in %s()", __FUNCTION__ );
+		gpgme_key_unref( gpg_key[0] );
+		gpgme_data_release( gpg_in );
+		gpgme_data_release( gpg_out );
+		gpgme_release( gpg_ctx );
+		return TT_ERR;
 	}
-  
+	memset( ciphertext, '\0', 2+ciphertext_size+1 );
+	gpgme_data_seek( gpg_out, 0, SEEK_SET );
+	offset = gpgme_data_read( gpg_out, ciphertext+2, ciphertext_size );
+	if( (long)offset != (long)ciphertext_size ) {
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "gpgme_data_read() failed at position %lu in %s()", (unsigned long)offset, __FUNCTION__ );
+		gpgme_key_unref( gpg_key[0] );
+		gpgme_data_release( gpg_in );
+		gpgme_data_release( gpg_out );
+		gpgme_release( gpg_ctx );
+		free( ciphertext );
+		return TT_ERR;
+	}
 	gpgme_key_unref( gpg_key[0] );
 	gpgme_data_release( gpg_in );
 	gpgme_data_release( gpg_out );
 	gpgme_release( gpg_ctx );
+	ciphertext[0] = '\r';
+	ciphertext[1] = '\n';
+	if( helpdesk__impl__storage_smtp_send( ciphertext ) != TT_OK ) {
+		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "helpdesk__impl__storage_smtp_send failed in %s()", __FUNCTION__ );
+		free( ciphertext );
+		return TT_ERR;
+	}
+	free( ciphertext );
 	return TT_OK;
 }
 

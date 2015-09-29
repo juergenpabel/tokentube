@@ -56,7 +56,6 @@ int python__storage_load(tt_file_t file, const char* identifier, char* data, siz
 	}
 	memcpy( data, buffer, buffer_size );
 	*data_size = (size_t)buffer_size;
-//TODO: free object & buffer?
 	return TT_OK;
 }
 
@@ -93,7 +92,6 @@ int python__storage_save(tt_file_t file, const char* identifier, const char* dat
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "no script configured for 'storage-save'" );
 		return TT_ERR;
 	}
-//TODO: free object ?
 	return TT_OK;
 }
 
