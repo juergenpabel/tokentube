@@ -25,7 +25,11 @@ static int finalize();
 
 
 __attribute__ ((visibility ("hidden")))
+int		g_conf_enabled = 0;
+
+__attribute__ ((visibility ("hidden")))
 char*		g_conf_file_directory = NULL;
+
 __attribute__ ((visibility ("hidden")))
 char*		g_conf_smtp_server = NULL;
 __attribute__ ((visibility ("hidden")))
@@ -34,6 +38,8 @@ __attribute__ ((visibility ("hidden")))
 char*		g_conf_smtp_to = NULL;
 __attribute__ ((visibility ("hidden")))
 char*		g_conf_smtp_subject = NULL;
+
+
 
 __attribute__ ((visibility ("hidden")))
 tt_plugin_t	g_self;
@@ -74,13 +80,14 @@ cfg_opt_t opt_config[] = {
 
 
 static int initialize() {
-	g_self.interface.api.storage.save = helpdesk__api__storage_save;
 	return TT_OK;
 }
 
 
 static int configure(const char* filename) {
-	cfg_t*		cfg = NULL;
+	const char* item = NULL;
+	size_t      index = 0;
+	cfg_t*      cfg = NULL;
 
 	if( filename == NULL ) {
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "INIT1" );
@@ -91,12 +98,29 @@ static int configure(const char* filename) {
 		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "cfg_parse() failed for '%s'", filename );
 		return TT_ERR;
 	}
+	item = cfg_getnstr( cfg, "helpdesk|enabled", index );
+	while( item != NULL ) {
+		if( strncasecmp( item, "file", 5 ) == 0 ) {
+			g_conf_enabled |= HELPDESK_FILE;
+		}
+		if( strncasecmp( item, "smtp", 5 ) == 0 ) {
+			g_conf_enabled |= HELPDESK_SMTP;
+		}
+		if( strncasecmp( item, "rest", 5 ) == 0 ) {
+			g_conf_enabled |= HELPDESK_REST;
+		}
+		index++;
+		item = cfg_getnstr( cfg, "helpdesk|enabled", index );
+	}
 	g_conf_file_directory = strndup( cfg_getstr( cfg, "helpdesk|file|directory" ), 255 );
 	g_conf_smtp_server = strndup( cfg_getstr( cfg, "helpdesk|smtp|server" ), 128 );
 	g_conf_smtp_from = strndup( cfg_getstr( cfg, "helpdesk|smtp|from" ), 128 );
 	g_conf_smtp_to = strndup( cfg_getstr( cfg, "helpdesk|smtp|to" ), 128 );
 	g_conf_smtp_subject = strndup( cfg_getstr( cfg, "helpdesk|smtp|subject" ), 128 );
+//TODO:rest
 	cfg_free( cfg );
+	g_self.interface.api.storage.load = helpdesk__api__storage_load;
+	g_self.interface.api.storage.save = helpdesk__api__storage_save;
 	return TT_OK;
 }
 

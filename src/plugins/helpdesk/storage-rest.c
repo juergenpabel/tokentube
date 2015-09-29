@@ -11,7 +11,7 @@
 extern tt_plugin_t 	g_self;
 
 
-int helpdesk__impl__rest(const char* identifier, const char* data, size_t data_size) {
+int helpdesk__impl__storage_rest_save(const char* identifier, const char* data, size_t data_size) {
 
 	if( identifier == NULL || data == NULL || data_size == 0 ) {
 		return TT_ERR;
