@@ -2,9 +2,9 @@
 #define __TT_LIBRARY_VERSION_H__
 
 
-#define TT_VERSION_MAJOR	1
+#define TT_VERSION_MAJOR	2
 #define TT_VERSION_MINOR	0
-#define TT_VERSION_PATCH	3
+#define TT_VERSION_PATCH	0
 
 
 typedef struct {

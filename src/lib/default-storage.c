@@ -28,8 +28,8 @@ int default__api__storage_load(tt_file_t type, const char* identifier, char* buf
 		TT_LOG_ERROR( "plugin/default", "libtokentube_runtime_get_type() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__storage_get_filename( type, identifier, filename, sizeof(filename) ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__storage_get_filename() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
+	if( default__impl__storage_get_filename( type, identifier, filename, sizeof(filename) ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__storage_get_filename() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
 	switch( runtime ) {
@@ -78,8 +78,8 @@ int default__api__storage_save(tt_file_t type, const char* identifier, const cha
 		TT_LOG_ERROR( "plugin/default", "libtokentube_runtime_get_type() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__storage_get_filename( type, identifier, filename, sizeof(filename) ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__storage_get_filename() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
+	if( default__impl__storage_get_filename( type, identifier, filename, sizeof(filename) ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__storage_get_filename() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
 	switch( runtime ) {
@@ -128,8 +128,8 @@ int default__api__storage_exists(tt_file_t type, const char* identifier, tt_stat
 		TT_LOG_ERROR( "plugin/default", "libtokentube_runtime_get_type() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__storage_get_filename( type, identifier, filename, sizeof(filename) ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__storage_get_filename() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
+	if( default__impl__storage_get_filename( type, identifier, filename, sizeof(filename) ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__storage_get_filename() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
 	switch( runtime ) {
@@ -178,8 +178,8 @@ int default__api__storage_delete(tt_file_t type, const char* identifier, tt_stat
 		TT_LOG_ERROR( "plugin/default", "libtokentube_runtime_get_type() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__storage_get_filename( type, identifier, filename, sizeof(filename) ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__storage_get_filename() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
+	if( default__impl__storage_get_filename( type, identifier, filename, sizeof(filename) ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__impl__storage_get_filename() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
 	switch( runtime ) {
