@@ -64,6 +64,9 @@ int libtokentube_crypto_hash_impl(const char* oid, const void* in, size_t in_siz
 		TT_LOG_ERROR( "library/crypto", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
+	if( oid[0] == '\0' ) {
+		oid = libtokentube_crypto_get_hash();
+	}
 	hash_id = gcry_md_map_name( oid );
 	if( hash_id < 0 ) {
 		TT_LOG_ERROR( "library/crypto", "invalid hash='%s' in %s()", oid, __FUNCTION__ );
