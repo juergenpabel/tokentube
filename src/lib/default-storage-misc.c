@@ -76,11 +76,12 @@ int default__impl__storage_get_filename(tt_file_t file, const char* identifier, 
 			TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
 			return TT_ERR;
 		}
-		if( libtokentube_util_hex_encode( uuid, uuid_size, uuid, &uuid_size ) != TT_OK ) {
+		directory_size = sizeof(directory);
+		if( libtokentube_util_hex_encode( uuid, uuid_size, directory, &directory_size ) != TT_OK ) {
 			TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
 			return TT_ERR;
 		}
-		filename = uuid;
+		filename = directory;
 	}
 	if( directory_size + strnlen( filename, TT_IDENTIFIER_CHAR_MAX ) >= buffer_size ) {
 		TT_LOG_ERROR( "plugin/default", "buffer too small for filename in %s()", __FUNCTION__ );
