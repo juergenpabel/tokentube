@@ -6,6 +6,7 @@ extern char*        g_conf_smtp_server;
 extern char*        g_conf_smtp_from;
 extern char*        g_conf_smtp_to;
 extern char*        g_conf_smtp_subject;
+extern char*        g_conf_rest_url;
 
 typedef enum { HELPDESK_FILE = 1, HELPDESK_SMTP = 2, HELPDESK_REST = 4 } enabled_t;
 

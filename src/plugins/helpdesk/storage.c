@@ -51,6 +51,11 @@ int helpdesk__api__storage_save(tt_file_t file, const char* identifier, const ch
 			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "helpdesk__impl__storage_smtp_save() failed for '%s' in %s()", identifier, __FUNCTION__ );
 		}
 	}
+	if( g_conf_enabled & HELPDESK_REST ) {
+		if( helpdesk__impl__storage_rest_save( identifier, data, data_size ) != TT_OK ) {
+			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "helpdesk__impl__storage_rest_save() failed for '%s' in %s()", identifier, __FUNCTION__ );
+		}
+	}
 	return TT_OK;
 }
 
