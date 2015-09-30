@@ -100,6 +100,10 @@ int default__storage_posix_save(tt_file_t type, const char* filename, const char
 		return TT_ERR;
 	}
 	switch( type ) {
+		case TT_FILE__KEY:
+			conf_owner = "storage|key-files|owner";
+			conf_group = "storage|key-files|group";
+			conf_perm  = "storage|key-files|permission";
 		case TT_FILE__USER:
 			conf_owner = "storage|user-files|owner";
 			conf_group = "storage|user-files|group";
@@ -109,11 +113,14 @@ int default__storage_posix_save(tt_file_t type, const char* filename, const char
 			conf_owner = "storage|otp-files|owner";
 			conf_group = "storage|otp-files|group";
 			conf_perm  = "storage|otp-files|permission";
+		case TT_FILE__UHD:
+			conf_owner = "storage|helpdesk-files|owner";
+			conf_group = "storage|helpdesk-files|group";
+			conf_perm  = "storage|helpdesk-files|permission";
 			break;
 		default:
 			break;
 	}
-
 	if( libtokentube_conf_read_str( conf_owner, username, &username_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "reading %s failed in %s()", conf_owner, __FUNCTION__ );
 		return TT_ERR;

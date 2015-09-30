@@ -28,9 +28,6 @@ __attribute__ ((visibility ("hidden")))
 int		g_conf_enabled = 0;
 
 __attribute__ ((visibility ("hidden")))
-char*		g_conf_file_directory = NULL;
-
-__attribute__ ((visibility ("hidden")))
 char*		g_conf_smtp_server = NULL;
 __attribute__ ((visibility ("hidden")))
 char*		g_conf_smtp_from = NULL;
@@ -48,11 +45,6 @@ tt_plugin_t	g_self;
 TT_PLUGIN_REGISTER( g_self, initialize, configure, finalize )
 
 
-cfg_opt_t opt_config_helpdesk_file[] = {
-	CFG_STR("directory",  "/", CFGF_NONE),
-	CFG_END()
-};
-
 cfg_opt_t opt_config_helpdesk_rest[] = {
 	CFG_STR("url",  "null", CFGF_NONE),
 	CFG_STR("x509",  "null", CFGF_NONE),
@@ -69,7 +61,6 @@ cfg_opt_t opt_config_helpdesk_smtp[] = {
 
 cfg_opt_t opt_config_helpdesk[] = {
 	CFG_STR_LIST("enabled", NULL, CFGF_NONE),
-	CFG_SEC("file", opt_config_helpdesk_file, CFGF_NODEFAULT),
 	CFG_SEC("rest", opt_config_helpdesk_rest, CFGF_NODEFAULT),
 	CFG_SEC("smtp", opt_config_helpdesk_smtp, CFGF_NODEFAULT),
 	CFG_END()
@@ -102,9 +93,6 @@ static int configure(const char* filename) {
 	}
 	item = cfg_getnstr( cfg, "helpdesk|enabled", index );
 	while( item != NULL ) {
-		if( strncasecmp( item, "file", 5 ) == 0 ) {
-			g_conf_enabled |= HELPDESK_FILE;
-		}
 		if( strncasecmp( item, "smtp", 5 ) == 0 ) {
 			g_conf_enabled |= HELPDESK_SMTP;
 		}
@@ -114,13 +102,11 @@ static int configure(const char* filename) {
 		index++;
 		item = cfg_getnstr( cfg, "helpdesk|enabled", index );
 	}
-	g_conf_file_directory = strndup( cfg_getstr( cfg, "helpdesk|file|directory" ), 255 );
 	g_conf_smtp_server = strndup( cfg_getstr( cfg, "helpdesk|smtp|server" ), 128 );
 	g_conf_smtp_from = strndup( cfg_getstr( cfg, "helpdesk|smtp|from" ), 128 );
 	g_conf_smtp_to = strndup( cfg_getstr( cfg, "helpdesk|smtp|to" ), 128 );
 	g_conf_smtp_subject = strndup( cfg_getstr( cfg, "helpdesk|smtp|subject" ), 128 );
 	g_conf_rest_url = strndup( cfg_getstr( cfg, "helpdesk|rest|url" ), 255/*TODO*/ );
-	g_self.interface.api.storage.load = helpdesk__api__storage_load;
 	g_self.interface.api.storage.save = helpdesk__api__storage_save;
 	cfg_free( cfg );
 	return TT_OK;
@@ -132,12 +118,12 @@ static int finalize() {
 	free( g_conf_smtp_from );
 	free( g_conf_smtp_to );
 	free( g_conf_smtp_subject );
-	free( g_conf_file_directory );
+	free( g_conf_rest_url );
 	g_conf_smtp_server = NULL;
 	g_conf_smtp_from = NULL;
 	g_conf_smtp_to = NULL;
 	g_conf_smtp_subject = NULL;
-	g_conf_file_directory = NULL;
+	g_conf_rest_url = NULL;
 	return TT_OK;
 }
 

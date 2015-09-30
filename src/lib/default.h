@@ -106,7 +106,7 @@ int  default__storage_posix_save(tt_file_t type, const char* filename, const cha
 int  default__storage_posix_exists(tt_file_t type, const char* filename, tt_status_t* status);
 int  default__storage_posix_delete(tt_file_t type, const char* filename, tt_status_t* status);
 
-int  default__storage_get_filename(tt_file_t type, const char* identifier, char* data, const size_t data_size);
+int  default__impl__storage_get_filename(tt_file_t type, const char* identifier, char* data, const size_t data_size);
 
 int  default__api__otp_create(const char* identifier);
 int  default__api__otp_exists(const char* identifier, tt_status_t* status);

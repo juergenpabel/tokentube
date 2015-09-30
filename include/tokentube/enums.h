@@ -43,7 +43,7 @@ typedef enum {
 	TT_FILE__KEY = 3,
 	TT_FILE__USER = 4,
 	TT_FILE__OTP = 5,
-	TT_FILE__HELPDESK = 6
+	TT_FILE__UHD = 6
 } tt_file_t;
 
 

@@ -33,8 +33,13 @@
 
 #define TT_CONFIG_MAX		4096
 
-#define TT_FILENAME__TOKENTUBE_CONF	"/etc/tokentube/tokentube.conf"
-#define TT_FILENAME__BOOT_CONF		"/etc/tokentube/boot.conf"
+#define TT_FILENAME__TOKENTUBE_CONF     "/etc/tokentube/tokentube.conf"
+#define TT_FILENAME__BOOT_CONF          "/etc/tokentube/boot.conf"
+
+#define TT_DIRNAME__USER_FILES          "/boot/tokentube/user"
+#define TT_DIRNAME__OTP_FILES           "/boot/tokentube/user"
+#define TT_DIRNAME__KEY_FILES           "/etc/tokentube/keys"
+#define TT_DIRNAME__UHD_FILES           "/var/spool/tokentube/helpdesk"
 
 
 #endif /* __TT_LIBRARY_DEFINES_H__ */

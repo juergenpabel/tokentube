@@ -50,7 +50,7 @@ int test__impl__get_filename(tt_file_t type, const char* identifier, char* buffe
 		case TT_FILE__OTP:
 			path = "boot/tokentube/otp";
 			break;
-		case TT_FILE__HELPDESK:
+		case TT_FILE__UHD:
 			path = "var/spool/tokentube/helpdesk";
 			break;
 		default:

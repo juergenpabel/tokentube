@@ -84,7 +84,7 @@ void default__event__otp_created(const char* identifier) {
 		return;
 	}
 	cfg_free( cfg );
-	if( libtokentube_plugin__storage_save( TT_FILE__HELPDESK, identifier, buffer, buffer_size ) != TT_OK ) {
+	if( libtokentube_plugin__storage_save( TT_FILE__UHD, identifier, buffer, buffer_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "API:storage_save failed in %s()", __FUNCTION__ );
 	}
 }
@@ -99,7 +99,7 @@ void default__event__otp_deleted(const char* identifier) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameters in %s()", __FUNCTION__ );
 		return;
 	}
-	if( libtokentube_plugin__storage_delete( TT_FILE__HELPDESK, identifier, &status ) != TT_OK ) {
+	if( libtokentube_plugin__storage_delete( TT_FILE__UHD, identifier, &status ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "API:storage_delete failed in %s()", __FUNCTION__ );
 	}
 }
@@ -166,7 +166,7 @@ int default__api__otp_execute_response(const char* identifier, const char* chall
 		TT_LOG_ERROR( "plugin/default", "invalid parameters in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_plugin__storage_load( TT_FILE__HELPDESK, identifier, buffer, &buffer_size ) != TT_OK ) {
+	if( libtokentube_plugin__storage_load( TT_FILE__UHD, identifier, buffer, &buffer_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "API:storage_load() failed for identifier='%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -274,7 +274,7 @@ int default__api__otp_execute_response(const char* identifier, const char* chall
 		return TT_ERR;
 	}
 	cfg_free( cfg );
-	if( libtokentube_plugin__storage_save( TT_FILE__HELPDESK, identifier, buffer, strnlen( buffer, sizeof(buffer) ) ) != TT_OK ) {
+	if( libtokentube_plugin__storage_save( TT_FILE__UHD, identifier, buffer, strnlen( buffer, sizeof(buffer) ) ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "API:storage_save() failed for identifier='%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
