@@ -29,6 +29,12 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, tokentube-ssod, lightdm, liblightdm
 Description: TokenTube Single-Sign-On for LightDM
  Tokentube Pre-Boot-Authentication SSO pass-through to LightDM Window-Manager
 
+Package: tokentube-plugin-helpdesk
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, tokentube
+Description: Helpdesk plugin for TokenTube
+ Plugins allow for submitting recovery keys to TokenTube Helpdesk server
+
 Package: tokentube-plugin-python
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, tokentube, libpython3.4

@@ -1,3 +1,9 @@
+tokentube (2.0.0-20150930) UNRELEASED; urgency=medium
+
+  * Upgrade to tokentube-2.0.0
+
+ -- Juergen Pabel <juergen@pabel.net>  Thu, 30 Sep 2015 23:30:08 +0100
+
 tokentube (1.0.3-20150331) UNRELEASED; urgency=medium
 
   * Upgrade to tokentube-1.0.3
