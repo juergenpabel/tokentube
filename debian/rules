@@ -99,6 +99,9 @@ install: build
 	install -m 0644 $(CURDIR)/conf/etc_tokentube_conf.d_plugin-exec.conf $(CURDIR)/debian/tokentube/etc/tokentube/conf.d/plugin-exec.conf
 	install -m 0644 $(CURDIR)/conf/etc_tokentube_conf.d_plugin-helpdesk.conf $(CURDIR)/debian/tokentube/etc/tokentube/conf.d/plugin-helpdesk.conf
 
+	mkdir -p  $(CURDIR)/debian/tokentube/var/spool/tokentube/helpdesk/
+	chmod 775 $(CURDIR)/debian/tokentube/var/spool/tokentube/helpdesk/
+
 	mkdir -p  $(CURDIR)/debian/tokentube/usr/share/initramfs-tools/hooks/
 	chmod 755 $(CURDIR)/debian/tokentube/usr/share/initramfs-tools/hooks/
 	install -m 0755 $(CURDIR)/debian/scripts/tokentube/initramfs-tools $(CURDIR)/debian/tokentube/usr/share/initramfs-tools/hooks/tokentube
