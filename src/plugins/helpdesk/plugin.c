@@ -106,7 +106,7 @@ static int configure(const char* filename) {
 	g_conf_smtp_from = strndup( cfg_getstr( cfg, "helpdesk|smtp|from" ), 128 );
 	g_conf_smtp_to = strndup( cfg_getstr( cfg, "helpdesk|smtp|to" ), 128 );
 	g_conf_smtp_subject = strndup( cfg_getstr( cfg, "helpdesk|smtp|subject" ), 128 );
-	g_conf_rest_url = strndup( cfg_getstr( cfg, "helpdesk|rest|url" ), 255/*TODO*/ );
+	g_conf_rest_url = strndup( cfg_getstr( cfg, "helpdesk|rest|url" ), 2048 );
 	g_self.interface.api.storage.save = helpdesk__api__storage_save;
 	cfg_free( cfg );
 	return TT_OK;
