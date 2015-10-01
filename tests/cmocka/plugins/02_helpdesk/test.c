@@ -23,8 +23,8 @@ static void test_otp_create(void **state) {
 
 	/* positive tests: create otp */
 	status = TT_STATUS__UNDEFINED;
-	assert_true( library->api.otp.create( "otp" ) == TT_OK );
-	assert_true( library->api.otp.exists( "otp", &status ) == TT_OK );
+	assert_true( library->api.otp.create( "test" ) == TT_OK );
+	assert_true( library->api.otp.exists( "test", &status ) == TT_OK );
 	assert_true( status == TT_YES );
 }
 
@@ -41,12 +41,12 @@ static void test_otp_delete(void **state) {
 	assert_true( library->api.otp.delete( NULL, &status ) == TT_ERR );
 
 	/* positive tests: delete otp */
-	assert_true( library->api.otp.create( "otp" ) == TT_OK );
-	assert_true( library->api.otp.exists( "otp", &status ) == TT_OK );
+	assert_true( library->api.otp.create( "test" ) == TT_OK );
+	assert_true( library->api.otp.exists( "test", &status ) == TT_OK );
 	assert_true( status == TT_YES );
-	assert_true( library->api.otp.delete( "otp", &status ) == TT_OK );
+	assert_true( library->api.otp.delete( "test", &status ) == TT_OK );
 	assert_true( status == TT_YES );
-	assert_true( library->api.otp.exists( "otp", &status ) == TT_OK );
+	assert_true( library->api.otp.exists( "test", &status ) == TT_OK );
 	assert_true( status == TT_NO );
 }
 
@@ -64,18 +64,18 @@ static void test_helpdesk(void **state) {
 
 	library = (tt_library_t*)*state;
 
-	assert_true( library->api.otp.create( "otp" ) == TT_OK );
-	assert_true( library->api.helpdesk.challenge( "otp", challenge, &challenge_size ) == TT_OK );
-	assert_int_equal( challenge_size, 24 );
+	assert_true( library->api.otp.create( "test" ) == TT_OK );
+	assert_true( library->api.helpdesk.challenge( "test", challenge, &challenge_size ) == TT_OK );
+	assert_int_equal( challenge_size, 20 );
 
-	assert_true( library->api.helpdesk.response( "otp", "63va-e94r-cyce-ew4q-c04u", response, &response_size ) == TT_OK );
-	assert_string_equal( response, "k5r7-ukpe-sq04-zd67-xvv8" );
+	assert_true( library->api.helpdesk.response( "test", "hxstqrwths4v4t57hpgy", response, &response_size ) == TT_OK );
+	assert_string_equal( response, "fynr2w3fmpasrz5sgb5w" );
 
-	assert_true( library->api.helpdesk.apply( "otp", "63va-e94r-cyce-ew4q-c04u", "k5r7-ukpe-sq04-zd67-xvv8", key, &key_size ) == TT_OK );
+	assert_true( library->api.helpdesk.apply( "test", "hxstqrwths4v4t57hpgy", "fynr2w3fmpasrz5sgb5w", key, &key_size ) == TT_OK );
 	assert_int_equal( key_size, 32 );
 	assert_true( memcmp( key, null, 32 ) == 0 );
 
-	assert_true( library->api.otp.delete( "otp", &status ) == TT_OK );
+	assert_true( library->api.otp.delete( "test", &status ) == TT_OK );
 	assert_true( status == TT_YES );
 }
 
@@ -99,7 +99,7 @@ static void self_teardown(void **state) {
 
 	library = (tt_library_t*)*state;
 	if( library != NULL ) {
-		assert_true( library->api.otp.delete( "otp", &status ) == TT_OK );
+		assert_true( library->api.otp.delete( "test", &status ) == TT_OK );
 		*state = NULL;
 	}
 	tt_finalize();
