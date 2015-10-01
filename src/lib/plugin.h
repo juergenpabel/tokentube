@@ -41,9 +41,9 @@ extern tt_module_t* g_modules[MAX_PLUGINS+1];
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__otp_create(const char* identifier);
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__otp_exists(const char* identifier, tt_status_t* status);
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__otp_delete(const char* identifier, tt_status_t* status);
-/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__otp_execute_challenge(const char* identifier, char* challenge, size_t* challenge_size);
-/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__otp_execute_response(const char* identifier, const char* challenge, char* response, size_t* response_size);
-/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__otp_execute_apply(const char* identifier, const char* challenge, const char* response, char* key, size_t* key_size);
+/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__helpdesk_challenge(const char* identifier, char* challenge, size_t* challenge_size);
+/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__helpdesk_response(const char* identifier, const char* challenge, char* response, size_t* response_size);
+/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__helpdesk_apply(const char* identifier, const char* challenge, const char* response, char* key, size_t* key_size);
 
 
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__event_broadcast(tt_event_t event, const char* identifier);

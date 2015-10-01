@@ -59,7 +59,7 @@ static void test_otp_delete_success(void **state) {
 }
 
 
-static void test_otp_execute(void **state) {
+static void test_helpdesk(void **state) {
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 	char		challenge[TT_OTP_TEXT_MAX+1] = {0};
 	size_t		challenge_size = sizeof(challenge);
@@ -73,13 +73,13 @@ static void test_otp_execute(void **state) {
 	library = (tt_library_t*)*state;
 
 	assert_true( library->api.otp.create( "test" ) == TT_OK );
-	assert_true( library->api.otp.execute_challenge( "test", challenge, &challenge_size ) == TT_OK );
+	assert_true( library->api.helpdesk.challenge( "test", challenge, &challenge_size ) == TT_OK );
 	assert_int_equal( challenge_size, 20 );
 
-	assert_true( library->api.otp.execute_response( "test", "hxstyrzhpq65p89y9uwv", response, &response_size ) == TT_OK );
+	assert_true( library->api.helpdesk.response( "test", "hxstyrzhpq65p89y9uwv", response, &response_size ) == TT_OK );
 	assert_string_equal( response, "fynraw6vcrgg229h86rx" );
 
-	assert_true( library->api.otp.execute_apply( "test", "hxstyrzhpq65p89y9uwv", "fynraw6vcrgg229h86rx", key, &key_size ) == TT_OK );
+	assert_true( library->api.helpdesk.apply( "test", "hxstyrzhpq65p89y9uwv", "fynraw6vcrgg229h86rx", key, &key_size ) == TT_OK );
 	assert_int_equal( key_size, 32 );
 	assert_true( memcmp( key, null, 32 ) == 0 );
 
@@ -120,7 +120,7 @@ int main(void) {
 		unit_test_setup_teardown(test_otp_create_failure, self_setup, self_teardown),
 		unit_test_setup_teardown(test_otp_delete_success, self_setup, self_teardown),
 		unit_test_setup_teardown(test_otp_delete_failure, self_setup, self_teardown),
-		unit_test_setup_teardown(test_otp_execute, self_setup, self_teardown),
+		unit_test_setup_teardown(test_helpdesk, self_setup, self_teardown),
 	};
 	return run_tests(tests);
 }

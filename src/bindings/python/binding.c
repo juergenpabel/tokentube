@@ -69,9 +69,9 @@ static PyMethodDef g_tokentube_funcs[] = {
 	{ "otp_create", (PyCFunction)py_tt_otp_create, METH_VARARGS, "otp create function" },
 	{ "otp_delete", (PyCFunction)py_tt_otp_delete, METH_VARARGS, "otp delete function" },
 	{ "otp_exists", (PyCFunction)py_tt_otp_exists, METH_VARARGS, "otp exists function" },
-	{ "otp_execute_challenge", (PyCFunction)py_tt_otp_execute_challenge, METH_VARARGS, "otp execute challenge function" },
-	{ "otp_execute_response", (PyCFunction)py_tt_otp_execute_response, METH_VARARGS, "otp execute response function" },
-	{ "otp_execute_apply", (PyCFunction)py_tt_otp_execute_apply, METH_VARARGS, "otp execute challenge function" },
+	{ "helpdesk_challenge", (PyCFunction)py_tt_helpdesk_challenge, METH_VARARGS, "helpdesk challenge function" },
+	{ "helpdesk_response", (PyCFunction)py_tt_helpdesk_response, METH_VARARGS, "helpdesk response function" },
+	{ "helpdesk_apply", (PyCFunction)py_tt_helpdesk_apply, METH_VARARGS, "helpdesk apply function" },
 	{ "runtime_install_pba", (PyCFunction)py_tt_runtime_install_pba, METH_VARARGS, "pba install function" },
 	{ NULL }
 };

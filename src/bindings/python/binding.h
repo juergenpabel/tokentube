@@ -13,9 +13,9 @@ extern PyObject* py_tt_user_execute_autoenrollment(PyObject* self, PyObject *arg
 extern PyObject* py_tt_otp_create(PyObject* self, PyObject *args);
 extern PyObject* py_tt_otp_exists(PyObject* self, PyObject *args);
 extern PyObject* py_tt_otp_delete(PyObject* self, PyObject *args);
-extern PyObject* py_tt_otp_execute_challenge(PyObject* self, PyObject *args);
-extern PyObject* py_tt_otp_execute_response(PyObject* self, PyObject *args);
-extern PyObject* py_tt_otp_execute_apply(PyObject* self, PyObject *args);
+extern PyObject* py_tt_helpdesk_challenge(PyObject* self, PyObject *args);
+extern PyObject* py_tt_helpdesk_response(PyObject* self, PyObject *args);
+extern PyObject* py_tt_helpdesk_apply(PyObject* self, PyObject *args);
 
 extern PyObject* py_tt_runtime_install_pba(PyObject* self, PyObject *args);
 

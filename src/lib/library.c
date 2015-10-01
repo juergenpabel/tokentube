@@ -53,9 +53,9 @@ int libtokentube_library_configure() {
 	g_library_api.otp.create = libtokentube_plugin__otp_create;
 	g_library_api.otp.delete = libtokentube_plugin__otp_delete;
 	g_library_api.otp.exists = libtokentube_plugin__otp_exists;
-	g_library_api.otp.execute_challenge = libtokentube_plugin__otp_execute_challenge;
-	g_library_api.otp.execute_response = libtokentube_plugin__otp_execute_response;
-	g_library_api.otp.execute_apply = libtokentube_plugin__otp_execute_apply;
+	g_library_api.helpdesk.challenge = libtokentube_plugin__helpdesk_challenge;
+	g_library_api.helpdesk.response = libtokentube_plugin__helpdesk_response;
+	g_library_api.helpdesk.apply = libtokentube_plugin__helpdesk_apply;
 	return TT_OK;
 }
 

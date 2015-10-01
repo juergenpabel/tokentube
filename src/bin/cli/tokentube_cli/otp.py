@@ -85,13 +85,13 @@ def delete(args):
 
 
 def challenge(args):
-	challenge = " " * tokentube.TT_OTP_TEXT_MAX;
+	challenge = " " * 2*tokentube.TT_OTP_TEXT_MAX;
 	if args.identifier is None:
 		args.identifier = get_identifier()
 	if tokentube.otp_exists( args.identifier ) is False:
 		message( args, "WARNING: otp '%s' does not exist" % args.identifier )
 		return 0
-	if tokentube.otp_execute_challenge( args.identifier, challenge ) is False:
+	if tokentube.helpdesk_challenge( args.identifier, challenge ) is False:
 		message( args, "FAILURE: failed to process challenge for otp '%s'" % args.identifier )
 		return -1
 	message( args, "SUCCESS: challenge = '%s'" % challenge )
@@ -99,7 +99,7 @@ def challenge(args):
 
 
 def response(args):
-	response = " " * tokentube.TT_OTP_TEXT_MAX;
+	response = " " * 2*tokentube.TT_OTP_TEXT_MAX;
 	if args.identifier is None:
 		args.identifier = get_identifier()
 	if tokentube.otp_exists( args.identifier ) is False:
@@ -107,7 +107,7 @@ def response(args):
 		return 0
 	if args.challenge is None:
 		args.challenge = get_challenge()
-	if tokentube.otp_execute_response( args.identifier, args.challenge, response ) is False:
+	if tokentube.helpdesk_response( args.identifier, args.challenge, response ) is False:
 		message( args, "FAILURE: failed to process response for otp '%s'" % args.identifier )
 		return -1
 	message( args, "SUCCESS: response = '%s'" % response )
@@ -115,7 +115,7 @@ def response(args):
 
 
 def apply(args):
-	key = " " * tokentube.TT_OTP_TEXT_MAX;
+	key = " " * 2*tokentube.TT_OTP_TEXT_MAX;
 	if args.identifier is None:
 		args.identifier = get_identifier()
 	if tokentube.otp_exists( args.identifier ) is False:
@@ -125,7 +125,7 @@ def apply(args):
 		args.challenge = get_challenge()
 	if args.response is None:
 		args.response = get_response()
-	if tokentube.otp_execute_apply( args.identifier, args.challenge, args.response, key ) is False:
+	if tokentube.helpdesk_apply( args.identifier, args.challenge, args.response, key ) is False:
 		message( args, "FAILURE: failed to process otp '%s'" % args.identifier )
 		return -1
 	message( args, "SUCCESS: key = '%s'" % key )

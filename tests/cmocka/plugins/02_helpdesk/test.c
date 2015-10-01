@@ -51,7 +51,7 @@ static void test_otp_delete(void **state) {
 }
 
 
-static void test_otp_execute(void **state) {
+static void test_helpdesk(void **state) {
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 	char		challenge[TT_OTP_TEXT_MAX+1] = {0};
 	size_t		challenge_size = sizeof(challenge);
@@ -65,13 +65,13 @@ static void test_otp_execute(void **state) {
 	library = (tt_library_t*)*state;
 
 	assert_true( library->api.otp.create( "otp" ) == TT_OK );
-	assert_true( library->api.otp.execute_challenge( "otp", challenge, &challenge_size ) == TT_OK );
+	assert_true( library->api.helpdesk.challenge( "otp", challenge, &challenge_size ) == TT_OK );
 	assert_int_equal( challenge_size, 24 );
 
-	assert_true( library->api.otp.execute_response( "otp", "63va-e94r-cyce-ew4q-c04u", response, &response_size ) == TT_OK );
+	assert_true( library->api.helpdesk.response( "otp", "63va-e94r-cyce-ew4q-c04u", response, &response_size ) == TT_OK );
 	assert_string_equal( response, "k5r7-ukpe-sq04-zd67-xvv8" );
 
-	assert_true( library->api.otp.execute_apply( "otp", "63va-e94r-cyce-ew4q-c04u", "k5r7-ukpe-sq04-zd67-xvv8", key, &key_size ) == TT_OK );
+	assert_true( library->api.helpdesk.apply( "otp", "63va-e94r-cyce-ew4q-c04u", "k5r7-ukpe-sq04-zd67-xvv8", key, &key_size ) == TT_OK );
 	assert_int_equal( key_size, 32 );
 	assert_true( memcmp( key, null, 32 ) == 0 );
 
@@ -110,7 +110,7 @@ int main(void) {
 	const UnitTest tests[] = {
 		unit_test_setup_teardown(test_otp_create, self_setup, self_teardown),
 		unit_test_setup_teardown(test_otp_delete, self_setup, self_teardown),
-		unit_test_setup_teardown(test_otp_execute, self_setup, self_teardown),
+		unit_test_setup_teardown(test_helpdesk, self_setup, self_teardown),
 	};
 	return run_tests(tests);
 }

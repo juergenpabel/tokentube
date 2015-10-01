@@ -111,9 +111,9 @@ int  default__impl__storage_get_filename(tt_file_t type, const char* identifier,
 int  default__api__otp_create(const char* identifier);
 int  default__api__otp_exists(const char* identifier, tt_status_t* status);
 int  default__api__otp_delete(const char* identifier, tt_status_t* status);
-int  default__api__otp_execute_challenge(const char* identifier, char* challenge, size_t* challenge_size);
-int  default__api__otp_execute_response(const char* identifier, const char* challenge, char* response, size_t* response_size);
-int  default__api__otp_execute_apply(const char* identifier, const char* challenge_text, const char* response_text, char* key, size_t* key_size);
+int  default__api__helpdesk_challenge(const char* identifier, char* challenge, size_t* challenge_size);
+int  default__api__helpdesk_response(const char* identifier, const char* challenge, char* response, size_t* response_size);
+int  default__api__helpdesk_apply(const char* identifier, const char* challenge_text, const char* response_text, char* key, size_t* key_size);
 void default__event__otp_created(const char* identifier);
 void default__event__otp_deleted(const char* identifier);
 

@@ -41,9 +41,9 @@ int default__initialize(tt_plugin_t* plugin) {
 	plugin->interface.api.otp.create = default__api__otp_create;
 	plugin->interface.api.otp.delete = default__api__otp_delete;
 	plugin->interface.api.otp.exists = default__api__otp_exists;
-	plugin->interface.api.otp.execute_challenge = default__api__otp_execute_challenge;
-	plugin->interface.api.otp.execute_response = default__api__otp_execute_response;
-	plugin->interface.api.otp.execute_apply = default__api__otp_execute_apply;
+	plugin->interface.api.helpdesk.challenge = default__api__helpdesk_challenge;
+	plugin->interface.api.helpdesk.response = default__api__helpdesk_response;
+	plugin->interface.api.helpdesk.apply = default__api__helpdesk_apply;
 	plugin->interface.events.otp.created = default__event__otp_created;
 	plugin->interface.events.otp.deleted = default__event__otp_deleted;
 	return TT_OK;

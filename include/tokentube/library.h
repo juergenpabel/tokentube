@@ -50,12 +50,17 @@ typedef struct {
 
 typedef struct {
 	int (*create)(const char* identifier);
+//TODO	int (*update)(const char* identifier, const char* key, const char* new_key, tt_status_t* status);
 	int (*exists)(const char* identifier, tt_status_t* status);
 	int (*delete)(const char* identifier, tt_status_t* status);
-	int (*execute_challenge)(const char* identifier, char* challenge, size_t* challenge_size);
-	int (*execute_response)(const char* identifier, const char* challenge, char* response, size_t* response_size);
-	int (*execute_apply)(const char* identifier, const char* challenge, const char* response, char* key, size_t* key_size);
 } tt_library_api_otp_t;
+
+
+typedef struct {
+	int (*challenge)(const char* identifier, char* challenge, size_t* challenge_size);
+	int (*response)(const char* identifier, const char* challenge, char* response, size_t* response_size);
+	int (*apply)(const char* identifier, const char* challenge, const char* response, char* key, size_t* key_size);
+} tt_library_api_helpdesk_t;
 
 
 typedef struct {
@@ -72,12 +77,13 @@ typedef struct {
 
 
 typedef struct {
-	tt_library_api_runtime_t	runtime;
-	tt_library_api_crypto_t		crypto;
-	tt_library_api_storage_t	storage;
-	tt_library_api_util_t		util;
-	tt_library_api_user_t		user;
-	tt_library_api_otp_t		otp;
+	tt_library_api_runtime_t   runtime;
+	tt_library_api_crypto_t	   crypto;
+	tt_library_api_storage_t   storage;
+	tt_library_api_util_t      util;
+	tt_library_api_user_t      user;
+	tt_library_api_otp_t       otp;
+	tt_library_api_helpdesk_t  helpdesk;
 } tt_library_api_t;
 
 

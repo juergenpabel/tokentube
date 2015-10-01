@@ -106,7 +106,7 @@ void default__event__otp_deleted(const char* identifier) {
 
 
 __attribute__ ((visibility ("hidden")))
-int default__api__otp_execute_challenge( const char* identifier, char* challenge, size_t* challenge_size) {
+int default__api__helpdesk_challenge( const char* identifier, char* challenge, size_t* challenge_size) {
 	char		bytes[2+TT_OTP_BITS_MAX/8] = { 0 };
 	tt_otp_t	otp = {0};
 	unsigned short	crc = 0;
@@ -144,7 +144,7 @@ int default__api__otp_execute_challenge( const char* identifier, char* challenge
 
 
 __attribute__ ((visibility ("hidden")))
-int default__api__otp_execute_response(const char* identifier, const char* challenge, char* response, size_t* response_size) {
+int default__api__helpdesk_response(const char* identifier, const char* challenge, char* response, size_t* response_size) {
 	char		buffer[DEFAULT__FILESIZE_MAX+1] = {0};
 	size_t		buffer_size = sizeof(buffer);
 	char		challenge_raw[2+TT_OTP_BITS_MAX/8] = {0};
@@ -283,7 +283,7 @@ int default__api__otp_execute_response(const char* identifier, const char* chall
 
 
 __attribute__ ((visibility ("hidden")))
-int default__api__otp_execute_apply(const char* identifier, const char* challenge, const char* response, char* key, size_t* key_size) {
+int default__api__helpdesk_apply(const char* identifier, const char* challenge, const char* response, char* key, size_t* key_size) {
 	char		challenge_raw[TT_OTP_TEXT_MAX+1] = {0};
 	size_t		challenge_raw_size = sizeof(challenge_raw);
 	char		response_raw[TT_OTP_TEXT_MAX+1] = {0};
