@@ -50,7 +50,7 @@ typedef struct {
 
 typedef struct {
 	int (*create)(const char* identifier);
-//TODO	int (*update)(const char* identifier, const char* key, const char* new_key, tt_status_t* status);
+	int (*update)(const char* identifier, const char* key, size_t key_size, const char* new_key, size_t new_key_size, tt_status_t* status);
 	int (*exists)(const char* identifier, tt_status_t* status);
 	int (*delete)(const char* identifier, tt_status_t* status);
 } tt_library_api_otp_t;

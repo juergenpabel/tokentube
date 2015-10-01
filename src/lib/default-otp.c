@@ -76,6 +76,17 @@ int default__api__otp_create(const char* identifier) {
 
 
 __attribute__ ((visibility ("hidden")))
+int default__api__otp_update(const char* identifier, const char* key, size_t key_size, const char* new_key, size_t new_key_size, tt_status_t* status) {
+	TT_TRACE( "library/plugin", "%s(identifier='%s',key=%p,key_size=%zd,new_key=%p,new_key_size=%zd,status=%p)", __FUNCTION__, identifier, key, key_size, new_key, new_key_size, status );
+	if( identifier == NULL || identifier[0] == '\0' || key == NULL || key_size == 0 || new_key == NULL || new_key_size == 0 || status == NULL ) {
+		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	return TT_IGN;
+}
+
+
+__attribute__ ((visibility ("hidden")))
 int default__api__otp_exists(const char* identifier, tt_status_t* status) {
 	TT_TRACE( "library/plugin", "%s(identifier='%s',status=%p)", __FUNCTION__, identifier, status );
 	if( identifier == NULL || identifier[0] == '\0' || status == NULL ) {

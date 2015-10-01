@@ -39,6 +39,7 @@ extern tt_module_t* g_modules[MAX_PLUGINS+1];
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__user_execute_autoenrollment(const char* username, const char* password, tt_status_t* status);
 
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__otp_create(const char* identifier);
+/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__otp_update(const char* identifier, const char* key, size_t key_size, const char* new_key, size_t new_key_size, tt_status_t* status);
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__otp_exists(const char* identifier, tt_status_t* status);
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__otp_delete(const char* identifier, tt_status_t* status);
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__helpdesk_challenge(const char* identifier, char* challenge, size_t* challenge_size);

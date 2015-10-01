@@ -109,6 +109,7 @@ int  default__storage_posix_delete(tt_file_t type, const char* filename, tt_stat
 int  default__impl__storage_get_filename(tt_file_t type, const char* identifier, char* data, const size_t data_size);
 
 int  default__api__otp_create(const char* identifier);
+int  default__api__otp_update(const char* identifier, const char* key, size_t key_size, const char* new_key, size_t new_key_size, tt_status_t* status);
 int  default__api__otp_exists(const char* identifier, tt_status_t* status);
 int  default__api__otp_delete(const char* identifier, tt_status_t* status);
 int  default__api__helpdesk_challenge(const char* identifier, char* challenge, size_t* challenge_size);

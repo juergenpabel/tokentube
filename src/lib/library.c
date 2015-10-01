@@ -51,6 +51,7 @@ int libtokentube_library_configure() {
 	g_library_api.user.execute_loadkey = libtokentube_plugin__user_execute_loadkey;
 	g_library_api.user.execute_autoenrollment = libtokentube_plugin__user_execute_autoenrollment;
 	g_library_api.otp.create = libtokentube_plugin__otp_create;
+	g_library_api.otp.update = libtokentube_plugin__otp_update;
 	g_library_api.otp.delete = libtokentube_plugin__otp_delete;
 	g_library_api.otp.exists = libtokentube_plugin__otp_exists;
 	g_library_api.helpdesk.challenge = libtokentube_plugin__helpdesk_challenge;
