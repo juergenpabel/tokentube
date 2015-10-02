@@ -12,7 +12,7 @@ mapping = {
 
 path = mapping.get( sys.argv[1] );
 if( path is not None ):
-	f = open( path + "/" + sys.argv[2] + ".dat", "rb" );
+	f = open( path + "/" + sys.argv[2], "rb" );
 	data = f.read()
 	f.close()
 
