@@ -41,11 +41,11 @@ int libtokentube_runtime_broadcast(tt_event_t event, const char* identifier) {
 	TT_TRACE( "library/runtime", "%s(event=%d, identifier='%s')", __FUNCTION__, event, identifier );
 	switch( event ) {
 		case TT_EVENT__USER_CREATED:
-		case TT_EVENT__USER_VERIFIED:
-		case TT_EVENT__USER_UPDATED:
+		case TT_EVENT__AUTH_USER_VERIFIED:
+		case TT_EVENT__USER_MODIFIED:
 		case TT_EVENT__USER_DELETED:
 		case TT_EVENT__OTP_CREATED:
-		case TT_EVENT__OTP_APPLIED:
+		case TT_EVENT__AUTH_OTP_APPLIED:
 		case TT_EVENT__OTP_DELETED:
 			event_name = g_event_names[event];
 			break;

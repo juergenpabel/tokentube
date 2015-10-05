@@ -44,6 +44,8 @@ int default__initialize(tt_plugin_t* plugin) {
 	plugin->interface.api.auth.otp.challenge = default__api__auth_otp_challenge;
 	plugin->interface.api.auth.otp.response = default__api__auth_otp_response;
 	plugin->interface.api.auth.otp.loadkey = default__api__auth_otp_loadkey;
+	plugin->interface.events.user.created = default__event__user_created;
+	plugin->interface.events.user.deleted = default__event__user_deleted;
 	plugin->interface.events.otp.created = default__event__otp_created;
 	plugin->interface.events.otp.deleted = default__event__otp_deleted;
 	return TT_OK;

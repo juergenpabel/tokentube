@@ -69,7 +69,7 @@ int libtokentube_plugin__user_update(const char* username, const char* old_passw
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_update'", module->name );
 						if( *status == TT_YES ) {
-							if( libtokentube_runtime_broadcast( TT_EVENT__USER_UPDATED, username ) != TT_OK ) {
+							if( libtokentube_runtime_broadcast( TT_EVENT__USER_MODIFIED, username ) != TT_OK ) {
 								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
 							}
 						}
@@ -187,7 +187,7 @@ int libtokentube_plugin__user_key_add(const char* username, const char* password
 					case TT_OK:
 						if( *status == TT_STATUS__YES ) {
 							TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_key_add'", module->name );
-							if( libtokentube_runtime_broadcast( TT_EVENT__USER_UPDATED, username ) != TT_OK ) {
+							if( libtokentube_runtime_broadcast( TT_EVENT__USER_MODIFIED, username ) != TT_OK ) {
 								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
 							}
 						}
@@ -232,7 +232,7 @@ int libtokentube_plugin__user_key_del(const char* username, const char* password
 					case TT_OK:
 						if( *status == TT_STATUS__YES ) {
 							TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_key_del'", module->name );
-							if( libtokentube_runtime_broadcast( TT_EVENT__USER_UPDATED, username ) != TT_OK ) {
+							if( libtokentube_runtime_broadcast( TT_EVENT__USER_MODIFIED, username ) != TT_OK ) {
 								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
 							}
 						}

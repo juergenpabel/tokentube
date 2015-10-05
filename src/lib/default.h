@@ -144,6 +144,9 @@ int  default__impl__helpdesk_storage_exists(const char* identifier, tt_status_t*
 int  default__impl__helpdesk_storage_delete(const char* identifier, tt_status_t* status);
 
 
+void default__event__user_created(const char* identifier);
+void default__event__user_deleted(const char* identifier);
+
 void default__event__otp_created(const char* identifier);
 void default__event__otp_deleted(const char* identifier);
 

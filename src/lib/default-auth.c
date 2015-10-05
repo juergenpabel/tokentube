@@ -364,7 +364,7 @@ int default__api__auth_otp_loadkey(const char* identifier, const char* challenge
 		return TT_ERR;
 	}
 	TT_DEBUG3( "plugin/default", "default__impl__otp_storage_save() successful for '%s' in %s()", identifier, __FUNCTION__ );
-	libtokentube_runtime_broadcast( TT_EVENT__OTP_APPLIED, identifier );
+	libtokentube_runtime_broadcast( TT_EVENT__AUTH_OTP_APPLIED, identifier );
         return TT_OK;
 }
 

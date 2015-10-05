@@ -53,7 +53,7 @@ typedef struct {
 
 
 typedef struct {
-	int (*create)(const char* username, const char* password);
+	int (*create)(const char* username, const char* password /*TODO:, tt_status_t* status*/);
 	int (*exists)(const char* username, tt_status_t* status);
 	int (*delete)(const char* username, tt_status_t* status);
 

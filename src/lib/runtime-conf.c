@@ -65,6 +65,7 @@ static cfg_opt_t opt_tokentube_user_autoenrollment[] = {
 
 static cfg_opt_t opt_tokentube_user[] = {
         CFG_SEC("auto-enrollment", opt_tokentube_user_autoenrollment, CFGF_NONE),
+	CFG_STR("symlink-directory", "", CFGF_NONE),
         CFG_END()
 };
 
