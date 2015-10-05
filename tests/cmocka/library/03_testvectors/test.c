@@ -15,17 +15,17 @@ static void test_testvectors_hex(void **state) {
 	assert_non_null( library );
 
 	output_size = sizeof(output);
-	assert_true( library->api.util.hex_encode( "", 0, output, &output_size ) == TT_OK );
+	assert_true( library->api.runtime.util.hex_encode( "", 0, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 0 );
 	assert_string_equal( output, "" );
 
 	output_size = sizeof(output);
-	assert_true( library->api.util.hex_encode( "test", 4, output, &output_size ) == TT_OK );
+	assert_true( library->api.runtime.util.hex_encode( "test", 4, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 8 );
 	assert_string_equal( output, "74657374" );
 
 	output_size = sizeof(output);
-	assert_true( library->api.util.hex_decode( "74657374", 8, output, &output_size ) == TT_OK );
+	assert_true( library->api.runtime.util.hex_decode( "74657374", 8, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 4 );
 	assert_string_equal( output, "test" );
 }
@@ -38,10 +38,10 @@ static void test_testvectors_crc16(void **state) {
 	library = (tt_library_t*)*state;
 	assert_non_null( library );
 
-	assert_true( library->api.util.crc16( "", 0, &result ) == TT_OK );
+	assert_true( library->api.runtime.util.crc16( "", 0, &result ) == TT_OK );
 	assert_int_equal( result, 0x0000 );
 
-	assert_true( library->api.util.crc16( "test", 4, &result ) == TT_OK );
+	assert_true( library->api.runtime.util.crc16( "test", 4, &result ) == TT_OK );
 	assert_int_equal( result, 0xf82e );
 
 }
@@ -56,23 +56,23 @@ static void test_testvectors_base32(void **state) {
 	assert_non_null( library );
 
 	output_size = sizeof(output);
-	assert_true( library->api.util.base32_encode( "", 0, output, &output_size ) == TT_OK );
+	assert_true( library->api.runtime.util.base32_encode( "", 0, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 0 );
 	assert_string_equal( output, "" );
 
 	output_size = sizeof(output);
-	assert_true( library->api.util.base32_encode( "test", 4, output, &output_size ) == TT_OK );
+	assert_true( library->api.runtime.util.base32_encode( "test", 4, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 8 );
 	assert_string_equal( output, "ruvtrq4h" );
 
 	output_size = sizeof(output);
-	assert_true( library->api.util.base32_decode( "ruvtrq4h", 8, output, &output_size ) == TT_OK );
+	assert_true( library->api.runtime.util.base32_decode( "ruvtrq4h", 8, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 4 );
 	output[4] = '\0';
 	assert_string_equal( output, "test" );
 
 	output_size = sizeof(output);
-	assert_true( library->api.util.base32_decode( "zpcp2e37qua92y9u860e", 20, output, &output_size ) == TT_OK );
+	assert_true( library->api.runtime.util.base32_decode( "zpcp2e37qua92y9u860e", 20, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 10 );
 }
 
@@ -86,22 +86,22 @@ static void test_testvectors_base64(void **state) {
 	assert_non_null( library );
 
 	output_size = sizeof(output);
-	assert_true( library->api.util.base64_encode( "", 0, output, &output_size ) == TT_OK );
+	assert_true( library->api.runtime.util.base64_encode( "", 0, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 0 );
 	assert_string_equal( output, "" );
 
 	output_size = sizeof(output);
-	assert_true( library->api.util.base64_encode( "test", 4, output, &output_size ) == TT_OK );
+	assert_true( library->api.runtime.util.base64_encode( "test", 4, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 8 );
 	assert_string_equal( output, "dGVzdA==" );
 
 	output_size = sizeof(output);
-	assert_true( library->api.util.base64_decode( "", 0, output, &output_size ) == TT_OK );
+	assert_true( library->api.runtime.util.base64_decode( "", 0, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 0 );
 	assert_string_equal( output, "" );
 
 	output_size = sizeof(output);
-	assert_true( library->api.util.base64_decode( "dGVzdA==", 8, output, &output_size ) == TT_OK );
+	assert_true( library->api.runtime.util.base64_decode( "dGVzdA==", 8, output, &output_size ) == TT_OK );
 	assert_int_equal( output_size, 4 );
 	assert_string_equal( output, "test" );
 }

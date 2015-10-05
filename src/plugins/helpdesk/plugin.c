@@ -83,12 +83,12 @@ static int configure(const char* filename) {
 	cfg_t*      cfg = NULL;
 
 	if( filename == NULL ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "INIT1" );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/helpdesk", "INIT1" );
 		return TT_ERR;
 	}
 	cfg = cfg_init( opt_config, CFGF_NONE );
 	if( cfg_parse( cfg, filename ) != 0 ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "cfg_parse() failed for '%s'", filename );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/helpdesk", "cfg_parse() failed for '%s'", filename );
 		return TT_ERR;
 	}
 	item = cfg_getnstr( cfg, "helpdesk|enabled", index );

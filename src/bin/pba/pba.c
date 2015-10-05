@@ -218,7 +218,7 @@ int main (int argc, char *argv[]) {
 		exit(-1);
 	}
 	if( g_library.api.storage.load( TT_FILE__CONFIG_PBA, "/boot/tokentube/pba.conf", buffer, &buffer_size ) != TT_OK ) {
-		g_library.api.runtime.log( TT_LOG__ERROR, "pba", "API:storage.load() failed for [boot]/tokentube/pba.conf" );
+		g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "API:storage.load() failed for [boot]/tokentube/pba.conf" );
 		if( fallback[0] != '\0' ) {
 			fprintf( stderr, "TokenTube[pba]: executing fallback ('%s')\n", fallback );
 			argv[0] = fallback;
@@ -231,7 +231,7 @@ int main (int argc, char *argv[]) {
 	cfg = cfg_init( opt_pba, CFGF_NONE );
 	if( cfg == NULL ) {
 		fprintf( stderr, "TokenTube[pba]: cfg_init() failed\n");
-		g_library.api.runtime.log( TT_LOG__ERROR, "pba", "cfg_init() failed in %s()", __FUNCTION__ );
+		g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "cfg_init() failed in %s()", __FUNCTION__ );
 		tt_finalize();
 		if( fallback[0] != '\0' ) {
 			fprintf( stderr, "TokenTube[pba]: executing fallback ('%s')\n", fallback );
@@ -243,7 +243,7 @@ int main (int argc, char *argv[]) {
 	}
 	if( cfg_parse_buf( cfg, buffer ) != 0 ) {
 		fprintf( stderr, "TokenTube[pba]: cfg_parse_buf() failed\n");
-		g_library.api.runtime.log( TT_LOG__ERROR, "pba", "cfg_parse_buf() failed for [boot]/tokentube/pba.conf" );
+		g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "cfg_parse_buf() failed for [boot]/tokentube/pba.conf" );
 		cfg_free( cfg );
 		tt_finalize();
 		if( fallback[0] != '\0' ) {
@@ -269,8 +269,8 @@ int main (int argc, char *argv[]) {
 	}
 	strncpy( buffer, g_conf_sso_socket, sizeof(buffer)-1 );
 	if( access( dirname( buffer ), F_OK ) == -1 && errno == ENOENT ) {
-		if( g_library.api.util.posix_mkdir( buffer ) < 0 ) {
-			g_library.api.runtime.log( TT_LOG__ERROR, "pba", "API:util.posix_mkdir() failed for '%s'", configuration );
+		if( g_library.api.runtime.util.posix_mkdir( buffer ) < 0 ) {
+			g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "API:util.posix_mkdir() failed for '%s'", configuration );
 			cfg_free( cfg );
 			tt_finalize();
 			exit(-1);
@@ -285,7 +285,7 @@ int main (int argc, char *argv[]) {
 	}
 	if( username[0] == '\0' || password[0] == '\0' ) {
 		if( pba_plymouth( g_conf_user_userprompt, g_conf_user_passprompt, username, &username_size, password, &password_size ) != TT_OK ) {
-			g_library.api.runtime.log( TT_LOG__ERROR, "pba", "pba_plymouth() returned TT_ERR" );
+			g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "pba_plymouth() returned TT_ERR" );
 			tt_finalize();
 			exit(-1);
 		}
@@ -293,20 +293,20 @@ int main (int argc, char *argv[]) {
 	if( username[0] == '\0' && password[0] == '\0' ) {
 		key_size = sizeof(key);
 		if( pba_otp( &g_library, g_conf_otp_identifier, key, &key_size ) != TT_OK ) {
-			g_library.api.runtime.log( TT_LOG__ERROR, "pba", "pba_otp() returned error in %s()", __FUNCTION__ );
+			g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "pba_otp() returned error in %s()", __FUNCTION__ );
 			tt_finalize();
 			exit(-1);
 		}
 		write( STDOUT_FILENO, key, key_size );
 	}
 	if( username[0] == '\0' && password[0] != '\0' ) {
-		g_library.api.runtime.debug( TT_DEBUG__VERBOSITY1, "pba", "no username given, returning password in %s()", __FUNCTION__ );
+		g_library.api.runtime.system.debug( TT_DEBUG__VERBOSITY1, "pba", "no username given, returning password in %s()", __FUNCTION__ );
 		write( STDOUT_FILENO, password, password_size );
 	}
 	if( username[0] != '\0' && password[0] != '\0' ) {
 		key_size = sizeof(key);
 		if( pba_user_loadkey( &g_library, username, username_size, password, password_size, identifier, key, &key_size ) != TT_OK ) {
-			g_library.api.runtime.log( TT_LOG__ERROR, "pba", "pba_user_loadkey() failed in %s()", __FUNCTION__ );
+			g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "pba_user_loadkey() failed in %s()", __FUNCTION__ );
 			memset( password, '\0', password_size );
 			tt_finalize();
 			exit(-1);
@@ -324,14 +324,14 @@ int main (int argc, char *argv[]) {
 				fd = mkstemp( configuration );
 				if( fd >= 0 ) {
 					if( write( fd, buffer, buffer_size ) != (ssize_t)buffer_size ) {
-						g_library.api.runtime.log( TT_LOG__ERROR, "pba", "write() failed in %s()", __FUNCTION__ );
+						g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "write() failed in %s()", __FUNCTION__ );
 						unlink( configuration );
 					}
 					close( fd );
 					if( pba_sso_start( g_conf_sso_exec, configuration, g_conf_sso_socket ) == TT_OK ) {
 						pba_sso_credentials( g_conf_sso_socket, username, password );
 					} else {
-						g_library.api.runtime.log( TT_LOG__ERROR, "pba", "failed to start sso-daemon" );
+						g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "failed to start sso-daemon" );
 					}
 					unlink( configuration );
 				}

@@ -16,8 +16,8 @@ PyObject* py_tt_otp_create(PyObject* self __attribute__((unused)), PyObject *arg
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.otp.create( py_identifier ) != TT_OK ) {
-		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.create failed" );
+	if( g_library->api.database.otp.create( py_identifier ) != TT_OK ) {
+		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.otp.create failed" );
 		return NULL;
 	}
 	Py_RETURN_TRUE;
@@ -37,8 +37,8 @@ PyObject* py_tt_otp_exists(PyObject* self __attribute__((unused)), PyObject *arg
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.otp.exists( py_identifier, &status ) != TT_OK ) {
-		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.exists failed" );
+	if( g_library->api.database.otp.exists( py_identifier, &status ) != TT_OK ) {
+		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.otp.exists failed" );
 		return NULL;
 	}
 	switch( status ) {
@@ -49,7 +49,7 @@ PyObject* py_tt_otp_exists(PyObject* self __attribute__((unused)), PyObject *arg
 			Py_RETURN_FALSE;
 			break;
 		default:
-			PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.exists returned unknown status" );
+			PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.otp.exists returned unknown status" );
 			return NULL;
 	}
 	PyErr_SetString(PyExc_TypeError, "py_tt_otp_exists: internal error" );
@@ -70,8 +70,8 @@ PyObject* py_tt_otp_delete(PyObject* self __attribute__((unused)), PyObject *arg
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.otp.delete( py_identifier, &status ) != TT_OK ) {
-		PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.delete failed" );
+	if( g_library->api.database.otp.delete( py_identifier, &status ) != TT_OK ) {
+		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.otp.delete failed" );
 		return NULL;
 	}
 	switch( status ) {
@@ -82,7 +82,7 @@ PyObject* py_tt_otp_delete(PyObject* self __attribute__((unused)), PyObject *arg
 			Py_RETURN_FALSE;
 			break;
 		default:
-			PyErr_SetString(PyExc_TypeError, "libtokentube.api.otp.delete returned unknown status" );
+			PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.otp.delete returned unknown status" );
 			return NULL;
 	}
 	PyErr_SetString(PyExc_TypeError, "py_tt_otp_delete: internal error" );

@@ -45,12 +45,12 @@ static cfg_opt_t opt_lua[] = {
 static int initialize() {
 	g_cfg = cfg_init( opt_lua, CFGF_NONE );
 	if( g_cfg == NULL ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/lua", "cfg_init() returned NULL" );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/lua", "cfg_init() returned NULL" );
 		return TT_ERR;
 	}
 	g_LUA = luaL_newstate();
 	if( g_LUA == NULL ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/lua", "lua_open() returned NULL" );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/lua", "lua_open() returned NULL" );
 		return TT_ERR;
 	}
 	luaL_openlibs( g_LUA );
@@ -60,7 +60,7 @@ static int initialize() {
 
 static int configure(const char* filename) {
 	if( cfg_parse( g_cfg, filename ) != CFG_SUCCESS ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/lua", "error loading configuration file '%s'", filename );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/lua", "error loading configuration file '%s'", filename );
 		return TT_ERR;
 	}
 	g_self.interface.api.storage.load = lua__storage_load;

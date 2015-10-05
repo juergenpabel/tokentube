@@ -13,37 +13,37 @@ TT_PLUGIN_REGISTER( g_self, initialize, NULL, finalize )
 
 
 static void log__event__user_created(const char* identifier) {
-	g_self.library.api.runtime.log( TT_LOG__INFO, "plugin/log", "event 'USER_CREATED' received for identifier '%s'", identifier );
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/log", "event 'USER_CREATED' received for identifier '%s'", identifier );
 }
 
 
 static void log__event__user_updated(const char* identifier) {
-	g_self.library.api.runtime.log( TT_LOG__INFO, "plugin/log", "event 'USER_UPDATED' received for identifier '%s'", identifier );
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/log", "event 'USER_UPDATED' received for identifier '%s'", identifier );
 }
 
 
 static void log__event__user_verified(const char* identifier) {
-	g_self.library.api.runtime.log( TT_LOG__INFO, "plugin/log", "event 'USER_VERIFIED' received for identifier '%s'", identifier );
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/log", "event 'USER_VERIFIED' received for identifier '%s'", identifier );
 }
 
 
 static void log__event__user_deleted(const char* identifier) {
-	g_self.library.api.runtime.log( TT_LOG__INFO, "plugin/log", "event 'USER_DELETED' received for identifier '%s'", identifier );
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/log", "event 'USER_DELETED' received for identifier '%s'", identifier );
 }
 
 
 static void log__event__otp_created(const char* identifier) {
-	g_self.library.api.runtime.log( TT_LOG__INFO, "plugin/log", "event 'OTP_CREATED' received for identifier '%s'", identifier );
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/log", "event 'OTP_CREATED' received for identifier '%s'", identifier );
 }
 
 
 static void log__event__otp_applied(const char* identifier) {
-	g_self.library.api.runtime.log( TT_LOG__INFO, "plugin/log", "event 'OTP_APPLIED' received for identifier '%s'", identifier );
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/log", "event 'OTP_APPLIED' received for identifier '%s'", identifier );
 }
 
 
 static void log__event__otp_deleted(const char* identifier) {
-	g_self.library.api.runtime.log( TT_LOG__INFO, "plugin/log", "event 'OTP_DELETED' received for identifier '%s'", identifier );
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/log", "event 'OTP_DELETED' received for identifier '%s'", identifier );
 }
 
 

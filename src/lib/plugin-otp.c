@@ -24,9 +24,9 @@ int libtokentube_plugin__otp_create(const char* identifier) {
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "processing 'otp_create' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.otp.create != NULL ) {
+			if( module->plugin->interface.api.database.otp.create != NULL ) {
 				TT_DEBUG4( "library/plugin", "invoking 'otp_create' for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.otp.create( identifier ) ) {
+				switch( module->plugin->interface.api.database.otp.create( identifier ) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'otp_create'", module->name );
 						if( libtokentube_runtime_broadcast( TT_EVENT__OTP_CREATED, identifier ) != TT_OK ) {
@@ -62,9 +62,9 @@ int libtokentube_plugin__otp_update(const char* identifier, const char* key, siz
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "processing 'otp_update' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.otp.update != NULL ) {
+			if( module->plugin->interface.api.database.otp.update != NULL ) {
 				TT_DEBUG4( "library/plugin", "invoking 'otp_update' for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.otp.update( identifier, key, key_size, new_key, new_key_size, status ) ) {
+				switch( module->plugin->interface.api.database.otp.update( identifier, key, key_size, new_key, new_key_size, status ) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'otp_update'", module->name );
 						if( libtokentube_runtime_broadcast( TT_EVENT__OTP_CREATED, identifier ) != TT_OK ) {
@@ -100,8 +100,8 @@ int libtokentube_plugin__otp_delete(const char* identifier, tt_status_t* status)
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "checking 'otp_delete' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.otp.delete != NULL ) {
-				switch( module->plugin->interface.api.otp.delete( identifier, status ) ) {
+			if( module->plugin->interface.api.database.otp.delete != NULL ) {
+				switch( module->plugin->interface.api.database.otp.delete( identifier, status ) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'otp_delete'", module->name );
 						if( *status == TT_YES ) {
@@ -139,8 +139,8 @@ int libtokentube_plugin__otp_exists(const char* identifier, tt_status_t* status)
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "checking 'otp_exists' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.otp.exists != NULL ) {
-				switch( module->plugin->interface.api.otp.exists( identifier, status ) ) {
+			if( module->plugin->interface.api.database.otp.exists != NULL ) {
+				switch( module->plugin->interface.api.database.otp.exists( identifier, status ) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'otp_exists'", module->name );
 						return TT_OK;

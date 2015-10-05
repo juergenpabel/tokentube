@@ -44,17 +44,27 @@ typedef struct {
 	dflt_user_hmac_t   hmac;
 } dflt_user_t;
 
-#define TT_USER__UNDEFINED { {0}, {0}, {0}, {0} }
-
-
 typedef struct {
 	char	hash[TT_IDENTIFIER_CHAR_MAX+1];
 	size_t	bits;
 	char	data[TT_DIGEST_BITS_MAX/8];
 	size_t	data_size;
-} tt_otp_t;
+} dflt_otp_t;
 
+typedef struct {
+	char	sys_id[TT_IDENTIFIER_CHAR_MAX+1];
+	char	key_id[TT_IDENTIFIER_CHAR_MAX+1];
+	char	key_data[TT_KEY_BITS_MAX/8];
+	size_t	key_data_size;
+	char	otp_hash[TT_IDENTIFIER_CHAR_MAX+1];
+	size_t	otp_bits;
+	size_t	otp_iter;
+} dflt_helpdesk_t;
+
+
+#define TT_USER__UNDEFINED { {0}, {0}, {0}, {0} }
 #define TT_OTP__UNDEFINED { "", 0, "", 0 }
+#define TT_UHD__UNDEFINED { "", "", "", 0, "", 0, 0 }
 
 
 int  default__initialize(tt_plugin_t* plugin);
@@ -82,9 +92,24 @@ int  default__api__user_delete(const char* username, tt_status_t* status);
 int  default__api__user_exists(const char* username, tt_status_t* status);
 int  default__api__user_key_add(const char* username, const char* password, const char* identifier, tt_status_t* status);
 int  default__api__user_key_del(const char* username, const char* password, const char* identifier, tt_status_t* status);
-int  default__api__user_execute_verify(const char* username, const char* password, tt_status_t* status);
-int  default__api__user_execute_loadkey(const char* username, const char* password, const char* key_name, char* key, size_t* key_size);
-int  default__api__user_execute_autoenrollment(const char* username, const char* password, tt_status_t* status);
+
+int  default__api__otp_create(const char* identifier);
+int  default__api__otp_update(const char* identifier, const char* key, size_t key_size, const char* new_key, size_t new_key_size, tt_status_t* status);
+int  default__api__otp_exists(const char* identifier, tt_status_t* status);
+int  default__api__otp_delete(const char* identifier, tt_status_t* status);
+
+int  default__api__helpdesk_create(const char* identifier);
+int  default__api__helpdesk_exists(const char* identifier, tt_status_t* status);
+int  default__api__helpdesk_delete(const char* identifier, tt_status_t* status);
+
+int  default__api__auth_user_autoenrollment(const char* username, const char* password, tt_status_t* status);
+int  default__api__auth_user_verify(const char* username, const char* password, tt_status_t* status);
+int  default__api__auth_user_loadkey(const char* username, const char* password, const char* key_name, char* key, size_t* key_size);
+int  default__api__auth_otp_challenge(const char* identifier, char* challenge, size_t* challenge_size);
+int  default__api__auth_otp_response(const char* identifier, const char* challenge, char* response, size_t* response_size);
+int  default__api__auth_otp_loadkey(const char* identifier, const char* challenge_text, const char* response_text, char* key, size_t* key_size);
+
+
 
 int  default__impl__user_storage_load(const char* identifier, dflt_user_t* user);
 int  default__impl__user_storage_save(const char* identifier, const dflt_user_t* user);
@@ -108,20 +133,19 @@ int  default__storage_posix_delete(tt_file_t type, const char* filename, tt_stat
 
 int  default__impl__storage_get_filename(tt_file_t type, const char* identifier, char* data, const size_t data_size);
 
-int  default__api__otp_create(const char* identifier);
-int  default__api__otp_update(const char* identifier, const char* key, size_t key_size, const char* new_key, size_t new_key_size, tt_status_t* status);
-int  default__api__otp_exists(const char* identifier, tt_status_t* status);
-int  default__api__otp_delete(const char* identifier, tt_status_t* status);
-int  default__api__helpdesk_challenge(const char* identifier, char* challenge, size_t* challenge_size);
-int  default__api__helpdesk_response(const char* identifier, const char* challenge, char* response, size_t* response_size);
-int  default__api__helpdesk_apply(const char* identifier, const char* challenge_text, const char* response_text, char* key, size_t* key_size);
+int  default__impl__otp_storage_load(const char* identifier, dflt_otp_t* otp);
+int  default__impl__otp_storage_save(const char* identifier, dflt_otp_t* otp);
+int  default__impl__otp_storage_delete(const char* identifier, tt_status_t* status);
+int  default__impl__otp_storage_exists(const char* identifier, tt_status_t* status);
+
+int  default__impl__helpdesk_storage_load(const char* identifier, dflt_helpdesk_t* helpdesk);
+int  default__impl__helpdesk_storage_save(const char* identifier, const dflt_helpdesk_t* helpdesk);
+int  default__impl__helpdesk_storage_exists(const char* identifier, tt_status_t* status);
+int  default__impl__helpdesk_storage_delete(const char* identifier, tt_status_t* status);
+
+
 void default__event__otp_created(const char* identifier);
 void default__event__otp_deleted(const char* identifier);
-
-
-int  default__impl__otp_load(const char* identifier, tt_otp_t* otp);
-int  default__impl__otp_save(const char* identifier, tt_otp_t* otp);
-int  default__impl__otp_delete(const char* identifier);
 
 
 #endif /* __LIBTOKENTUBE_PLUGIN_DEFAULT_H__ */

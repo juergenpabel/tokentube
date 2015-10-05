@@ -20,7 +20,7 @@ int default__api__otp_create(const char* identifier) {
 	size_t		hash_size = 0;
 	size_t		key_size = 0;
 	size_t          i = 0;
-	tt_otp_t	otp = {0};
+	dflt_otp_t	otp = {0};
 
 	TT_TRACE( "library/plugin", "%s(identifier='%s')", __FUNCTION__, identifier );
 	if( identifier == NULL || identifier[0] == '\0' ) {
@@ -66,7 +66,7 @@ int default__api__otp_create(const char* identifier) {
 	otp.bits = g_crypto_otp_bits;
 	strncpy( otp.hash, libtokentube_crypto_get_hash(), sizeof(otp.hash)-1 );
 
-	if( default__impl__otp_save( identifier, &otp ) != TT_OK ) {
+	if( default__impl__otp_storage_save( identifier, &otp ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_otp_save() failed for '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}

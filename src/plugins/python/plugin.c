@@ -56,12 +56,12 @@ static int initialize() {
 	}
 	g_python = Py_NewInterpreter();
 	if( g_python == NULL ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "Py_NewInterpreter() returned NULL" );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/python", "Py_NewInterpreter() returned NULL" );
 		return TT_ERR;
 	}
 	g_cfg = cfg_init( opt_python, CFGF_NONE );
 	if( g_cfg == NULL ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "cfg_init() returned NULL" );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/python", "cfg_init() returned NULL" );
 		return TT_ERR;
 	}
 	return TT_OK;
@@ -70,7 +70,7 @@ static int initialize() {
 
 static int configure(const char* filename) {
 	if( cfg_parse( g_cfg, filename ) != CFG_SUCCESS ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/python", "error loading configuration file '%s'", filename );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/python", "error loading configuration file '%s'", filename );
 		return TT_ERR;
 	}
 	g_self.interface.api.storage.load = python__storage_load;

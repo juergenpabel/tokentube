@@ -23,24 +23,24 @@ int test__impl__get_filename(tt_file_t type, const char* identifier, char* buffe
 	const char*	path = NULL;
         int		result = TT_ERR;
 
-	g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY4, "plugin/test", "processing '%s' in test__get_filename()", identifier );
+	g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY4, "plugin/test", "processing '%s' in test__get_filename()", identifier );
 	switch( type ) {
 		case TT_FILE__CONFIG_PBA:
 		case TT_FILE__CONFIG_STANDARD:
 			if( snprintf( buffer, (*buffer_size)-1, "boot/tokentube/%s", identifier ) > 0 ) {
-				g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY5, "plugin/test", "returning '%s' in test__get_filename()", buffer );
+				g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY5, "plugin/test", "returning '%s' in test__get_filename()", buffer );
 				return TT_OK;
 			} else {
-				g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "snprintf() failed in test__get_filename()" );
+				g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "snprintf() failed in test__get_filename()" );
 				return TT_ERR;
 			}
 			break;
 		case TT_FILE__KEY:
 			if( snprintf( buffer, (*buffer_size)-1, "etc/tokentube/keys/%s", identifier ) > 0 ) {
-				g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY5, "plugin/test", "returning '%s' in test__get_filename()", buffer );
+				g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY5, "plugin/test", "returning '%s' in test__get_filename()", buffer );
 				return TT_OK;
 			} else {
-				g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "snprintf() failed in test__get_filename()" );
+				g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "snprintf() failed in test__get_filename()" );
 				return TT_ERR;
 			}
 			break;
@@ -58,13 +58,13 @@ int test__impl__get_filename(tt_file_t type, const char* identifier, char* buffe
 	}
 	if( path != NULL ) {
 		if( snprintf( buffer, (*buffer_size)-1, "%s/%s.dat", path, identifier ) > 0 ) {
-			g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY5, "plugin/test", "returning '%s' in test__get_filename()", buffer );
+			g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY5, "plugin/test", "returning '%s' in test__get_filename()", buffer );
 			result = TT_OK;
 		} else {
-			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "snprintf() failed in test__get_filename()" );
+			g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "snprintf() failed in test__get_filename()" );
 		}
 	} else {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "unsupported value for type(%d) in test__get_filename()", type );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "unsupported value for type(%d) in test__get_filename()", type );
 	}
 	return result;
 }

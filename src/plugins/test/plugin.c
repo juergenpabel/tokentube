@@ -28,11 +28,11 @@ static int test__api__storage_load(tt_file_t type, const char* identifier, char*
 	size_t	filename_size = sizeof(filename);
         int	result = TT_ERR;
 
-	g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY3, "plugin/test", "test__api__storage_load() invoked for identifier '%s'", identifier );
+	g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY3, "plugin/test", "test__api__storage_load() invoked for identifier '%s'", identifier );
 	if( test__impl__get_filename( type, identifier, filename, &filename_size ) == TT_OK ) {
 		result = test__impl__posix_load( filename, buffer, buffer_size );
 	} else {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "test__impl__get_filename() failed for '%s' in test__api__storage_load", identifier );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "test__impl__get_filename() failed for '%s' in test__api__storage_load", identifier );
 	}
 	return result;
 }
@@ -43,11 +43,11 @@ static int test__api__storage_save(tt_file_t type, const char* identifier, const
 	size_t	filename_size = sizeof(filename);
         int result = TT_ERR;
 
-	g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY3, "plugin/test", "test__api__storage_save() invoked for identifier '%s'", identifier );
+	g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY3, "plugin/test", "test__api__storage_save() invoked for identifier '%s'", identifier );
 	if( test__impl__get_filename( type, identifier, filename, &filename_size ) == TT_OK ) {
 		result = test__impl__posix_save( &filename[0], buffer, buffer_size );
 	} else {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "test__impl__get_filename() failed for '%s' in test__api__filesave", identifier );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "test__impl__get_filename() failed for '%s' in test__api__filesave", identifier );
 	}
 	return result;
 }
@@ -58,11 +58,11 @@ static int test__api__storage_exists(tt_file_t type, const char* identifier, tt_
 	size_t	filename_size = sizeof(filename);
         int    result = TT_ERR;
 
-	g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY3, "plugin/test", "test__api__storage_exists() invoked for identifier '%s'", identifier );
+	g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY3, "plugin/test", "test__api__storage_exists() invoked for identifier '%s'", identifier );
 	if( test__impl__get_filename( type, identifier, filename, &filename_size ) == TT_OK ) {
 		result = test__impl__posix_exists( filename, status );
 	} else {
-		g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY2, "plugin/test", "test__impl__get_filename() failed for '%s' in test__api__storage_exists", identifier );
+		g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY2, "plugin/test", "test__impl__get_filename() failed for '%s' in test__api__storage_exists", identifier );
 	}
 	return result;
 }
@@ -73,19 +73,19 @@ static int test__api__storage_delete(tt_file_t type, const char* identifier, tt_
 	size_t	filename_size = sizeof(filename);
         int result = TT_ERR;
 
-	g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY3, "plugin/test", "test__api__storage_delete() invoked for identifier '%s'", identifier );
+	g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY3, "plugin/test", "test__api__storage_delete() invoked for identifier '%s'", identifier );
 	if( test__impl__get_filename( type, identifier, filename, &filename_size ) == TT_OK ) {
 		result = test__impl__posix_delete( filename, status );
 	} else {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "test__impl__get_filename() failed for '%s' in test__api__storage_delete", identifier );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "test__impl__get_filename() failed for '%s' in test__api__storage_delete", identifier );
 	}
 	return result;
 }
 
 
-static int test__api__user_execute_autoenrollment(const char* username, const char* password, tt_status_t* status) {
-	if( g_self.library.api.user.create( username, password ) != TT_OK ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/default", "API:user.create failed in %s()", __FUNCTION__ );
+static int test__api__auth_user_autoenrollment(const char* username, const char* password, tt_status_t* status) {
+	if( g_self.library.api.database.user.create( username, password ) != TT_OK ) {
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/default", "API:user.create failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	*status = TT_STATUS__YES;
@@ -98,7 +98,7 @@ static int initialize() {
 	g_self.interface.api.storage.save = test__api__storage_save;
 	g_self.interface.api.storage.delete = test__api__storage_delete;
 	g_self.interface.api.storage.exists = test__api__storage_exists;
-	g_self.interface.api.user.execute_autoenrollment = test__api__user_execute_autoenrollment;
+	g_self.interface.api.auth.user.autoenrollment = test__api__auth_user_autoenrollment;
 	return TT_OK;
 }
 

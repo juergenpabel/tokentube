@@ -22,11 +22,6 @@ def init(parser):
 	parser_user_delete.add_argument('--username', '-u', action='store', help='username')
 	parser_user_delete.set_defaults(func=delete)
 
-	parser_user_verify = parser.add_parser('user-verify')
-	parser_user_verify.add_argument('--username', '-u', action='store', help='username')
-	parser_user_verify.add_argument('--password', '-p', action='store', help='password')
-	parser_user_verify.set_defaults(func=verify)
-
 	parser_user_key_add = parser.add_parser('user-add-key')
 	parser_user_key_add.add_argument('--username', '-u', action='store', help='username')
 	parser_user_key_add.add_argument('--password', '-p', action='store', help='password')
@@ -109,21 +104,6 @@ def delete(args):
 		message( args, "FAILURE: user '%s' not deleted" % args.username )
 		return -1
 	message( args, "SUCCESS: user '%s' deleted" % args.username )
-	return 0
-
-
-def verify(args):
-	if args.username is None:
-		args.username = get_username()
-	if tokentube.user_exists( args.username ) is False:
-		message( args, "FAILURE: user '%s' does not exist" % args.username )
-		return -1
-	if args.password is None:
-		args.password = get_password()
-	if tokentube.user_execute_verify( args.username, args.password ) is False:
-		message( args, "FAILURE: user '%s' not verified" % args.username )
-		return -1
-	message( args, "SUCCESS: user '%s' verified" % args.username )
 	return 0
 
 

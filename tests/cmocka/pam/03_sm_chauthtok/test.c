@@ -25,7 +25,7 @@ static void self_setup(void **state) {
 	assert_true( tt_initialize( TT_VERSION ) == TT_OK );
 	assert_true( tt_configure( "etc/tokentube/tokentube.conf" ) == TT_OK );
 	assert_true( tt_discover( &library ) == TT_OK );
-	assert_true( library.api.user.create( "user", "pass" ) == TT_OK );
+	assert_true( library.api.database.user.create( "user", "pass" ) == TT_OK );
 	tt_finalize();
 }
 
@@ -39,7 +39,7 @@ static void self_teardown(void **state) {
 	assert_true( tt_initialize( TT_VERSION ) == TT_OK );
 	assert_true( tt_configure( "etc/tokentube/tokentube.conf" ) == TT_OK );
 	assert_true( tt_discover( &library ) == TT_OK );
-	assert_true( library.api.user.delete( "user", &status ) == TT_OK );
+	assert_true( library.api.database.user.delete( "user", &status ) == TT_OK );
 	tt_finalize();
 }
 

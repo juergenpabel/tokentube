@@ -17,8 +17,8 @@ PyObject* py_tt_runtime_install_pba(PyObject* self __attribute__((unused)), PyOb
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.runtime.install_pba( py_type, py_path ) != TT_OK ) {
-		PyErr_SetString(PyExc_TypeError, "libtokentube.api.pba.install failed" );
+	if( g_library->api.runtime.system.install_pba( py_type, py_path ) != TT_OK ) {
+		PyErr_SetString(PyExc_TypeError, "libtokentube.api.pba.system.install failed" );
 		return NULL;
 	}
 	Py_RETURN_TRUE;

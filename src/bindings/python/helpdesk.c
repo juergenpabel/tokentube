@@ -5,7 +5,7 @@
 
 
 __attribute__ ((visibility ("hidden")))
-PyObject* py_tt_helpdesk_challenge(PyObject* self __attribute__((unused)), PyObject *args) {
+PyObject* py_tt_auth_otp_challenge(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 	char*		py_challenge = NULL;
 	ssize_t		py_challenge_size = 0;
@@ -20,8 +20,8 @@ PyObject* py_tt_helpdesk_challenge(PyObject* self __attribute__((unused)), PyObj
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.helpdesk.challenge( py_identifier, data, &data_size ) != TT_OK ) {
-		PyErr_SetString(PyExc_TypeError, "libtokentube.api.helpdesk.challenge failed" );
+	if( g_library->api.auth.otp.challenge( py_identifier, data, &data_size ) != TT_OK ) {
+		PyErr_SetString(PyExc_TypeError, "libtokentube.api.auth.otp.challenge failed" );
 		return NULL;
 	}
 	if( data_size == 0 || data_size > (size_t)py_challenge_size ) {
@@ -35,7 +35,7 @@ PyObject* py_tt_helpdesk_challenge(PyObject* self __attribute__((unused)), PyObj
 
 
 __attribute__ ((visibility ("hidden")))
-PyObject* py_tt_helpdesk_response(PyObject* self __attribute__((unused)), PyObject *args) {
+PyObject* py_tt_auth_otp_response(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 	char*		py_challenge = NULL;
 	char*		py_response = NULL;
@@ -51,8 +51,8 @@ PyObject* py_tt_helpdesk_response(PyObject* self __attribute__((unused)), PyObje
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.helpdesk.response( py_identifier, py_challenge, data, &data_size ) != TT_OK ) {
-		PyErr_SetString(PyExc_TypeError, "libtokentube.api.helpdesk.response failed" );
+	if( g_library->api.auth.otp.response( py_identifier, py_challenge, data, &data_size ) != TT_OK ) {
+		PyErr_SetString(PyExc_TypeError, "libtokentube.api.auth.otp.response failed" );
 		return NULL;
 	}
 	if( data_size == 0 || data_size > (size_t)py_response_size ) {
@@ -66,7 +66,7 @@ PyObject* py_tt_helpdesk_response(PyObject* self __attribute__((unused)), PyObje
 
 
 __attribute__ ((visibility ("hidden")))
-PyObject* py_tt_helpdesk_apply(PyObject* self __attribute__((unused)), PyObject *args) {
+PyObject* py_tt_auth_otp_loadkey(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_identifier = NULL;
 	char*		py_challenge = NULL;
 	char*		py_response = NULL;
@@ -83,16 +83,16 @@ PyObject* py_tt_helpdesk_apply(PyObject* self __attribute__((unused)), PyObject 
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.helpdesk.apply( py_identifier, py_challenge, py_response, data, &data_size ) != TT_OK ) {
-		PyErr_SetString(PyExc_TypeError, "libtokentube.api.helpdesk.apply failed" );
+	if( g_library->api.auth.otp.loadkey( py_identifier, py_challenge, py_response, data, &data_size ) != TT_OK ) {
+		PyErr_SetString(PyExc_TypeError, "libtokentube.api.auth.otp.loadkey failed" );
 		return NULL;
 	}
 	if( data_size == 0 || 2*data_size > (size_t)py_key_size ) {
-		PyErr_SetString(PyExc_TypeError, "buffer too small in py_tt_helpdesk_apply()" );
+		PyErr_SetString(PyExc_TypeError, "buffer too small in py_tt_auth_otp_loadkey()" );
 		Py_RETURN_FALSE;
 	}
-	if( g_library->api.util.hex_encode( data, data_size, py_key, &py_key_size ) != TT_OK ) {
-		PyErr_SetString(PyExc_TypeError, "API:util.hex_encode() failed in py_tt_helpdesk_apply()" );
+	if( g_library->api.runtime.util.hex_encode( data, data_size, py_key, &py_key_size ) != TT_OK ) {
+		PyErr_SetString(PyExc_TypeError, "API:util.hex_encode() failed in py_tt_auth_otp_loadkey()" );
 		Py_RETURN_FALSE;
 	}
 	Py_RETURN_TRUE;

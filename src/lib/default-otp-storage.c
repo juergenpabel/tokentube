@@ -19,7 +19,7 @@ static cfg_opt_t opt[] = {
 
 
 __attribute__ ((visibility ("hidden")))
-int default__impl__otp_load(const char* identifier, tt_otp_t* otp) {
+int default__impl__otp_storage_load(const char* identifier, dflt_otp_t* otp) {
 	char    data[DEFAULT__FILESIZE_MAX+1] = { 0 };
 	size_t	data_size = sizeof(data);
 	cfg_t*  cfg = NULL;
@@ -57,7 +57,7 @@ int default__impl__otp_load(const char* identifier, tt_otp_t* otp) {
 
 
 __attribute__ ((visibility ("hidden")))
-int default__impl__otp_save(const char* identifier, tt_otp_t* otp) {
+int default__impl__otp_storage_save(const char* identifier, dflt_otp_t* otp) {
 	char    data[DEFAULT__FILESIZE_MAX+1] = { 0 };
 	size_t  data_size = sizeof(data);
 	cfg_t*	cfg = NULL;
@@ -99,19 +99,18 @@ int default__impl__otp_save(const char* identifier, tt_otp_t* otp) {
 
 
 __attribute__ ((visibility ("hidden")))
-int default__impl__otp_delete(const char* identifier) {
-	tt_status_t	status = TT_STATUS__UNDEFINED;
-
+int default__impl__otp_storage_delete(const char* identifier, tt_status_t* status) {
 	TT_TRACE( "plugin/default", "%s(identifier='%s')", __FUNCTION__, identifier );
-	if( identifier == NULL || identifier[0] == '\0' ) {
+	if( identifier == NULL || identifier[0] == '\0' || status == NULL ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_plugin__storage_delete( TT_FILE__OTP, identifier, &status ) != TT_OK ) {
+	*status = TT_STATUS__UNDEFINED;
+	if( libtokentube_plugin__storage_delete( TT_FILE__OTP, identifier, status ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "api:storage_delete() failed for '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( status == TT_YES ) {
+	if( *status == TT_YES ) {
 		libtokentube_runtime_broadcast( TT_EVENT__OTP_DELETED, identifier );
 	}
 	return TT_OK;

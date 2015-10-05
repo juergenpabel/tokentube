@@ -15,11 +15,11 @@ static void test_user_create_success(void **state) {
 
 	/* positive tests: create user */
 	status = TT_STATUS__UNDEFINED;
-	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
-	assert_true( library->api.user.exists( "user", &status ) == TT_OK );
+	assert_true( library->api.database.user.create( "user", "pass" ) == TT_OK );
+	assert_true( library->api.database.user.exists( "user", &status ) == TT_OK );
 	assert_true( status == TT_YES );
 	status = TT_STATUS__UNDEFINED;
-	assert_true( library->api.user.execute_verify( "user", "pass", &status ) == TT_OK );
+	assert_true( library->api.auth.user.verify( "user", "pass", &status ) == TT_OK );
 	assert_true( status == TT_YES );
 }
 
@@ -32,23 +32,23 @@ static void test_user_create_failure(void **state) {
 
 	/* negative tests: invalid parameters */
 	status = TT_STATUS__UNDEFINED;
-	assert_true( library->api.user.create( NULL, "pass" ) == TT_ERR );
-	assert_true( library->api.user.exists( NULL, &status ) == TT_ERR );
+	assert_true( library->api.database.user.create( NULL, "pass" ) == TT_ERR );
+	assert_true( library->api.database.user.exists( NULL, &status ) == TT_ERR );
 	assert_true( status == TT_STATUS__UNDEFINED );
 
 	status = TT_STATUS__UNDEFINED;
-	assert_true( library->api.user.create( "user", NULL ) == TT_ERR );
-	assert_true( library->api.user.exists( "user", &status ) == TT_OK );
+	assert_true( library->api.database.user.create( "user", NULL ) == TT_ERR );
+	assert_true( library->api.database.user.exists( "user", &status ) == TT_OK );
 	assert_true( status == TT_NO );
 
 	status = TT_STATUS__UNDEFINED;
-	assert_true( library->api.user.create( "", "pass" ) == TT_ERR );
-	assert_true( library->api.user.exists( "", &status ) == TT_ERR );
+	assert_true( library->api.database.user.create( "", "pass" ) == TT_ERR );
+	assert_true( library->api.database.user.exists( "", &status ) == TT_ERR );
 	assert_true( status == TT_STATUS__UNDEFINED );
 
 	status = TT_STATUS__UNDEFINED;
-	assert_true( library->api.user.create( "user", "" ) == TT_ERR );
-	assert_true( library->api.user.exists( "user", &status ) == TT_OK );
+	assert_true( library->api.database.user.create( "user", "" ) == TT_ERR );
+	assert_true( library->api.database.user.exists( "user", &status ) == TT_OK );
 	assert_true( status == TT_NO );
 }
 
@@ -61,10 +61,10 @@ static void test_user_update_success(void **state) {
 
 	/* positive tests: update user */
 	status = TT_STATUS__UNDEFINED;
-	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
-	assert_true( library->api.user.update( "user", "pass", "pass2", &status ) == TT_OK );
+	assert_true( library->api.database.user.create( "user", "pass" ) == TT_OK );
+	assert_true( library->api.database.user.update( "user", "pass", "pass2", &status ) == TT_OK );
 	status = TT_STATUS__UNDEFINED;
-	assert_true( library->api.user.execute_verify( "user", "pass2", &status ) == TT_OK );
+	assert_true( library->api.auth.user.verify( "user", "pass2", &status ) == TT_OK );
 	assert_true( status == TT_YES );
 }
 
@@ -77,13 +77,13 @@ static void test_user_update_failure(void **state) {
 
 	/* negative tests: invalid parameters */
 	status = TT_STATUS__UNDEFINED;
-	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
-	assert_true( library->api.user.update( "user", NULL, NULL, &status ) == TT_ERR );
-	assert_true( library->api.user.update( "user", "pass", NULL, &status ) == TT_ERR );
-	assert_true( library->api.user.update( "user", NULL, "pass2", &status ) == TT_ERR );
-	assert_true( library->api.user.update( "user", "", "", &status ) == TT_ERR );
-	assert_true( library->api.user.update( "user", "pass", "", &status ) == TT_ERR );
-	assert_true( library->api.user.update( "user", "", "pass2", &status ) == TT_ERR );
+	assert_true( library->api.database.user.create( "user", "pass" ) == TT_OK );
+	assert_true( library->api.database.user.update( "user", NULL, NULL, &status ) == TT_ERR );
+	assert_true( library->api.database.user.update( "user", "pass", NULL, &status ) == TT_ERR );
+	assert_true( library->api.database.user.update( "user", NULL, "pass2", &status ) == TT_ERR );
+	assert_true( library->api.database.user.update( "user", "", "", &status ) == TT_ERR );
+	assert_true( library->api.database.user.update( "user", "pass", "", &status ) == TT_ERR );
+	assert_true( library->api.database.user.update( "user", "", "pass2", &status ) == TT_ERR );
 }
 
 
@@ -94,12 +94,12 @@ static void test_user_delete_success(void **state) {
 	library = (tt_library_t*)*state;
 
 	/* positive tests: delete user */
-	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
-	assert_true( library->api.user.exists( "user", &status ) == TT_OK );
+	assert_true( library->api.database.user.create( "user", "pass" ) == TT_OK );
+	assert_true( library->api.database.user.exists( "user", &status ) == TT_OK );
 	assert_true( status == TT_YES );
-	assert_true( library->api.user.delete( "user", &status ) == TT_OK );
+	assert_true( library->api.database.user.delete( "user", &status ) == TT_OK );
 	assert_true( status == TT_YES );
-	assert_true( library->api.user.exists( "user", &status ) == TT_OK );
+	assert_true( library->api.database.user.exists( "user", &status ) == TT_OK );
 	assert_true( status == TT_NO );
 }
 
@@ -111,9 +111,9 @@ static void test_user_delete_failure(void **state) {
 	library = (tt_library_t*)*state;
 
 	/* negative tests: invalid paramters */
-	assert_true( library->api.user.delete( NULL, NULL ) == TT_ERR );
-	assert_true( library->api.user.delete( "", NULL ) == TT_ERR );
-	assert_true( library->api.user.delete( NULL, &status ) == TT_ERR );
+	assert_true( library->api.database.user.delete( NULL, NULL ) == TT_ERR );
+	assert_true( library->api.database.user.delete( "", NULL ) == TT_ERR );
+	assert_true( library->api.database.user.delete( NULL, &status ) == TT_ERR );
 }
 
 
@@ -124,8 +124,8 @@ static void test_user_verify_success(void **state) {
 	library = (tt_library_t*)*state;
 
 	/* positive tests */
-	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
-	assert_true( library->api.user.execute_verify( "user", "pass", &status ) == TT_OK );
+	assert_true( library->api.database.user.create( "user", "pass" ) == TT_OK );
+	assert_true( library->api.auth.user.verify( "user", "pass", &status ) == TT_OK );
 	assert_true( status == TT_YES );
 }
 
@@ -137,10 +137,10 @@ static void test_user_verify_failure(void **state) {
 	library = (tt_library_t*)*state;
 
 	/* negative tests */
-	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
-	assert_true( library->api.user.execute_verify( "user", "fail", &status ) == TT_OK );
+	assert_true( library->api.database.user.create( "user", "pass" ) == TT_OK );
+	assert_true( library->api.auth.user.verify( "user", "fail", &status ) == TT_OK );
 	assert_true( status == TT_NO );
-	assert_true( library->api.user.delete( "user", &status ) == TT_OK );
+	assert_true( library->api.database.user.delete( "user", &status ) == TT_OK );
 	assert_true( status == TT_YES );
 }
 
@@ -152,17 +152,17 @@ static void test_user_keys_success(void **state) {
 	library = (tt_library_t*)*state;
 
 	/* positive tests */
-	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
-	assert_true( library->api.user.key_add( "user", "pass", "test", &status ) == TT_OK );
+	assert_true( library->api.database.user.create( "user", "pass" ) == TT_OK );
+	assert_true( library->api.database.user.key_add( "user", "pass", "test", &status ) == TT_OK );
 	assert_true( status == TT_YES );
-	assert_true( library->api.user.key_add( "user", "pass", "test", &status ) == TT_OK );
+	assert_true( library->api.database.user.key_add( "user", "pass", "test", &status ) == TT_OK );
 	assert_true( status == TT_NO );
-	assert_true( library->api.user.key_del( "user", "pass", "test", &status ) == TT_OK );
+	assert_true( library->api.database.user.key_del( "user", "pass", "test", &status ) == TT_OK );
 	assert_true( status == TT_YES );
-	assert_true( library->api.user.key_del( "user", "pass", "test", &status ) == TT_OK );
+	assert_true( library->api.database.user.key_del( "user", "pass", "test", &status ) == TT_OK );
 	assert_true( status == TT_NO );
 
-	assert_true( library->api.user.delete( "user", &status ) == TT_OK );
+	assert_true( library->api.database.user.delete( "user", &status ) == TT_OK );
 	assert_true( status == TT_YES );
 }
 
@@ -174,19 +174,19 @@ static void test_user_keys_failure(void **state) {
 	library = (tt_library_t*)*state;
 
 	/* negative tests */
-	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
-	assert_true( library->api.user.key_del( "user", "pass", "test", &status ) == TT_OK );
+	assert_true( library->api.database.user.create( "user", "pass" ) == TT_OK );
+	assert_true( library->api.database.user.key_del( "user", "pass", "test", &status ) == TT_OK );
 	assert_true( status == TT_NO );
-	assert_true( library->api.user.key_add( "user", "fail", "test", &status ) == TT_ERR );
-	assert_true( library->api.user.key_add( "user", "pass", "fail", &status ) == TT_ERR );
-	assert_true( library->api.user.key_add( "fail", "pass", "test", &status ) == TT_ERR );
+	assert_true( library->api.database.user.key_add( "user", "fail", "test", &status ) == TT_ERR );
+	assert_true( library->api.database.user.key_add( "user", "pass", "fail", &status ) == TT_ERR );
+	assert_true( library->api.database.user.key_add( "fail", "pass", "test", &status ) == TT_ERR );
 
-	assert_true( library->api.user.key_del( "fail", "pass", "test", &status ) == TT_ERR );
-	assert_true( library->api.user.key_del( "user", "fail", "test", &status ) == TT_ERR );
-	assert_true( library->api.user.key_del( "user", "pass", "fail", &status ) == TT_OK );
+	assert_true( library->api.database.user.key_del( "fail", "pass", "test", &status ) == TT_ERR );
+	assert_true( library->api.database.user.key_del( "user", "fail", "test", &status ) == TT_ERR );
+	assert_true( library->api.database.user.key_del( "user", "pass", "fail", &status ) == TT_OK );
 	assert_true( status == TT_NO );
 
-	assert_true( library->api.user.delete( "user", &status ) == TT_OK );
+	assert_true( library->api.database.user.delete( "user", &status ) == TT_OK );
 	assert_true( status == TT_YES );
 }
 
@@ -198,8 +198,8 @@ static void test_user_reconf_success(void **state) {
 	library = (tt_library_t*)*state;
 
 	/* positive tests */
-	assert_true( library->api.user.create( "user", "pass" ) == TT_OK );
-	assert_true( library->api.user.execute_verify( "user", "pass", &status ) == TT_OK );
+	assert_true( library->api.database.user.create( "user", "pass" ) == TT_OK );
+	assert_true( library->api.auth.user.verify( "user", "pass", &status ) == TT_OK );
 	assert_true( status == TT_YES );
 
 	assert_true( tt_finalize() == TT_OK );
@@ -207,11 +207,11 @@ static void test_user_reconf_success(void **state) {
 	assert_true( tt_configure( "etc/tokentube/tokentube-reconf.conf" ) == TT_OK );
 	assert_true( tt_discover( library ) == TT_OK );
 
-	assert_true( library->api.user.execute_verify( "user", "pass", &status ) == TT_OK );
+	assert_true( library->api.auth.user.verify( "user", "pass", &status ) == TT_OK );
 	assert_true( status == TT_YES );
-	assert_true( library->api.user.update( "user", "pass", "pass2", &status ) == TT_OK );
+	assert_true( library->api.database.user.update( "user", "pass", "pass2", &status ) == TT_OK );
 	assert_true( status == TT_YES );
-	assert_true( library->api.user.execute_verify( "user", "pass2", &status ) == TT_OK );
+	assert_true( library->api.auth.user.verify( "user", "pass2", &status ) == TT_OK );
 }
 
 
@@ -225,7 +225,7 @@ static void self_setup(void **state) {
 	assert_true( tt_initialize( TT_VERSION ) == TT_OK );
 	assert_true( tt_configure( "etc/tokentube/tokentube.conf" ) == TT_OK );
 	assert_true( tt_discover( library ) == TT_OK );
-	assert_true( library->api.user.delete( "user", &status ) == TT_OK );
+	assert_true( library->api.database.user.delete( "user", &status ) == TT_OK );
 	*state = library;
 }
 
@@ -236,7 +236,7 @@ static void self_teardown(void **state) {
 
 	library = (tt_library_t*)*state;
 
-	assert_true( library->api.user.delete( "user", &status ) == TT_OK );
+	assert_true( library->api.database.user.delete( "user", &status ) == TT_OK );
 	tt_finalize();
 }
 

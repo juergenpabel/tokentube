@@ -36,7 +36,7 @@ int test__impl__posix_exists(const char* filename, int* status) {
 			*status = TT_NO;
 			break;
 		default:
-			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "stat('%s') failed in test__impl__get_filename()", filename );
+			g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "stat('%s') failed in test__impl__get_filename()", filename );
 	}
 	return result;
 }
@@ -52,27 +52,27 @@ int test__impl__posix_load(const char* filename, char* buffer, size_t* buffer_si
 	}
 	fd = open( filename, O_RDONLY );
 	if( fd < 0 ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "open() failed for '%s' in %s()", filename, __FUNCTION__ );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "open() failed for '%s' in %s()", filename, __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( fstat( fd, &st ) < 0 ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "fstat() failed for '%s' in %s()", filename, __FUNCTION__ );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "fstat() failed for '%s' in %s()", filename, __FUNCTION__ );
 		close( fd );
 		return TT_ERR;
 	}
 	if( st.st_size > (off_t)*buffer_size ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "buffer insufficient (%zd vs. %zd) bytes for '%s' in %s()", *buffer_size, st.st_size, filename, __FUNCTION__ );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "buffer insufficient (%zd vs. %zd) bytes for '%s' in %s()", *buffer_size, st.st_size, filename, __FUNCTION__ );
 		close( fd );
 		return TT_ERR;
 	}
 	if( read( fd, buffer, *buffer_size ) != st.st_size ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "read() failed for '%s' in %s()", filename, __FUNCTION__ );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "read() failed for '%s' in %s()", filename, __FUNCTION__ );
 		close( fd );
 		return TT_ERR;
 	}
 	*buffer_size = st.st_size;
 	close( fd );
-	g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY5, "plugin/test", "successfully loaded '%s' in test__impl__posix_load()", filename );
+	g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY5, "plugin/test", "successfully loaded '%s' in test__impl__posix_load()", filename );
         return TT_OK;
 }
 
@@ -82,22 +82,22 @@ int test__impl__posix_save(const char* filename, const char* buffer, const size_
 	int             fd = -1;
 
 	if( filename == NULL ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "invalid parameter in %s()", __FUNCTION__ );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY5, "plugin/test", "saving '%s' in %s()", filename, __FUNCTION__ );
+	g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY5, "plugin/test", "saving '%s' in %s()", filename, __FUNCTION__ );
 	fd = open( filename, O_CREAT|O_WRONLY|O_TRUNC, 0600 );
 	if( fd < 0 ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "open() failed for '%s' in %s()", filename, __FUNCTION__ );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "open() failed for '%s' in %s()", filename, __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( write( fd, buffer, buffer_size ) != (ssize_t)buffer_size ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "write() failed for '%s' in %s()", filename, __FUNCTION__ );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "write() failed for '%s' in %s()", filename, __FUNCTION__ );
 		close( fd );
 		return TT_ERR;
 	}
 	close( fd );
-	g_self.library.api.runtime.debug( TT_DEBUG__VERBOSITY4, "plugin/test", "successfully saved '%s' in %s()", filename, __FUNCTION__ );
+	g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY4, "plugin/test", "successfully saved '%s' in %s()", filename, __FUNCTION__ );
 	return TT_OK;
 }
 
@@ -107,7 +107,7 @@ int test__impl__posix_delete(const char* filename, int* status) {
 	int	result = TT_ERR;
 
 	if( filename == NULL || status == NULL ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "invalid parameter in %s()", __FUNCTION__ );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	*status = TT_STATUS__UNDEFINED;
@@ -123,7 +123,7 @@ int test__impl__posix_delete(const char* filename, int* status) {
 				break;
 			}
 		default:
-			g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/test", "unlink() failed for '%s' in %s()", filename, __FUNCTION__ );
+			g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/test", "unlink() failed for '%s' in %s()", filename, __FUNCTION__ );
 	}
 	return result;
 }

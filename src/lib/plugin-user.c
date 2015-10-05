@@ -24,9 +24,9 @@ int libtokentube_plugin__user_create(const char* username, const char* password)
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "checking 'user_create' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.user.create != NULL ) {
+			if( module->plugin->interface.api.database.user.create != NULL ) {
 				TT_DEBUG4( "library/plugin", "invoking 'user_create' handler for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.user.create( username, password ) ) {
+				switch( module->plugin->interface.api.database.user.create( username, password ) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_create'", module->name );
 						if( libtokentube_runtime_broadcast( TT_EVENT__USER_CREATED, username ) != TT_OK ) {
@@ -63,9 +63,9 @@ int libtokentube_plugin__user_update(const char* username, const char* old_passw
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "checking 'user_update' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.user.update != NULL ) {
+			if( module->plugin->interface.api.database.user.update != NULL ) {
 				TT_DEBUG4( "library/plugin", "invoking 'user_update' handler for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.user.update( username, old_password, new_password, status ) ) {
+				switch( module->plugin->interface.api.database.user.update( username, old_password, new_password, status ) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_update'", module->name );
 						if( *status == TT_YES ) {
@@ -104,9 +104,9 @@ int libtokentube_plugin__user_delete(const char* username, tt_status_t* status) 
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "checking 'user_delete' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.user.delete != NULL ) {
+			if( module->plugin->interface.api.database.user.delete != NULL ) {
 				TT_DEBUG4( "library/plugin", "invoking 'user_delete' handler for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.user.delete( username, status ) ) {
+				switch( module->plugin->interface.api.database.user.delete( username, status ) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_delete'", module->name );
 						if( *status == TT_YES ) {
@@ -145,9 +145,9 @@ int libtokentube_plugin__user_exists(const char* username, tt_status_t* status) 
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "checking 'user_exists' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.user.exists != NULL ) {
+			if( module->plugin->interface.api.database.user.exists != NULL ) {
 				TT_DEBUG4( "library/plugin", "invoking 'user_exists' handler for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.user.exists( username, status ) ) {
+				switch( module->plugin->interface.api.database.user.exists( username, status ) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_exists'", module->name );
 						return TT_OK;
@@ -181,9 +181,9 @@ int libtokentube_plugin__user_key_add(const char* username, const char* password
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "checking 'user_key_add' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.user.key_add != NULL ) {
+			if( module->plugin->interface.api.database.user.key_add != NULL ) {
 				TT_DEBUG4( "library/plugin", "invoking 'user_key_add' handler for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.user.key_add( username, password, identifier, status ) ) {
+				switch( module->plugin->interface.api.database.user.key_add( username, password, identifier, status ) ) {
 					case TT_OK:
 						if( *status == TT_STATUS__YES ) {
 							TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_key_add'", module->name );
@@ -226,9 +226,9 @@ int libtokentube_plugin__user_key_del(const char* username, const char* password
 		module = g_modules[i];
 		if( module != NULL && module->plugin != NULL ) {
 			TT_DEBUG5( "library/plugin", "checking 'user_key_del' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.user.key_del != NULL ) {
+			if( module->plugin->interface.api.database.user.key_del != NULL ) {
 				TT_DEBUG4( "library/plugin", "invoking 'user_key_del' handler for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.user.key_del( username, password, identifier, status ) ) {
+				switch( module->plugin->interface.api.database.user.key_del( username, password, identifier, status ) ) {
 					case TT_OK:
 						if( *status == TT_STATUS__YES ) {
 							TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_key_del'", module->name );
@@ -251,118 +251,6 @@ int libtokentube_plugin__user_key_del(const char* username, const char* password
 	}
 	TT_LOG_ERROR( "library/plugin", "no plugin handled 'user_key_del', returning TT_ERR" );
 	*status = TT_STATUS__NO;
-	return TT_ERR;
-}
-
-
-__attribute__ ((visibility ("hidden")))
-int libtokentube_plugin__user_execute_loadkey( const char* username, const char* password, const char* identifier, char* key, size_t* key_size ) {
-	tt_module_t*	module;
-	size_t		i;
-
-	TT_TRACE( "library/plugin", "%s(username='%s' password='%s')", __FUNCTION__, username, password );
-	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || key == NULL || key_size == NULL || *key_size == 0) {
-		TT_LOG_FATAL( "library/plugin", "invalid parameters in %s()", __FUNCTION__ );
-		return TT_ERR;
-	}
-	TT_DEBUG3( "library/plugin", "invoking 'user_execute_load' handlers" );
-	for( i=0; i<MAX_PLUGINS+1; i++ ) {
-		module = g_modules[i];
-		if( module != NULL && module->plugin != NULL ) {
-			TT_DEBUG5( "library/plugin", "checking 'user_execute_load' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.user.execute_loadkey != NULL ) {
-				TT_DEBUG4( "library/plugin", "invoking 'user_execute_loadkey' handler for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.user.execute_loadkey( username, password, identifier, key, key_size ) ) {
-					case TT_OK:
-						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_execute_loadkey'", module->name );
-						return TT_OK;
-					case TT_IGN:
-						TT_DEBUG4( "library/plugin", "plugin '%s' ignored 'user_execute_load'", module->name );
-						break;
-					default:
-						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'user_execute_load'", module->name );
-				}
-			}
-		}
-	}
-	TT_LOG_ERROR( "library/plugin", "no plugin handled 'user_execute_load', returning TT_ERR" );
-	return TT_ERR;
-}
-
-
-__attribute__ ((visibility ("hidden")))
-int libtokentube_plugin__user_execute_verify( const char* username, const char* password, tt_status_t* status ) {
-	tt_module_t*	module;
-	size_t		i;
-
-	TT_TRACE( "library/plugin", "%s(username='%s' password='%s')", __FUNCTION__, username, password );
-	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || status == NULL ) {
-		TT_LOG_FATAL( "library/plugin", "invalid parameter in %s()", __FUNCTION__ );
-		return TT_ERR;
-	}
-	TT_DEBUG3( "library/plugin", "invoking 'user_execute_verify' handlers" );
-	*status = TT_STATUS__UNDEFINED;
-	for( i=0; i<MAX_PLUGINS+1; i++ ) {
-		module = g_modules[i];
-		if( module != NULL && module->plugin != NULL ) {
-			TT_DEBUG5( "library/plugin", "checking 'user_execute_verify' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.user.execute_verify != NULL ) {
-				TT_DEBUG4( "library/plugin", "invoking 'user_execute_verify' handler for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.user.execute_verify( username, password, status ) ) {
-					case TT_OK:
-						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_execute_verify'", module->name );
-						if( *status == TT_YES ) {
-							if( libtokentube_runtime_broadcast( TT_EVENT__USER_VERIFIED, username ) != TT_OK ) {
-								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
-							}
-						}
-						return TT_OK;
-					case TT_IGN:
-						TT_DEBUG4( "library/plugin", "plugin '%s' ignored 'user_execute_verify'", module->name );
-						break;
-					default:
-						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'user_execute_verify'", module->name );
-				}
-			}
-		}
-	}
-	TT_LOG_ERROR( "library/plugin", "no plugin handled 'user_execute_verify', returning TT_ERR" );
-	return TT_ERR;
-}
-
-
-__attribute__ ((visibility ("hidden")))
-int libtokentube_plugin__user_execute_autoenrollment(const char* username, const char* password, tt_status_t* status) {
-	tt_module_t*	module;
-	size_t		i;
-
-	TT_TRACE( "library/plugin", "%s(username='%s')", __FUNCTION__, username );
-	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || status == NULL ) {
-		TT_LOG_FATAL( "library/plugin", "invalid parameter in %s()", __FUNCTION__ );
-		return TT_ERR;
-	}
-	TT_DEBUG3( "library/plugin", "invoking 'user_execute_autoenrollment' handlers" );
-	*status = TT_STATUS__UNDEFINED;
-	for( i=0; i<MAX_PLUGINS+1; i++ ) {
-		module = g_modules[i];
-		if( module != NULL && module->plugin != NULL ) {
-			TT_DEBUG5( "library/plugin", "checking 'user_autoenrollment' for plugin '%s'", module->name );
-			if( module->plugin->interface.api.user.execute_autoenrollment != NULL ) {
-				TT_DEBUG4( "library/plugin", "invoking 'user_execute_autoenrollment' handler for plugin '%s'", module->name );
-				switch( module->plugin->interface.api.user.execute_autoenrollment( username, password, status ) ) {
-					case TT_OK:
-						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_execute_autoenrollment'", module->name );
-						return TT_OK;
-					case TT_IGN:
-						TT_DEBUG4( "library/plugin", "plugin '%s' ignored 'user_execute_autoenrollment'", module->name );
-						break;
-					default:
-						TT_LOG_ERROR( "library/plugin", "plugin '%s' returned error for 'user_execute_autoenrollment'", module->name );
-				}
-			}
-		}
-	}
-	TT_LOG_ERROR( "library/plugin", "no plugin handled 'user_execute_autoenrollment', returning TT_ERR" );
 	return TT_ERR;
 }
 

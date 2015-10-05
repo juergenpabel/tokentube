@@ -20,9 +20,8 @@ typedef struct {
 	tt_plugin_api_runtime_t    runtime;
 	tt_plugin_api_pba_t        pba;
 	tt_library_api_storage_t   storage;
-	tt_library_api_user_t      user;
-	tt_library_api_otp_t       otp;
-	tt_library_api_helpdesk_t  helpdesk;
+	tt_library_api_database_t  database;
+	tt_library_api_auth_t      auth;
 } tt_plugin_api_t;
 
 

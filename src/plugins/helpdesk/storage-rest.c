@@ -27,7 +27,7 @@ int helpdesk__impl__storage_rest_save(const char* identifier, const char* data, 
 	curl_easy_setopt( curl, CURLOPT_POSTFIELDSIZE, (long)data_size );
 	code = curl_easy_perform( curl );
 	if( code != CURLE_OK ) {
-		g_self.library.api.runtime.log( TT_LOG__ERROR, "plugin/helpdesk", "curl_easy_perform() failed: %s", curl_easy_strerror( code ) );
+		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/helpdesk", "curl_easy_perform() failed: %s", curl_easy_strerror( code ) );
 		curl_easy_cleanup( curl );
 		return TT_ERR;
 	}

@@ -30,6 +30,15 @@ typedef enum {
 
 
 typedef enum {
+	TT_MODIFY__UNDEFINED = 0,
+	TT_MODIFY__USER_PASSWORD = 1,
+	TT_MODIFY__USER_KEY_ADD = 2,
+	TT_MODIFY__USER_KEY_DEL = 3,
+	TT_MODIFY__USER_OTP_KEY = 4
+} tt_modify_t;
+
+
+typedef enum {
 	TT_RUNTIME__UNDEFINED = 0,
 	TT_RUNTIME__PBA = 1,
 	TT_RUNTIME__STANDARD = 2

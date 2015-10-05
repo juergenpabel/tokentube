@@ -224,11 +224,14 @@ int tt_plugin_register(tt_plugin_t* plugin) {
 		if( strncasecmp( filter, "pba", 4 ) == 0 ) {
 			memset( &plugin->interface.api.pba, '\0', sizeof(plugin->interface.api.pba) );
 		}
+		if( strncasecmp( filter, "database", 5 ) == 0 ) {
+			memset( &plugin->interface.api.database, '\0', sizeof(plugin->interface.api.database) );
+		}
 		if( strncasecmp( filter, "user", 5 ) == 0 ) {
-			memset( &plugin->interface.api.user, '\0', sizeof(plugin->interface.api.user) );
+			memset( &plugin->interface.api.database.user, '\0', sizeof(plugin->interface.api.database.user) );
 		}
 		if( strncasecmp( filter, "otp", 4 ) == 0 ) {
-			memset( &plugin->interface.api.otp, '\0', sizeof(plugin->interface.api.otp) );
+			memset( &plugin->interface.api.database.otp, '\0', sizeof(plugin->interface.api.database.otp) );
 		}
 		offset++;
 		filter_size = sizeof(filter);
