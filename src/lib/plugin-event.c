@@ -29,9 +29,6 @@ int libtokentube_plugin__event_broadcast(tt_event_t event, const char* identifie
 				case TT_EVENT__USER_CREATED:
 					event_func = module->plugin->interface.events.user.created;
 					break;
-				case TT_EVENT__AUTH_USER_VERIFIED:
-					event_func = module->plugin->interface.events.auth.user_verified;
-					break;
 				case TT_EVENT__USER_MODIFIED:
 					event_func = module->plugin->interface.events.user.modified;
 					break;
@@ -41,11 +38,26 @@ int libtokentube_plugin__event_broadcast(tt_event_t event, const char* identifie
 				case TT_EVENT__OTP_CREATED:
 					event_func = module->plugin->interface.events.otp.created;
 					break;
-				case TT_EVENT__AUTH_OTP_APPLIED:
-					event_func = module->plugin->interface.events.auth.otp_applied;
+				case TT_EVENT__OTP_MODIFIED:
+					event_func = module->plugin->interface.events.otp.modified;
 					break;
 				case TT_EVENT__OTP_DELETED:
 					event_func = module->plugin->interface.events.otp.deleted;
+					break;
+				case TT_EVENT__UHD_CREATED:
+					event_func = module->plugin->interface.events.uhd.created;
+					break;
+				case TT_EVENT__UHD_MODIFIED:
+					event_func = module->plugin->interface.events.uhd.modified;
+					break;
+				case TT_EVENT__UHD_DELETED:
+					event_func = module->plugin->interface.events.uhd.deleted;
+					break;
+				case TT_EVENT__AUTH_USER:
+					event_func = module->plugin->interface.events.auth.user;
+					break;
+				case TT_EVENT__AUTH_OTP:
+					event_func = module->plugin->interface.events.auth.otp;
 					break;
 				default:
 					TT_LOG_ERROR( "library/plugin", "unsupported event=%d in %s()", (int)event, __FUNCTION__ );

@@ -142,44 +142,68 @@ static int exec__exec( cfg_t* cfg, const char* event, const char* identifier ) {
 
 
 static void exec__event__user_created(const char* identifier) {
-	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'USER_CREATED' received for identifier '%s'", identifier );
-	exec__exec( g_cfg, "USER_CREATED", identifier );
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'USER-CREATED' received for identifier '%s'", identifier );
+	exec__exec( g_cfg, "USER-CREATED", identifier );
 }
 
 
-static void exec__event__user_updated(const char* identifier) {
-	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'USER_UPDATED' received for identifier '%s'", identifier );
-	exec__exec( g_cfg, "USER_UPDATED", identifier );
-}
-
-
-static void exec__event__user_verified(const char* identifier) {
-	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'USER_VERIFIED' received for identifier '%s'", identifier );
-	exec__exec( g_cfg, "USER_VERIFIED", identifier );
+static void exec__event__user_modified(const char* identifier) {
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'USER-MODIFIED' received for identifier '%s'", identifier );
+	exec__exec( g_cfg, "USER-MODIFIED", identifier );
 }
 
 
 static void exec__event__user_deleted(const char* identifier) {
-	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'USER_DELETED' received for identifier '%s'", identifier );
-	exec__exec( g_cfg, "USER_DELETED", identifier );
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'USER-DELETED' received for identifier '%s'", identifier );
+	exec__exec( g_cfg, "USER-DELETED", identifier );
 }
 
 
 static void exec__event__otp_created(const char* identifier) {
-	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'OTP_CREATED' received for identifier '%s'", identifier );
-	exec__exec( g_cfg, "OTP_CREATED", identifier );
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'OTP-CREATED' received for identifier '%s'", identifier );
+	exec__exec( g_cfg, "OTP-CREATED", identifier );
 }
 
 
-static void exec__event__otp_applied(const char* identifier) {
-	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'OTP_APPLIED' received for identifier '%s'", identifier );
-	exec__exec( g_cfg, "OTP_APPLIED", identifier );
+static void exec__event__otp_modified(const char* identifier) {
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'OTP-MODIFIED' received for identifier '%s'", identifier );
+	exec__exec( g_cfg, "OTP-MODIFIED", identifier );
 }
 
 
 static void exec__event__otp_deleted(const char* identifier) {
-	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'OTP_DELETED' received for identifier '%s'", identifier );
-	exec__exec( g_cfg, "OTP_DELETED", identifier );
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'OTP-DELETED' received for identifier '%s'", identifier );
+	exec__exec( g_cfg, "OTP-DELETED", identifier );
+}
+
+
+static void exec__event__uhd_created(const char* identifier) {
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'UHD-CREATED' received for identifier '%s'", identifier );
+	exec__exec( g_cfg, "UHD-CREATED", identifier );
+}
+
+
+static void exec__event__uhd_modified(const char* identifier) {
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'UHD-MODIFIED' received for identifier '%s'", identifier );
+	exec__exec( g_cfg, "UHD-MODIFIED", identifier );
+}
+
+
+static void exec__event__uhd_deleted(const char* identifier) {
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'UHD-DELETED' received for identifier '%s'", identifier );
+	exec__exec( g_cfg, "UHD-DELETED", identifier );
+}
+
+
+static void exec__event__auth_user(const char* identifier) {
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'AUTH-USER' received for identifier '%s'", identifier );
+	exec__exec( g_cfg, "AUTH-USER", identifier );
+}
+
+
+static void exec__event__auth_otp(const char* identifier) {
+	g_self.library.api.runtime.system.log( TT_LOG__INFO, "plugin/exec", "event 'AUTH-OTP' received for identifier '%s'", identifier );
+	exec__exec( g_cfg, "AUTH-OTP", identifier );
 }
 
 
@@ -198,12 +222,16 @@ static int configure(const char* filename) {
 		return TT_ERR;
 	}
 	g_self.interface.events.user.created = exec__event__user_created;
-	g_self.interface.events.user.modified = exec__event__user_updated;
+	g_self.interface.events.user.modified = exec__event__user_modified;
 	g_self.interface.events.user.deleted = exec__event__user_deleted;
-	g_self.interface.events.auth.user_verified = exec__event__user_verified;
 	g_self.interface.events.otp.created = exec__event__otp_created;
+	g_self.interface.events.otp.modified = exec__event__otp_modified;
 	g_self.interface.events.otp.deleted = exec__event__otp_deleted;
-	g_self.interface.events.auth.otp_applied = exec__event__otp_applied;
+	g_self.interface.events.uhd.created = exec__event__uhd_created;
+	g_self.interface.events.uhd.modified = exec__event__uhd_modified;
+	g_self.interface.events.uhd.deleted = exec__event__uhd_deleted;
+	g_self.interface.events.auth.user = exec__event__auth_user;
+	g_self.interface.events.auth.otp = exec__event__auth_otp;
 	return TT_OK;
 }
 

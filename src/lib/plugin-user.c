@@ -30,8 +30,10 @@ int libtokentube_plugin__user_create(const char* username, const char* password,
 				switch( module->plugin->interface.api.database.user.create( username, password, status ) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'user_create'", module->name );
-						if( libtokentube_runtime_broadcast( TT_EVENT__USER_CREATED, username ) != TT_OK ) {
-							TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
+						if( *status == TT_STATUS__YES ) {
+							if( libtokentube_runtime_broadcast( TT_EVENT__USER_CREATED, username ) != TT_OK ) {
+								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
+							}
 						}
 						return TT_OK;
 					case TT_IGN:

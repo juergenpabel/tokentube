@@ -30,8 +30,10 @@ int libtokentube_plugin__otp_create(const char* identifier, tt_status_t* status)
 				switch( module->plugin->interface.api.database.otp.create( identifier, status ) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'otp_create'", module->name );
-						if( libtokentube_runtime_broadcast( TT_EVENT__OTP_CREATED, identifier ) != TT_OK ) {
-							TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
+						if( *status == TT_STATUS__YES ) {
+							if( libtokentube_runtime_broadcast( TT_EVENT__OTP_CREATED, identifier ) != TT_OK ) {
+								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
+							}
 						}
 						return TT_OK;
 					case TT_IGN:
@@ -69,8 +71,10 @@ int libtokentube_plugin__otp_modify(const char* identifier, tt_modify_t action, 
 				switch( module->plugin->interface.api.database.otp.modify( identifier, action, data, status ) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'otp_modify'", module->name );
-						if( libtokentube_runtime_broadcast( TT_EVENT__OTP_CREATED, identifier ) != TT_OK ) {
-							TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
+						if( *status == TT_STATUS__YES ) {
+							if( libtokentube_runtime_broadcast( TT_EVENT__OTP_CREATED, identifier ) != TT_OK ) {
+								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
+							}
 						}
 						return TT_OK;
 					case TT_IGN:

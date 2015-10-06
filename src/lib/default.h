@@ -59,7 +59,7 @@ typedef struct {
 	char	otp_hash[TT_IDENTIFIER_CHAR_MAX+1];
 	size_t	otp_bits;
 	size_t	otp_iter;
-} dflt_helpdesk_t;
+} dflt_uhd_t;
 
 
 #define TT_USER__UNDEFINED { {0}, {0}, {0}, {0} }
@@ -96,10 +96,10 @@ int  default__api__otp_modify(const char* identifier, tt_modify_t action, void* 
 int  default__api__otp_exists(const char* identifier, tt_status_t* status);
 int  default__api__otp_delete(const char* identifier, tt_status_t* status);
 
-int  default__api__helpdesk_create(const char* identifier, tt_status_t* status);
-int  default__api__helpdesk_modify(const char* identifier, tt_modify_t action, void* data, tt_status_t* status);
-int  default__api__helpdesk_exists(const char* identifier, tt_status_t* status);
-int  default__api__helpdesk_delete(const char* identifier, tt_status_t* status);
+int  default__api__uhd_create(const char* identifier, tt_status_t* status);
+int  default__api__uhd_modify(const char* identifier, tt_modify_t action, void* data, tt_status_t* status);
+int  default__api__uhd_exists(const char* identifier, tt_status_t* status);
+int  default__api__uhd_delete(const char* identifier, tt_status_t* status);
 
 int  default__api__auth_user_autoenrollment(const char* username, const char* password, tt_status_t* status);
 int  default__api__auth_user_verify(const char* username, const char* password, tt_status_t* status);
@@ -137,10 +137,10 @@ int  default__impl__otp_storage_save(const char* identifier, dflt_otp_t* otp);
 int  default__impl__otp_storage_delete(const char* identifier, tt_status_t* status);
 int  default__impl__otp_storage_exists(const char* identifier, tt_status_t* status);
 
-int  default__impl__helpdesk_storage_load(const char* identifier, dflt_helpdesk_t* helpdesk);
-int  default__impl__helpdesk_storage_save(const char* identifier, const dflt_helpdesk_t* helpdesk);
-int  default__impl__helpdesk_storage_exists(const char* identifier, tt_status_t* status);
-int  default__impl__helpdesk_storage_delete(const char* identifier, tt_status_t* status);
+int  default__impl__uhd_storage_load(const char* identifier, dflt_uhd_t* uhd);
+int  default__impl__uhd_storage_save(const char* identifier, const dflt_uhd_t* uhd);
+int  default__impl__uhd_storage_exists(const char* identifier, tt_status_t* status);
+int  default__impl__uhd_storage_delete(const char* identifier, tt_status_t* status);
 
 
 void default__event__user_created(const char* identifier);

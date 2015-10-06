@@ -50,7 +50,7 @@ static cfg_opt_t opt_tokentube_storage[] = {
 	CFG_SEC("user-files", opt_tokentube_storage_files, CFGF_NONE),
 	CFG_SEC("otp-files", opt_tokentube_storage_files, CFGF_NONE),
 	CFG_SEC("key-files", opt_tokentube_storage_files, CFGF_NONE),
-	CFG_SEC("helpdesk-files", opt_tokentube_storage_files, CFGF_NONE),
+	CFG_SEC("uhd-files", opt_tokentube_storage_files, CFGF_NONE),
 	CFG_END()
 };
 

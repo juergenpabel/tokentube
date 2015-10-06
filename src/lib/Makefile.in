@@ -127,9 +127,8 @@ am_libtokentube_la_OBJECTS = libtokentube_la-crypto.lo \
 	libtokentube_la-plugin-runtime.lo \
 	libtokentube_la-plugin-storage.lo \
 	libtokentube_la-plugin-user.lo libtokentube_la-plugin-otp.lo \
-	libtokentube_la-plugin-helpdesk.lo \
-	libtokentube_la-plugin-auth.lo libtokentube_la-default.lo \
-	libtokentube_la-default-auth.lo \
+	libtokentube_la-plugin-uhd.lo libtokentube_la-plugin-auth.lo \
+	libtokentube_la-default.lo libtokentube_la-default-auth.lo \
 	libtokentube_la-default-storage-posix.lo \
 	libtokentube_la-default-storage-ext2fs.lo \
 	libtokentube_la-default-storage-misc.lo \
@@ -141,10 +140,9 @@ am_libtokentube_la_OBJECTS = libtokentube_la-crypto.lo \
 	libtokentube_la-default-user-key.lo \
 	libtokentube_la-default-user-hmac.lo \
 	libtokentube_la-default-user-events.lo \
-	libtokentube_la-default-otp.lo \
-	libtokentube_la-default-helpdesk.lo \
-	libtokentube_la-default-helpdesk-storage.lo \
-	libtokentube_la-default-helpdesk-events.lo \
+	libtokentube_la-default-otp.lo libtokentube_la-default-uhd.lo \
+	libtokentube_la-default-uhd-storage.lo \
+	libtokentube_la-default-uhd-events.lo \
 	libtokentube_la-default-otp-storage.lo \
 	libtokentube_la-runtime.lo libtokentube_la-runtime-conf.lo \
 	libtokentube_la-runtime-conf-confuse.lo \
@@ -355,7 +353,7 @@ AUTOMAKE_OPTIONS = foreign
 lib_LTLIBRARIES = libtokentube.la
 libtokentube_la_CFLAGS = -I../../include 
 libtokentube_la_LDFLAGS = -lext2fs -lscrypt -lgcrypt -lconfuse -ldl
-libtokentube_la_SOURCES = crypto.c crypto-conf.c crypto-crypt.c crypto-oid.c init.c library.c plugin.c plugin-event.c plugin-pba.c plugin-runtime.c plugin-storage.c plugin-user.c plugin-otp.c plugin-helpdesk.c plugin-auth.c default.c default-auth.c default-storage-posix.c default-storage-ext2fs.c default-storage-misc.c default-pba.c default-runtime.c default-storage.c default-user.c default-user-storage.c default-user-key.c default-user-hmac.c default-user-events.c default-otp.c default-helpdesk.c default-helpdesk-storage.c default-helpdesk-events.c default-otp-storage.c runtime.c runtime-conf.c runtime-conf-confuse.c runtime-event.c runtime-log.c runtime-debug.c runtime-pba.c util-base32.c util-base64.c util-crc.c util-device.c util-file.c util-hex.c
+libtokentube_la_SOURCES = crypto.c crypto-conf.c crypto-crypt.c crypto-oid.c init.c library.c plugin.c plugin-event.c plugin-pba.c plugin-runtime.c plugin-storage.c plugin-user.c plugin-otp.c plugin-uhd.c plugin-auth.c default.c default-auth.c default-storage-posix.c default-storage-ext2fs.c default-storage-misc.c default-pba.c default-runtime.c default-storage.c default-user.c default-user-storage.c default-user-key.c default-user-hmac.c default-user-events.c default-otp.c default-uhd.c default-uhd-storage.c default-uhd-events.c default-otp-storage.c runtime.c runtime-conf.c runtime-conf-confuse.c runtime-event.c runtime-log.c runtime-debug.c runtime-pba.c util-base32.c util-base64.c util-crc.c util-device.c util-file.c util-hex.c
 all: all-am
 
 .SUFFIXES:
@@ -440,9 +438,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-crypto-oid.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-crypto.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-auth.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-helpdesk-events.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-helpdesk-storage.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-helpdesk.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-otp-storage.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-otp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-pba.Plo@am__quote@
@@ -451,6 +446,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-storage-misc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-storage-posix.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-storage.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-uhd-events.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-uhd-storage.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-uhd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-user-events.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-user-hmac.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-default-user-key.Plo@am__quote@
@@ -461,11 +459,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-library.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-auth.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-event.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-helpdesk.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-otp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-pba.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-runtime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-storage.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-uhd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-user.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-runtime-conf-confuse.Plo@am__quote@
@@ -594,12 +592,12 @@ libtokentube_la-plugin-otp.lo: plugin-otp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-plugin-otp.lo `test -f 'plugin-otp.c' || echo '$(srcdir)/'`plugin-otp.c
 
-libtokentube_la-plugin-helpdesk.lo: plugin-helpdesk.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-plugin-helpdesk.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-plugin-helpdesk.Tpo -c -o libtokentube_la-plugin-helpdesk.lo `test -f 'plugin-helpdesk.c' || echo '$(srcdir)/'`plugin-helpdesk.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-plugin-helpdesk.Tpo $(DEPDIR)/libtokentube_la-plugin-helpdesk.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='plugin-helpdesk.c' object='libtokentube_la-plugin-helpdesk.lo' libtool=yes @AMDEPBACKSLASH@
+libtokentube_la-plugin-uhd.lo: plugin-uhd.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-plugin-uhd.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-plugin-uhd.Tpo -c -o libtokentube_la-plugin-uhd.lo `test -f 'plugin-uhd.c' || echo '$(srcdir)/'`plugin-uhd.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-plugin-uhd.Tpo $(DEPDIR)/libtokentube_la-plugin-uhd.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='plugin-uhd.c' object='libtokentube_la-plugin-uhd.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-plugin-helpdesk.lo `test -f 'plugin-helpdesk.c' || echo '$(srcdir)/'`plugin-helpdesk.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-plugin-uhd.lo `test -f 'plugin-uhd.c' || echo '$(srcdir)/'`plugin-uhd.c
 
 libtokentube_la-plugin-auth.lo: plugin-auth.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-plugin-auth.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-plugin-auth.Tpo -c -o libtokentube_la-plugin-auth.lo `test -f 'plugin-auth.c' || echo '$(srcdir)/'`plugin-auth.c
@@ -706,26 +704,26 @@ libtokentube_la-default-otp.lo: default-otp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-otp.lo `test -f 'default-otp.c' || echo '$(srcdir)/'`default-otp.c
 
-libtokentube_la-default-helpdesk.lo: default-helpdesk.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-helpdesk.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-helpdesk.Tpo -c -o libtokentube_la-default-helpdesk.lo `test -f 'default-helpdesk.c' || echo '$(srcdir)/'`default-helpdesk.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-default-helpdesk.Tpo $(DEPDIR)/libtokentube_la-default-helpdesk.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='default-helpdesk.c' object='libtokentube_la-default-helpdesk.lo' libtool=yes @AMDEPBACKSLASH@
+libtokentube_la-default-uhd.lo: default-uhd.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-uhd.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-uhd.Tpo -c -o libtokentube_la-default-uhd.lo `test -f 'default-uhd.c' || echo '$(srcdir)/'`default-uhd.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-default-uhd.Tpo $(DEPDIR)/libtokentube_la-default-uhd.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='default-uhd.c' object='libtokentube_la-default-uhd.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-helpdesk.lo `test -f 'default-helpdesk.c' || echo '$(srcdir)/'`default-helpdesk.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-uhd.lo `test -f 'default-uhd.c' || echo '$(srcdir)/'`default-uhd.c
 
-libtokentube_la-default-helpdesk-storage.lo: default-helpdesk-storage.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-helpdesk-storage.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-helpdesk-storage.Tpo -c -o libtokentube_la-default-helpdesk-storage.lo `test -f 'default-helpdesk-storage.c' || echo '$(srcdir)/'`default-helpdesk-storage.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-default-helpdesk-storage.Tpo $(DEPDIR)/libtokentube_la-default-helpdesk-storage.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='default-helpdesk-storage.c' object='libtokentube_la-default-helpdesk-storage.lo' libtool=yes @AMDEPBACKSLASH@
+libtokentube_la-default-uhd-storage.lo: default-uhd-storage.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-uhd-storage.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-uhd-storage.Tpo -c -o libtokentube_la-default-uhd-storage.lo `test -f 'default-uhd-storage.c' || echo '$(srcdir)/'`default-uhd-storage.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-default-uhd-storage.Tpo $(DEPDIR)/libtokentube_la-default-uhd-storage.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='default-uhd-storage.c' object='libtokentube_la-default-uhd-storage.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-helpdesk-storage.lo `test -f 'default-helpdesk-storage.c' || echo '$(srcdir)/'`default-helpdesk-storage.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-uhd-storage.lo `test -f 'default-uhd-storage.c' || echo '$(srcdir)/'`default-uhd-storage.c
 
-libtokentube_la-default-helpdesk-events.lo: default-helpdesk-events.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-helpdesk-events.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-helpdesk-events.Tpo -c -o libtokentube_la-default-helpdesk-events.lo `test -f 'default-helpdesk-events.c' || echo '$(srcdir)/'`default-helpdesk-events.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-default-helpdesk-events.Tpo $(DEPDIR)/libtokentube_la-default-helpdesk-events.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='default-helpdesk-events.c' object='libtokentube_la-default-helpdesk-events.lo' libtool=yes @AMDEPBACKSLASH@
+libtokentube_la-default-uhd-events.lo: default-uhd-events.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-uhd-events.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-uhd-events.Tpo -c -o libtokentube_la-default-uhd-events.lo `test -f 'default-uhd-events.c' || echo '$(srcdir)/'`default-uhd-events.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-default-uhd-events.Tpo $(DEPDIR)/libtokentube_la-default-uhd-events.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='default-uhd-events.c' object='libtokentube_la-default-uhd-events.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-helpdesk-events.lo `test -f 'default-helpdesk-events.c' || echo '$(srcdir)/'`default-helpdesk-events.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-default-uhd-events.lo `test -f 'default-uhd-events.c' || echo '$(srcdir)/'`default-uhd-events.c
 
 libtokentube_la-default-otp-storage.lo: default-otp-storage.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-default-otp-storage.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-default-otp-storage.Tpo -c -o libtokentube_la-default-otp-storage.lo `test -f 'default-otp-storage.c' || echo '$(srcdir)/'`default-otp-storage.c

@@ -13,7 +13,7 @@ if( type == "key" ) then
 	data = file:read("*all");
 	file:close()
 end
-if( type == "helpdesk" ) then
+if( type == "uhd" ) then
 	local file = io.open( "var/spool/tokentube/helpdesk/" .. identifier, "r" )
 	data = file:read("*all");
 	file:close()

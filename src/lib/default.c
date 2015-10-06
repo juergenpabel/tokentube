@@ -37,10 +37,10 @@ int default__initialize(tt_plugin_t* plugin) {
 	plugin->interface.api.database.otp.modify = default__api__otp_modify;
 	plugin->interface.api.database.otp.delete = default__api__otp_delete;
 	plugin->interface.api.database.otp.exists = default__api__otp_exists;
-	plugin->interface.api.database.helpdesk.create = default__api__helpdesk_create;
-	plugin->interface.api.database.helpdesk.modify = default__api__helpdesk_modify;
-	plugin->interface.api.database.helpdesk.delete = default__api__helpdesk_delete;
-	plugin->interface.api.database.helpdesk.exists = default__api__helpdesk_exists;
+	plugin->interface.api.database.uhd.create = default__api__uhd_create;
+	plugin->interface.api.database.uhd.modify = default__api__uhd_modify;
+	plugin->interface.api.database.uhd.delete = default__api__uhd_delete;
+	plugin->interface.api.database.uhd.exists = default__api__uhd_exists;
 	plugin->interface.api.auth.user.autoenrollment = default__api__auth_user_autoenrollment;
 	plugin->interface.api.auth.user.verify = default__api__auth_user_verify;
 	plugin->interface.api.auth.user.loadkey = default__api__auth_user_loadkey;

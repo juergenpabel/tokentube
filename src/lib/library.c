@@ -49,10 +49,10 @@ int libtokentube_library_configure() {
 	g_library_api.database.otp.modify = libtokentube_plugin__otp_modify;
 	g_library_api.database.otp.delete = libtokentube_plugin__otp_delete;
 	g_library_api.database.otp.exists = libtokentube_plugin__otp_exists;
-	g_library_api.database.helpdesk.create = libtokentube_plugin__helpdesk_create;
-	g_library_api.database.helpdesk.modify = libtokentube_plugin__helpdesk_modify;
-	g_library_api.database.helpdesk.delete = libtokentube_plugin__helpdesk_delete;
-	g_library_api.database.helpdesk.exists = libtokentube_plugin__helpdesk_exists;
+	g_library_api.database.uhd.create = libtokentube_plugin__uhd_create;
+	g_library_api.database.uhd.modify = libtokentube_plugin__uhd_modify;
+	g_library_api.database.uhd.delete = libtokentube_plugin__uhd_delete;
+	g_library_api.database.uhd.exists = libtokentube_plugin__uhd_exists;
 	g_library_api.auth.user.verify = libtokentube_plugin__auth_user_verify;
 	g_library_api.auth.user.loadkey = libtokentube_plugin__auth_user_loadkey;
 	g_library_api.auth.user.autoenrollment = libtokentube_plugin__auth_user_autoenrollment;

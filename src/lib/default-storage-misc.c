@@ -54,8 +54,8 @@ int default__impl__storage_get_filename(tt_file_t file, const char* identifier, 
 			conf_filehash  = "storage|otp-files|filename-hash";
 			break;
 		case TT_FILE__UHD:
-			conf_directory = "storage|helpdesk-files|directory";
-			conf_filehash  = "storage|helpdesk-files|filename-hash";
+			conf_directory = "storage|uhd-files|directory";
+			conf_filehash  = "storage|uhd-files|filename-hash";
 			break;
 		default:
 			TT_LOG_ERROR( "plugin/default", "invalid file=%d in %s()", file, __FUNCTION__ );

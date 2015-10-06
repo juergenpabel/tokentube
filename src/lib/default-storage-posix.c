@@ -114,9 +114,9 @@ int default__storage_posix_save(tt_file_t type, const char* filename, const char
 			conf_group = "storage|otp-files|group";
 			conf_perm  = "storage|otp-files|permission";
 		case TT_FILE__UHD:
-			conf_owner = "storage|helpdesk-files|owner";
-			conf_group = "storage|helpdesk-files|group";
-			conf_perm  = "storage|helpdesk-files|permission";
+			conf_owner = "storage|uhd-files|owner";
+			conf_group = "storage|uhd-files|group";
+			conf_perm  = "storage|uhd-files|permission";
 			break;
 		default:
 			break;

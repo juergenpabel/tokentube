@@ -21,8 +21,8 @@ void default__event__otp_created(const char* identifier) {
 	if( identifier == NULL ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameters in %s()", __FUNCTION__ );
 	}
-	if( default__api__helpdesk_create( identifier, &status ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__api__helpdesk_create failed in %s()", __FUNCTION__ );
+	if( default__api__uhd_create( identifier, &status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__api__uhd_create failed in %s()", __FUNCTION__ );
 	}
 }
 
@@ -35,8 +35,8 @@ void default__event__otp_deleted(const char* identifier) {
 	if( identifier == NULL ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameters in %s()", __FUNCTION__ );
 	}
-	if( default__api__helpdesk_delete( identifier, &status ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "default__api__helpdesk_create failed in %s()", __FUNCTION__ );
+	if( default__api__uhd_delete( identifier, &status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "default__api__uhd_create failed in %s()", __FUNCTION__ );
 	}
 }
 

@@ -11,7 +11,7 @@
 #include "plugin.h"
 
 
-static char* g_type[] = { NULL, "config-pba", "config-standard", "key", "user", "otp", "helpdesk" };
+static char* g_type[] = { NULL, "config-pba", "config-standard", "key", "user", "otp", "uhd" };
 
 
 __attribute__ ((visibility ("hidden")))

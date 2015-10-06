@@ -4,13 +4,17 @@
 
 static char* g_event_names[] = {
 	NULL,
-	"USER_CREATED",
-	"USER_VERIFIED",
-	"USER_UPDATED",
-	"USER_DELETED",
-	"OTP_CREATED",
-	"OTP_APPLIED",
-	"OTP_DELETED",
+	"USER-CREATED",
+	"USER-MODIFIED",
+	"USER-DELETED",
+	"OTP-CREATED",
+	"OTP-MODIFIED",
+	"OTP-DELETED",
+	"UHD-CREATED",
+	"UHD-MODIFIED",
+	"UHD-DELETED",
+	"AUTH-USER",
+	"AUTH-OTP",
 	NULL
 };
 
@@ -41,12 +45,16 @@ int libtokentube_runtime_broadcast(tt_event_t event, const char* identifier) {
 	TT_TRACE( "library/runtime", "%s(event=%d, identifier='%s')", __FUNCTION__, event, identifier );
 	switch( event ) {
 		case TT_EVENT__USER_CREATED:
-		case TT_EVENT__AUTH_USER_VERIFIED:
 		case TT_EVENT__USER_MODIFIED:
 		case TT_EVENT__USER_DELETED:
 		case TT_EVENT__OTP_CREATED:
-		case TT_EVENT__AUTH_OTP_APPLIED:
+		case TT_EVENT__OTP_MODIFIED:
 		case TT_EVENT__OTP_DELETED:
+		case TT_EVENT__UHD_CREATED:
+		case TT_EVENT__UHD_MODIFIED:
+		case TT_EVENT__UHD_DELETED:
+		case TT_EVENT__AUTH_USER:
+		case TT_EVENT__AUTH_OTP:
 			event_name = g_event_names[event];
 			break;
 		default:

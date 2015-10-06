@@ -219,7 +219,7 @@ int default__api__auth_otp_response(const char* identifier, const char* challeng
 	char            response_raw[2+TT_OTP_BITS_MAX/8] = {0};
 	char		data[TT_KEY_BITS_MAX/8] = {0};
 	size_t		data_size = sizeof(data);
-	dflt_helpdesk_t	helpdesk = {0};
+	dflt_uhd_t	uhd = {0};
 	size_t		i = 0;
 	unsigned short	crc;
 
@@ -229,22 +229,22 @@ int default__api__auth_otp_response(const char* identifier, const char* challeng
 		TT_LOG_ERROR( "plugin/default", "invalid parameters in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( default__impl__helpdesk_storage_load( identifier, &helpdesk ) != TT_OK ) {
+	if( default__impl__uhd_storage_load( identifier, &uhd ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "API:storage_load() failed for identifier='%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
-	memcpy( data, helpdesk.key_data, helpdesk.key_data_size );
-	for( i=0; i<helpdesk.otp_iter; i++ ) {
+	memcpy( data, uhd.key_data, uhd.key_data_size );
+	for( i=0; i<uhd.otp_iter; i++ ) {
 		data_size = sizeof(data);
-		if( libtokentube_crypto_hash_impl( helpdesk.otp_hash, data, helpdesk.otp_bits/8, data, &data_size ) != TT_OK ) {
+		if( libtokentube_crypto_hash_impl( uhd.otp_hash, data, uhd.otp_bits/8, data, &data_size ) != TT_OK ) {
 			TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hash_impl() failed in %s()", __FUNCTION__ );
 			return TT_ERR;
 		}
 	}
-	for( i=helpdesk.key_data_size; i>0; i-- ) {
-		data[i-1] = helpdesk.key_data[i-1] ^ data[(i-1)%(helpdesk.otp_bits/8)];
+	for( i=uhd.key_data_size; i>0; i-- ) {
+		data[i-1] = uhd.key_data[i-1] ^ data[(i-1)%(uhd.otp_bits/8)];
 	}
-	if( libtokentube_util_crc16( data, helpdesk.otp_bits/8, &crc ) != TT_OK ) {
+	if( libtokentube_util_crc16( data, uhd.otp_bits/8, &crc ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "crc16() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -252,7 +252,7 @@ int default__api__auth_otp_response(const char* identifier, const char* challeng
 		TT_LOG_ERROR( "plugin/default", "base32_decode() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( challenge_raw_size != (2+helpdesk.otp_bits/8) ) {
+	if( challenge_raw_size != (2+uhd.otp_bits/8) ) {
 		TT_LOG_ERROR( "plugin/default", "challenge and reponse are of different length" );
 		return TT_ERR;
 	}
@@ -260,32 +260,32 @@ int default__api__auth_otp_response(const char* identifier, const char* challeng
 		TT_LOG_ERROR( "plugin/default", "CRC of challenge incorrect (%u %u, instead of %u %u)", (unsigned char)challenge_raw[0], (unsigned char)challenge_raw[1], ((crc>>0)&0xff), ((crc>>8)&0xff) );
 		return TT_ERR;
 	}
-	for( i=0; i<helpdesk.otp_bits/8; i++ ) {
-		response_raw[2+i] = challenge_raw[2+i] ^ helpdesk.key_data[i] ^ data[i];
+	for( i=0; i<uhd.otp_bits/8; i++ ) {
+		response_raw[2+i] = challenge_raw[2+i] ^ uhd.key_data[i] ^ data[i];
 	}
-	for( i=0; i<helpdesk.key_data_size; i++ ) {
-		data[i] = data[i] ^ helpdesk.key_data[i];
+	for( i=0; i<uhd.key_data_size; i++ ) {
+		data[i] = data[i] ^ uhd.key_data[i];
 	}
 	data_size = sizeof(data);
-	if( libtokentube_crypto_hash_impl( helpdesk.otp_hash, data, helpdesk.otp_bits/8, data, &data_size ) != TT_OK ) {
+	if( libtokentube_crypto_hash_impl( uhd.otp_hash, data, uhd.otp_bits/8, data, &data_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hash_impl() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	for( i=helpdesk.key_data_size; i>0; i-- ) {
-		data[i-1] = helpdesk.key_data[i-1] ^ data[(i-1)%(helpdesk.otp_bits/8)];
+	for( i=uhd.key_data_size; i>0; i-- ) {
+		data[i-1] = uhd.key_data[i-1] ^ data[(i-1)%(uhd.otp_bits/8)];
 	}
-	if( libtokentube_util_crc16( data, helpdesk.otp_bits/8, &crc ) != TT_OK ) {
+	if( libtokentube_util_crc16( data, uhd.otp_bits/8, &crc ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "API:crc16() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	response_raw[0] = (crc>>0) & 0xff;
 	response_raw[1] = (crc>>8) & 0xff;
-	if( libtokentube_util_base32_encode(response_raw, 2+helpdesk.otp_bits/8, response, response_size) != TT_OK ) {
+	if( libtokentube_util_base32_encode(response_raw, 2+uhd.otp_bits/8, response, response_size) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "API:base32_encode() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	helpdesk.otp_iter++;
-	if( default__impl__helpdesk_storage_save( identifier, &helpdesk ) != TT_OK ) {
+	uhd.otp_iter++;
+	if( default__impl__uhd_storage_save( identifier, &uhd ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "API:storage_save() failed for identifier='%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -364,7 +364,6 @@ int default__api__auth_otp_loadkey(const char* identifier, const char* challenge
 		return TT_ERR;
 	}
 	TT_DEBUG3( "plugin/default", "default__impl__otp_storage_save() successful for '%s' in %s()", identifier, __FUNCTION__ );
-	libtokentube_runtime_broadcast( TT_EVENT__AUTH_OTP_APPLIED, identifier );
         return TT_OK;
 }
 

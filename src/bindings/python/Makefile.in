@@ -120,7 +120,7 @@ am__installdirs = "$(DESTDIR)$(pyexecdir)"
 LTLIBRARIES = $(pyexec_LTLIBRARIES)
 tokentube_la_LIBADD =
 am_tokentube_la_OBJECTS = tokentube_la-binding.lo tokentube_la-user.lo \
-	tokentube_la-otp.lo tokentube_la-helpdesk.lo \
+	tokentube_la-otp.lo tokentube_la-auth.lo \
 	tokentube_la-runtime.lo
 tokentube_la_OBJECTS = $(am_tokentube_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -319,7 +319,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 pyexec_LTLIBRARIES = tokentube.la
-tokentube_la_SOURCES = binding.c user.c otp.c helpdesk.c runtime.c
+tokentube_la_SOURCES = binding.c user.c otp.c auth.c runtime.c
 tokentube_la_CFLAGS = -I../../../include -I/usr/include/python3.4m
 tokentube_la_LDFLAGS = -L../../../src/lib/.libs -lpython3.4m -ltokentube -module -avoid-version -export-symbols-regex PyInit_tokentube
 all: all-am
@@ -401,8 +401,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tokentube_la-auth.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tokentube_la-binding.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tokentube_la-helpdesk.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tokentube_la-otp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tokentube_la-runtime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tokentube_la-user.Plo@am__quote@
@@ -449,12 +449,12 @@ tokentube_la-otp.lo: otp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tokentube_la_CFLAGS) $(CFLAGS) -c -o tokentube_la-otp.lo `test -f 'otp.c' || echo '$(srcdir)/'`otp.c
 
-tokentube_la-helpdesk.lo: helpdesk.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tokentube_la_CFLAGS) $(CFLAGS) -MT tokentube_la-helpdesk.lo -MD -MP -MF $(DEPDIR)/tokentube_la-helpdesk.Tpo -c -o tokentube_la-helpdesk.lo `test -f 'helpdesk.c' || echo '$(srcdir)/'`helpdesk.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/tokentube_la-helpdesk.Tpo $(DEPDIR)/tokentube_la-helpdesk.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='helpdesk.c' object='tokentube_la-helpdesk.lo' libtool=yes @AMDEPBACKSLASH@
+tokentube_la-auth.lo: auth.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tokentube_la_CFLAGS) $(CFLAGS) -MT tokentube_la-auth.lo -MD -MP -MF $(DEPDIR)/tokentube_la-auth.Tpo -c -o tokentube_la-auth.lo `test -f 'auth.c' || echo '$(srcdir)/'`auth.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/tokentube_la-auth.Tpo $(DEPDIR)/tokentube_la-auth.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='auth.c' object='tokentube_la-auth.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tokentube_la_CFLAGS) $(CFLAGS) -c -o tokentube_la-helpdesk.lo `test -f 'helpdesk.c' || echo '$(srcdir)/'`helpdesk.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tokentube_la_CFLAGS) $(CFLAGS) -c -o tokentube_la-auth.lo `test -f 'auth.c' || echo '$(srcdir)/'`auth.c
 
 tokentube_la-runtime.lo: runtime.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tokentube_la_CFLAGS) $(CFLAGS) -MT tokentube_la-runtime.lo -MD -MP -MF $(DEPDIR)/tokentube_la-runtime.Tpo -c -o tokentube_la-runtime.lo `test -f 'runtime.c' || echo '$(srcdir)/'`runtime.c

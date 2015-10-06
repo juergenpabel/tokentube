@@ -71,12 +71,12 @@ typedef struct {
 	int (*modify)(const char* identifier, tt_modify_t modify, void* data, tt_status_t* status);
 	int (*delete)(const char* identifier, tt_status_t* status);
 	int (*exists)(const char* identifier, tt_status_t* status);
-} tt_library_api_database_helpdesk_t;
+} tt_library_api_database_uhd_t;
 
 typedef struct {
-	tt_library_api_database_user_t      user;
-	tt_library_api_database_otp_t       otp;
-	tt_library_api_database_helpdesk_t  helpdesk;
+	tt_library_api_database_user_t  user;
+	tt_library_api_database_otp_t   otp;
+	tt_library_api_database_uhd_t   uhd;
 } tt_library_api_database_t;
 
 

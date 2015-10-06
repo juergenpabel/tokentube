@@ -36,10 +36,10 @@ extern tt_module_t* g_modules[MAX_PLUGINS+1];
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__otp_exists(const char* identifier, tt_status_t* status);
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__otp_delete(const char* identifier, tt_status_t* status);
 
-/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__helpdesk_create(const char* identifier, tt_status_t* status);
-/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__helpdesk_modify(const char* identifier, tt_modify_t action, void* data, tt_status_t* status);
-/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__helpdesk_exists(const char* identifier, tt_status_t* status);
-/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__helpdesk_delete(const char* identifier, tt_status_t* status);
+/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__uhd_create(const char* identifier, tt_status_t* status);
+/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__uhd_modify(const char* identifier, tt_modify_t action, void* data, tt_status_t* status);
+/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__uhd_exists(const char* identifier, tt_status_t* status);
+/*[TT_OK|TT_ERR]*/ int libtokentube_plugin__uhd_delete(const char* identifier, tt_status_t* status);
 
 
 /*[TT_OK|TT_ERR]*/ int libtokentube_plugin__auth_user_loadkey( const char* username, const char* password, const char* key_name, char* key, size_t* key_size );

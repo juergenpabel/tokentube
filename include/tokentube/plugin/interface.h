@@ -40,13 +40,21 @@ typedef struct {
 
 
 typedef struct {
-	void (*user_verified)(const char* identifier);
-	void (*otp_applied)(const char* identifier);
+	void (*created)(const char* identifier);
+	void (*modified)(const char* identifier);
+	void (*deleted)(const char* identifier);
+} tt_plugin_events_uhd_t;
+
+
+typedef struct {
+	void (*user)(const char* identifier);
+	void (*otp)(const char* identifier);
 } tt_plugin_events_auth_t;
 
 typedef struct {
 	tt_plugin_events_user_t  user;
 	tt_plugin_events_otp_t   otp;
+	tt_plugin_events_uhd_t   uhd;
 	tt_plugin_events_auth_t  auth;
 } tt_plugin_events_t;
 

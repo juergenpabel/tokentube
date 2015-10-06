@@ -71,7 +71,6 @@ int default__api__otp_create(const char* identifier, tt_status_t* status) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_otp_save() failed for '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
-	libtokentube_runtime_broadcast( TT_EVENT__OTP_CREATED, identifier );
 	*status = TT_YES;
         return TT_OK;
 }
@@ -118,7 +117,6 @@ int default__api__otp_delete(const char* identifier, tt_status_t* status) {
 			TT_LOG_ERROR( "plugin/default", "runtime error: error while deleting otp '%s'", identifier );
 			return TT_ERR;
 		}
-		libtokentube_runtime_broadcast( TT_EVENT__OTP_DELETED, identifier );
 	}
 	return TT_OK;
 }

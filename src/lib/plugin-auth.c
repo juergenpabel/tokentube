@@ -29,6 +29,9 @@ int libtokentube_plugin__auth_user_loadkey( const char* username, const char* pa
 				switch( module->plugin->interface.api.auth.user.loadkey( username, password, identifier, key, key_size ) ) {
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'auth_user_loadkey'", module->name );
+						if( libtokentube_runtime_broadcast( TT_EVENT__AUTH_USER, identifier ) != TT_OK ) {
+							TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
+						}
 						return TT_OK;
 					case TT_IGN:
 						TT_DEBUG4( "library/plugin", "plugin '%s' ignored 'auth_user_loadkey'", module->name );
@@ -66,7 +69,7 @@ int libtokentube_plugin__auth_user_verify( const char* username, const char* pas
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'auth_user_verify'", module->name );
 						if( *status == TT_YES ) {
-							if( libtokentube_runtime_broadcast( TT_EVENT__AUTH_USER_VERIFIED, username ) != TT_OK ) {
+							if( libtokentube_runtime_broadcast( TT_EVENT__AUTH_USER, username ) != TT_OK ) {
 								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
 							}
 						}
@@ -209,7 +212,7 @@ int libtokentube_plugin__auth_otp_loadkey( const char* identifier, const char* c
 					case TT_OK:
 						TT_DEBUG4( "library/plugin", "plugin '%s' successfully handled 'auth_otp_loadkey'", module->name );
 						if( *key_size > 0 ) {
-							if( libtokentube_runtime_broadcast( TT_EVENT__AUTH_OTP_APPLIED, identifier ) != TT_OK ) {
+							if( libtokentube_runtime_broadcast( TT_EVENT__AUTH_OTP, identifier ) != TT_OK ) {
 								TT_LOG_WARN( "library/plugin", "libtokentube_runtime_broadcast() failed in %s()", __FUNCTION__ );
 							}
 						}

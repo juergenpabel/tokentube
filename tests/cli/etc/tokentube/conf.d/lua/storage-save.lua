@@ -13,7 +13,7 @@ if( type == "key" ) then
 	file:write( data );
 	file:close()
 end
-if( type == "helpdesk" ) then
+if( type == "uhd" ) then
 	local file = io.open( "var/spool/tokentube/helpdesk/" .. identifier, "w" )
 	file:write( data );
 	file:close()

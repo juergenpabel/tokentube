@@ -49,12 +49,12 @@ static void test_compile_enums(void **state) {
 	assert_true( TT_FILE__USER != TT_FILE__OTP );
 
 	assert_true( TT_EVENT__UNDEFINED != TT_EVENT__USER_CREATED );
-	assert_true( TT_EVENT__USER_CREATED != TT_EVENT__AUTH_USER_VERIFIED );
-	assert_true( TT_EVENT__AUTH_USER_VERIFIED != TT_EVENT__USER_MODIFIED );
+	assert_true( TT_EVENT__USER_CREATED != TT_EVENT__AUTH_USER );
+	assert_true( TT_EVENT__AUTH_USER != TT_EVENT__USER_MODIFIED );
 	assert_true( TT_EVENT__USER_MODIFIED != TT_EVENT__USER_DELETED );
 	assert_true( TT_EVENT__USER_DELETED != TT_EVENT__OTP_CREATED );
-	assert_true( TT_EVENT__OTP_CREATED != TT_EVENT__AUTH_OTP_APPLIED );
-	assert_true( TT_EVENT__AUTH_OTP_APPLIED != TT_EVENT__OTP_DELETED );
+	assert_true( TT_EVENT__OTP_CREATED != TT_EVENT__AUTH_OTP );
+	assert_true( TT_EVENT__AUTH_OTP != TT_EVENT__OTP_DELETED );
 }
 
 
