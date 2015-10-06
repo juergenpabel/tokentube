@@ -295,7 +295,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = 00_compile 01_init 02_helpdesk
+SUBDIRS = 00_compile 01_init
 all: all-recursive
 
 .SUFFIXES:
@@ -611,7 +611,6 @@ uninstall-am:
 tests:
 	make -C 00_compile	tests
 	make -C 01_init		tests
-	make -C 02_helpdesk	tests
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

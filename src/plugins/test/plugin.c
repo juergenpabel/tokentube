@@ -84,11 +84,10 @@ static int test__api__storage_delete(tt_file_t type, const char* identifier, tt_
 
 
 static int test__api__auth_user_autoenrollment(const char* username, const char* password, tt_status_t* status) {
-	if( g_self.library.api.database.user.create( username, password ) != TT_OK ) {
+	if( g_self.library.api.database.user.create( username, password, status ) != TT_OK ) {
 		g_self.library.api.runtime.system.log( TT_LOG__ERROR, "plugin/default", "API:user.create failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	*status = TT_STATUS__YES;
 	return TT_OK;
 }
 

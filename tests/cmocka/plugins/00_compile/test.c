@@ -22,11 +22,11 @@ int tt_plugin_register(tt_plugin_t* plugin) {
 static void test_plugins(void **state) {
 	assert_true( *state == NULL );
 	assert_true( dlopen( "lib/tokentube/plugins.d/libtokentube-plugin-test.so", RTLD_GLOBAL|RTLD_NOW ) != NULL );
-	assert_true( dlopen( "lib/tokentube/plugins.d/libtokentube-plugin-helpdesk.so", RTLD_GLOBAL|RTLD_NOW ) != NULL );
 	assert_true( dlopen( "lib/tokentube/plugins.d/libtokentube-plugin-exec.so", RTLD_GLOBAL|RTLD_NOW ) != NULL );
 	assert_true( dlopen( "lib/tokentube/plugins.d/libtokentube-plugin-log.so", RTLD_GLOBAL|RTLD_NOW ) != NULL );
 	assert_true( dlopen( "lib/tokentube/plugins.d/libtokentube-plugin-syslog.so", RTLD_GLOBAL|RTLD_NOW ) != NULL );
 	assert_true( dlopen( "lib/tokentube/plugins.d/libtokentube-plugin-lua.so", RTLD_GLOBAL|RTLD_NOW ) != NULL );
+	assert_true( dlopen( "lib/tokentube/plugins.d/libtokentube-plugin-python.so", RTLD_GLOBAL|RTLD_NOW ) != NULL );
 	assert_true( g_plugins_loaded == 6 );
 }
 

@@ -1,9 +1,9 @@
 extern tt_library_t*    g_library;
 
 extern PyObject* py_tt_user_create(PyObject* self, PyObject *args);
-extern PyObject* py_tt_user_update(PyObject* self, PyObject *args);
-extern PyObject* py_tt_user_exists(PyObject* self, PyObject *args);
+extern PyObject* py_tt_user_chpass(PyObject* self, PyObject *args);
 extern PyObject* py_tt_user_delete(PyObject* self, PyObject *args);
+extern PyObject* py_tt_user_exists(PyObject* self, PyObject *args);
 extern PyObject* py_tt_user_key_add(PyObject* self, PyObject *args);
 extern PyObject* py_tt_user_key_del(PyObject* self, PyObject *args);
 

@@ -30,10 +30,10 @@ int libtokentube_plugin__event_broadcast(tt_event_t event, const char* identifie
 					event_func = module->plugin->interface.events.user.created;
 					break;
 				case TT_EVENT__AUTH_USER_VERIFIED:
-					event_func = module->plugin->interface.events.user.verified;
+					event_func = module->plugin->interface.events.auth.user_verified;
 					break;
 				case TT_EVENT__USER_MODIFIED:
-					event_func = module->plugin->interface.events.user.updated;
+					event_func = module->plugin->interface.events.user.modified;
 					break;
 				case TT_EVENT__USER_DELETED:
 					event_func = module->plugin->interface.events.user.deleted;
@@ -42,7 +42,7 @@ int libtokentube_plugin__event_broadcast(tt_event_t event, const char* identifie
 					event_func = module->plugin->interface.events.otp.created;
 					break;
 				case TT_EVENT__AUTH_OTP_APPLIED:
-					event_func = module->plugin->interface.events.otp.applied;
+					event_func = module->plugin->interface.events.auth.otp_applied;
 					break;
 				case TT_EVENT__OTP_DELETED:
 					event_func = module->plugin->interface.events.otp.deleted;

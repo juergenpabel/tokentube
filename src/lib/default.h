@@ -86,19 +86,18 @@ int  default__api__storage_save(tt_file_t type, const char* identifier, const ch
 int  default__api__storage_exists(tt_file_t type, const char* identifier, tt_status_t* status);
 int  default__api__storage_delete(tt_file_t type, const char* identifier, tt_status_t* status);
 
-int  default__api__user_create(const char* username, const char* password);
-int  default__api__user_update(const char* username, const char* old_password, const char* new_password, tt_status_t* status);
+int  default__api__user_create(const char* username, const char* password, tt_status_t* status);
+int  default__api__user_modify(const char* username, const char* password, tt_modify_t action, void* data, tt_status_t* status);
 int  default__api__user_delete(const char* username, tt_status_t* status);
 int  default__api__user_exists(const char* username, tt_status_t* status);
-int  default__api__user_key_add(const char* username, const char* password, const char* identifier, tt_status_t* status);
-int  default__api__user_key_del(const char* username, const char* password, const char* identifier, tt_status_t* status);
 
-int  default__api__otp_create(const char* identifier);
-int  default__api__otp_update(const char* identifier, const char* key, size_t key_size, const char* new_key, size_t new_key_size, tt_status_t* status);
+int  default__api__otp_create(const char* identifier, tt_status_t* status);
+int  default__api__otp_modify(const char* identifier, tt_modify_t action, void* data, tt_status_t* status);
 int  default__api__otp_exists(const char* identifier, tt_status_t* status);
 int  default__api__otp_delete(const char* identifier, tt_status_t* status);
 
-int  default__api__helpdesk_create(const char* identifier);
+int  default__api__helpdesk_create(const char* identifier, tt_status_t* status);
+int  default__api__helpdesk_modify(const char* identifier, tt_modify_t action, void* data, tt_status_t* status);
 int  default__api__helpdesk_exists(const char* identifier, tt_status_t* status);
 int  default__api__helpdesk_delete(const char* identifier, tt_status_t* status);
 

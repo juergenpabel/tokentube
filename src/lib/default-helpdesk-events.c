@@ -15,13 +15,13 @@
 
 __attribute__ ((visibility ("hidden")))
 void default__event__otp_created(const char* identifier) {
-//TODO	tt_status_t  status = TT_STATUS__UNDEFINED;
+	tt_status_t  status = TT_STATUS__UNDEFINED;
 
 	TT_TRACE( "plugin/default", "%s(identifier='%s')", __FUNCTION__, identifier );
 	if( identifier == NULL ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameters in %s()", __FUNCTION__ );
 	}
-	if( default__api__helpdesk_create( identifier ) != TT_OK ) {
+	if( default__api__helpdesk_create( identifier, &status ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "default__api__helpdesk_create failed in %s()", __FUNCTION__ );
 	}
 }

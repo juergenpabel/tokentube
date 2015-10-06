@@ -19,7 +19,8 @@ cmocka:
 
 .PHONY:	helpdesk
 helpdesk:
-	( cd src/helpdesk && ant )
+	make -C src/helpdesk/plugin
+	( cd src/helpdesk/server && ant )
 
 .PHONY:	man
 man:

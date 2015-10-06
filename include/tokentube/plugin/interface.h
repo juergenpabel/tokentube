@@ -27,22 +27,27 @@ typedef struct {
 
 typedef struct {
 	void (*created)(const char* identifier);
-	void (*verified)(const char* identifier);
-	void (*updated)(const char* identifier);
+	void (*modified)(const char* identifier);
 	void (*deleted)(const char* identifier);
 } tt_plugin_events_user_t;
 
 
 typedef struct {
 	void (*created)(const char* identifier);
-	void (*applied)(const char* identifier);
+	void (*modified)(const char* identifier);
 	void (*deleted)(const char* identifier);
 } tt_plugin_events_otp_t;
 
 
 typedef struct {
-	tt_plugin_events_user_t	user;
-	tt_plugin_events_otp_t	otp;
+	void (*user_verified)(const char* identifier);
+	void (*otp_applied)(const char* identifier);
+} tt_plugin_events_auth_t;
+
+typedef struct {
+	tt_plugin_events_user_t  user;
+	tt_plugin_events_otp_t   otp;
+	tt_plugin_events_auth_t  auth;
 } tt_plugin_events_t;
 
 

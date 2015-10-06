@@ -8,11 +8,11 @@ def init(parser):
 	parser_user_create.add_argument('--password', '-p', action='store', help='password')
 	parser_user_create.set_defaults(func=create)
 
-	parser_user_update = parser.add_parser('user-update')
-	parser_user_update.add_argument('--username', '-u', action='store', help='username')
-	parser_user_update.add_argument('--password-cur', '-p', action='store', help='current password')
-	parser_user_update.add_argument('--password-new', '-n', action='store', help='new password')
-	parser_user_update.set_defaults(func=update)
+	parser_user_chpass = parser.add_parser('user-chpass')
+	parser_user_chpass.add_argument('--username', '-u', action='store', help='username')
+	parser_user_chpass.add_argument('--password-cur', '-p', action='store', help='current password')
+	parser_user_chpass.add_argument('--password-new', '-n', action='store', help='new password')
+	parser_user_chpass.set_defaults(func=chpass)
 
 	parser_user_exists = parser.add_parser('user-exists')
 	parser_user_exists.add_argument('--username', '-u', action='store', help='username')
@@ -67,7 +67,7 @@ def create(args):
 	return 0
 
 
-def update(args):
+def chpass(args):
 	if args.username is None:
 		args.username = get_username()
 	if tokentube.user_exists( args.username ) is False:
@@ -77,10 +77,10 @@ def update(args):
 		args.password_cur = get_password()
 	if args.password_new is None:
 		args.password_new = get_password()
-	if tokentube.user_update( args.username, args.password_cur, args.password_new ) is False:
-		message( args, "FAILURE: user '%s' not updated" % args.username )
+	if tokentube.user_chpass( args.username, args.password_cur, args.password_new ) is False:
+		message( args, "FAILURE: password for user '%s' not changed" % args.username )
 		return -1
-	message( args, "SUCCESS: user '%s' updated" % args.username )
+	message( args, "SUCCESS: password for user '%s' changed" % args.username )
 	return 0
 
 

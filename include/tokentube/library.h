@@ -53,30 +53,24 @@ typedef struct {
 
 
 typedef struct {
-	int (*create)(const char* username, const char* password /*TODO:, tt_status_t* status*/);
-	int (*exists)(const char* username, tt_status_t* status);
+	int (*create)(const char* username, const char* password, tt_status_t* status);
+	int (*modify)(const char* username, const char* password, tt_modify_t action, void* data, tt_status_t* status);
 	int (*delete)(const char* username, tt_status_t* status);
-
-//TODO	int (*modify)(const char* username, const char* password, tt_modify_t action, void* data, tt_status_t* status);
-	int (*update)(const char* username, const char* password, const char* new_password, tt_status_t* status);
-	int (*key_add)(const char* username, const char* password, const char* identifier, tt_status_t* status);
-	int (*key_del)(const char* username, const char* password, const char* identifier, tt_status_t* status);
+	int (*exists)(const char* username, tt_status_t* status);
 } tt_library_api_database_user_t;
 
 typedef struct {
-	int (*create)(const char* identifier);
-	int (*update)(const char* identifier, const char* key, size_t key_size, const char* new_key, size_t new_key_size, tt_status_t* status);
-//TODO	int (*modify)(const char* username, const char* password, tt_modify_t modify, void* data, tt_status_t* status);
-	int (*exists)(const char* identifier, tt_status_t* status);
+	int (*create)(const char* identifier, tt_status_t* status);
+	int (*modify)(const char* identifier, tt_modify_t modify, void* data, tt_status_t* status);
 	int (*delete)(const char* identifier, tt_status_t* status);
+	int (*exists)(const char* identifier, tt_status_t* status);
 } tt_library_api_database_otp_t;
 
 typedef struct {
-//TODO	int (*create)(const char* identifier);
-//TODO	int (*modify)(const char* username, const char* password, tt_modify_t modify, void* data, tt_status_t* status);
-//TODO	int (*update)(const char* identifier, void* TODO, tt_status_t* status);
-//TODO	int (*exists)(const char* identifier, tt_status_t* status);
-//TODO	int (*delete)(const char* identifier, tt_status_t* status);
+	int (*create)(const char* identifier, tt_status_t* status);
+	int (*modify)(const char* identifier, tt_modify_t modify, void* data, tt_status_t* status);
+	int (*delete)(const char* identifier, tt_status_t* status);
+	int (*exists)(const char* identifier, tt_status_t* status);
 } tt_library_api_database_helpdesk_t;
 
 typedef struct {

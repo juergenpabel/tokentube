@@ -198,12 +198,12 @@ static int configure(const char* filename) {
 		return TT_ERR;
 	}
 	g_self.interface.events.user.created = exec__event__user_created;
-	g_self.interface.events.user.updated = exec__event__user_updated;
-	g_self.interface.events.user.verified = exec__event__user_verified;
+	g_self.interface.events.user.modified = exec__event__user_updated;
 	g_self.interface.events.user.deleted = exec__event__user_deleted;
+	g_self.interface.events.auth.user_verified = exec__event__user_verified;
 	g_self.interface.events.otp.created = exec__event__otp_created;
-	g_self.interface.events.otp.applied = exec__event__otp_applied;
 	g_self.interface.events.otp.deleted = exec__event__otp_deleted;
+	g_self.interface.events.auth.otp_applied = exec__event__otp_applied;
 	return TT_OK;
 }
 

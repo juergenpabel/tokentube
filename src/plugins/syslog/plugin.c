@@ -48,12 +48,12 @@ static void log__event__otp_deleted(const char* identifier) {
 
 int initialize() {
 	g_self.interface.events.user.created = log__event__user_created;
-	g_self.interface.events.user.updated = log__event__user_updated;
-	g_self.interface.events.user.verified = log__event__user_verified;
+	g_self.interface.events.user.modified = log__event__user_updated;
 	g_self.interface.events.user.deleted = log__event__user_deleted;
 	g_self.interface.events.otp.created = log__event__otp_created;
-	g_self.interface.events.otp.applied = log__event__otp_applied;
 	g_self.interface.events.otp.deleted = log__event__otp_deleted;
+	g_self.interface.events.auth.user_verified = log__event__user_verified;
+	g_self.interface.events.auth.otp_applied = log__event__otp_applied;
 	return TT_OK;
 }
 

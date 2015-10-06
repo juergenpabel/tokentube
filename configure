@@ -11788,7 +11788,7 @@ CC="$lt_save_CC"
 # Checks for library functions.
 
 CFLAGS="-g -O0 -Wall -Wextra -Werror -Wno-missing-braces -Wno-missing-field-initializers"
-ac_config_files="$ac_config_files Makefile src/lib/Makefile src/pam/Makefile src/plugins/Makefile src/plugins/exec/Makefile src/plugins/log/Makefile src/plugins/syslog/Makefile src/plugins/test/Makefile src/plugins/helpdesk/Makefile src/plugins/lua/Makefile src/plugins/python/Makefile src/bindings/Makefile src/bindings/python/Makefile src/bin/cli/Makefile src/bin/pba/Makefile src/bin/ssod/Makefile src/bin/sso-greeter-lightdm/Makefile doc/Makefile doc/man/Makefile tests/cmocka/Makefile tests/cmocka/library/Makefile tests/cmocka/library/00_compile/Makefile tests/cmocka/library/01_init/Makefile tests/cmocka/library/02_config/Makefile tests/cmocka/library/03_testvectors/Makefile tests/cmocka/library/04_user/Makefile tests/cmocka/library/05_otp/Makefile tests/cmocka/plugins/Makefile tests/cmocka/plugins/00_compile/Makefile tests/cmocka/plugins/01_init/Makefile tests/cmocka/plugins/02_helpdesk/Makefile tests/cmocka/pam/Makefile tests/cmocka/pam/libpam/Makefile tests/cmocka/pam/00_compile/Makefile tests/cmocka/pam/01_init/Makefile tests/cmocka/pam/02_sm_authenticate/Makefile tests/cmocka/pam/03_sm_chauthtok/Makefile"
+ac_config_files="$ac_config_files Makefile src/lib/Makefile src/pam/Makefile src/plugins/Makefile src/plugins/exec/Makefile src/plugins/log/Makefile src/plugins/syslog/Makefile src/plugins/test/Makefile src/plugins/lua/Makefile src/plugins/python/Makefile src/bindings/Makefile src/bindings/python/Makefile src/bin/cli/Makefile src/bin/pba/Makefile src/bin/ssod/Makefile src/bin/sso-greeter-lightdm/Makefile src/helpdesk/plugin/Makefile doc/Makefile doc/man/Makefile tests/cmocka/Makefile tests/cmocka/library/Makefile tests/cmocka/library/00_compile/Makefile tests/cmocka/library/01_init/Makefile tests/cmocka/library/02_config/Makefile tests/cmocka/library/03_testvectors/Makefile tests/cmocka/library/04_user/Makefile tests/cmocka/library/05_otp/Makefile tests/cmocka/plugins/Makefile tests/cmocka/plugins/00_compile/Makefile tests/cmocka/plugins/01_init/Makefile tests/cmocka/pam/Makefile tests/cmocka/pam/libpam/Makefile tests/cmocka/pam/00_compile/Makefile tests/cmocka/pam/01_init/Makefile tests/cmocka/pam/02_sm_authenticate/Makefile tests/cmocka/pam/03_sm_chauthtok/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -12807,7 +12807,6 @@ do
     "src/plugins/log/Makefile") CONFIG_FILES="$CONFIG_FILES src/plugins/log/Makefile" ;;
     "src/plugins/syslog/Makefile") CONFIG_FILES="$CONFIG_FILES src/plugins/syslog/Makefile" ;;
     "src/plugins/test/Makefile") CONFIG_FILES="$CONFIG_FILES src/plugins/test/Makefile" ;;
-    "src/plugins/helpdesk/Makefile") CONFIG_FILES="$CONFIG_FILES src/plugins/helpdesk/Makefile" ;;
     "src/plugins/lua/Makefile") CONFIG_FILES="$CONFIG_FILES src/plugins/lua/Makefile" ;;
     "src/plugins/python/Makefile") CONFIG_FILES="$CONFIG_FILES src/plugins/python/Makefile" ;;
     "src/bindings/Makefile") CONFIG_FILES="$CONFIG_FILES src/bindings/Makefile" ;;
@@ -12816,6 +12815,7 @@ do
     "src/bin/pba/Makefile") CONFIG_FILES="$CONFIG_FILES src/bin/pba/Makefile" ;;
     "src/bin/ssod/Makefile") CONFIG_FILES="$CONFIG_FILES src/bin/ssod/Makefile" ;;
     "src/bin/sso-greeter-lightdm/Makefile") CONFIG_FILES="$CONFIG_FILES src/bin/sso-greeter-lightdm/Makefile" ;;
+    "src/helpdesk/plugin/Makefile") CONFIG_FILES="$CONFIG_FILES src/helpdesk/plugin/Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
     "doc/man/Makefile") CONFIG_FILES="$CONFIG_FILES doc/man/Makefile" ;;
     "tests/cmocka/Makefile") CONFIG_FILES="$CONFIG_FILES tests/cmocka/Makefile" ;;
@@ -12829,7 +12829,6 @@ do
     "tests/cmocka/plugins/Makefile") CONFIG_FILES="$CONFIG_FILES tests/cmocka/plugins/Makefile" ;;
     "tests/cmocka/plugins/00_compile/Makefile") CONFIG_FILES="$CONFIG_FILES tests/cmocka/plugins/00_compile/Makefile" ;;
     "tests/cmocka/plugins/01_init/Makefile") CONFIG_FILES="$CONFIG_FILES tests/cmocka/plugins/01_init/Makefile" ;;
-    "tests/cmocka/plugins/02_helpdesk/Makefile") CONFIG_FILES="$CONFIG_FILES tests/cmocka/plugins/02_helpdesk/Makefile" ;;
     "tests/cmocka/pam/Makefile") CONFIG_FILES="$CONFIG_FILES tests/cmocka/pam/Makefile" ;;
     "tests/cmocka/pam/libpam/Makefile") CONFIG_FILES="$CONFIG_FILES tests/cmocka/pam/libpam/Makefile" ;;
     "tests/cmocka/pam/00_compile/Makefile") CONFIG_FILES="$CONFIG_FILES tests/cmocka/pam/00_compile/Makefile" ;;

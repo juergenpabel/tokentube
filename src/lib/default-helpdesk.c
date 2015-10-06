@@ -14,16 +14,17 @@
 
 
 __attribute__ ((visibility ("hidden")))
-int default__api__helpdesk_create(const char* identifier) {
+int default__api__helpdesk_create(const char* identifier, tt_status_t* status) {
 	dflt_helpdesk_t  helpdesk = TT_UHD__UNDEFINED;
 	dflt_otp_t       otp = TT_OTP__UNDEFINED;
 	size_t           sys_id_size = 0;
 
 	TT_TRACE( "plugin/default", "%s(identifier='%s')", __FUNCTION__, identifier );
-	if( identifier == NULL ) {
+	if( identifier == NULL || status == NULL ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameters in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
+	*status = TT_STATUS__UNDEFINED;
 	if( default__impl__otp_storage_load( identifier, &otp ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "default__impl__otp_storage_load() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
@@ -46,7 +47,19 @@ int default__api__helpdesk_create(const char* identifier) {
 		TT_LOG_ERROR( "plugin/default", "default__impl__helpdesk_storage_save() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
+	*status = TT_YES;
 	return TT_OK;
+}
+
+
+__attribute__ ((visibility ("hidden")))
+int default__api__helpdesk_modify(const char* identifier, tt_modify_t action, void* data, tt_status_t* status) {
+	TT_TRACE( "library/plugin", "%s(identifier='%s',action=%zd,data=%p,status=%p)", __FUNCTION__, identifier, action, data, status );
+	if( identifier == NULL || identifier[0] == '\0' || action == TT_MODIFY__UNDEFINED || data == NULL || status == NULL ) {
+		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	return TT_IGN;
 }
 
 

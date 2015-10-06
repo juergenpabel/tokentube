@@ -6,7 +6,8 @@
 
 __attribute__ ((visibility ("hidden")))
 PyObject* py_tt_otp_create(PyObject* self __attribute__((unused)), PyObject *args) {
-	char*		py_identifier = NULL;
+	tt_status_t  status = TT_STATUS__UNDEFINED;
+	char*        py_identifier = NULL;
 
 	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
@@ -16,7 +17,7 @@ PyObject* py_tt_otp_create(PyObject* self __attribute__((unused)), PyObject *arg
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.database.otp.create( py_identifier ) != TT_OK ) {
+	if( g_library->api.database.otp.create( py_identifier, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.otp.create failed" );
 		return NULL;
 	}

@@ -14,8 +14,7 @@
 
 
 __attribute__ ((visibility ("hidden")))
-int default__api__otp_create(const char* identifier) {
-	tt_status_t	status = TT_STATUS__UNDEFINED;
+int default__api__otp_create(const char* identifier, tt_status_t* status) {
 	char		key[TT_KEY_BITS_MAX/8] = { 0 };
 	size_t		hash_size = 0;
 	size_t		key_size = 0;
@@ -23,21 +22,23 @@ int default__api__otp_create(const char* identifier) {
 	dflt_otp_t	otp = {0};
 
 	TT_TRACE( "library/plugin", "%s(identifier='%s')", __FUNCTION__, identifier );
-	if( identifier == NULL || identifier[0] == '\0' ) {
+	if( identifier == NULL || identifier[0] == '\0' || status == NULL ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
+	*status = TT_STATUS__UNDEFINED;
 	if( g_crypto_otp_bits == TT_UNINITIALIZED ) {
 		TT_LOG_ERROR( "plugin/default", "otp|bits unconfigured in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_plugin__otp_exists( identifier, &status ) != TT_OK ) {
+	if( libtokentube_plugin__otp_exists( identifier, status ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "runtime error: error while checking if otp '%s' exists", identifier );
 		return TT_ERR;
 	}
-	if( status == TT_YES ) {
+	if( *status == TT_YES ) {
                 TT_LOG_ERROR( "plugin/default", "request error: otp '%s' already exists", identifier );
-		return TT_ERR;
+		*status = TT_NO;
+		return TT_OK;
 	}
 
 	key_size = sizeof( key );
@@ -71,14 +72,14 @@ int default__api__otp_create(const char* identifier) {
 		return TT_ERR;
 	}
 	libtokentube_runtime_broadcast( TT_EVENT__OTP_CREATED, identifier );
+	*status = TT_YES;
         return TT_OK;
 }
 
-
 __attribute__ ((visibility ("hidden")))
-int default__api__otp_update(const char* identifier, const char* key, size_t key_size, const char* new_key, size_t new_key_size, tt_status_t* status) {
-	TT_TRACE( "library/plugin", "%s(identifier='%s',key=%p,key_size=%zd,new_key=%p,new_key_size=%zd,status=%p)", __FUNCTION__, identifier, key, key_size, new_key, new_key_size, status );
-	if( identifier == NULL || identifier[0] == '\0' || key == NULL || key_size == 0 || new_key == NULL || new_key_size == 0 || status == NULL ) {
+int default__api__otp_modify(const char* identifier, tt_modify_t action, void* data, tt_status_t* status) {
+	TT_TRACE( "library/plugin", "%s(identifier='%s',action=%zd,data=%p,status=%p)", __FUNCTION__, identifier, action, data, status );
+	if( identifier == NULL || identifier[0] == '\0' || action == TT_MODIFY__UNDEFINED || data == NULL || status == NULL ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}

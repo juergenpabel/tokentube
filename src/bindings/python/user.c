@@ -6,8 +6,9 @@
 
 __attribute__ ((visibility ("hidden")))
 PyObject* py_tt_user_create(PyObject* self __attribute__((unused)), PyObject *args) {
-	char*		py_username = NULL;
-	char*		py_password = NULL;
+	tt_status_t  status = TT_STATUS__UNDEFINED;
+	char*        py_username = NULL;
+	char*        py_password = NULL;
 
 	if( g_library == NULL || g_library->version.major == 0 ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
@@ -17,7 +18,7 @@ PyObject* py_tt_user_create(PyObject* self __attribute__((unused)), PyObject *ar
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.database.user.create( py_username, py_password ) != TT_OK ) {
+	if( g_library->api.database.user.create( py_username, py_password, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.user.create failed" );
 		return NULL;
 	}
@@ -26,7 +27,7 @@ PyObject* py_tt_user_create(PyObject* self __attribute__((unused)), PyObject *ar
 
 
 __attribute__ ((visibility ("hidden")))
-PyObject* py_tt_user_update(PyObject* self __attribute__((unused)), PyObject *args) {
+PyObject* py_tt_user_chpass(PyObject* self __attribute__((unused)), PyObject *args) {
 	char*		py_username = NULL;
 	char*		py_password_cur = NULL;
 	char*		py_password_new = NULL;
@@ -40,8 +41,8 @@ PyObject* py_tt_user_update(PyObject* self __attribute__((unused)), PyObject *ar
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.database.user.update( py_username, py_password_cur, py_password_new, &status ) != TT_OK ) {
-		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.user.update failed" );
+	if( g_library->api.database.user.modify( py_username, py_password_cur, TT_MODIFY__USER_PASSWORD, py_password_new, &status ) != TT_OK ) {
+		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.user.modify failed" );
 		return NULL;
 	}
 	switch( status ) {
@@ -52,10 +53,10 @@ PyObject* py_tt_user_update(PyObject* self __attribute__((unused)), PyObject *ar
 			Py_RETURN_FALSE;
 			break;
 		default:
-			PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.user.update returned unknown status" );
+			PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.user.modify returned unknown status" );
 			return NULL;
 	}
-	PyErr_SetString(PyExc_TypeError, "py_tt_user_update: internal error" );
+	PyErr_SetString(PyExc_TypeError, "py_tt_user_modify: internal error" );
 	return NULL;
 }
 
@@ -141,7 +142,7 @@ PyObject* py_tt_user_key_add(PyObject* self __attribute__((unused)), PyObject *a
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.database.user.key_add( py_username, py_password, py_identifier, &status ) != TT_OK ) {
+	if( g_library->api.database.user.modify( py_username, py_password, TT_MODIFY__USER_KEY_ADD, py_identifier, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.user.key_add failed" );
 		return NULL;
 	}
@@ -167,7 +168,7 @@ PyObject* py_tt_user_key_del(PyObject* self __attribute__((unused)), PyObject *a
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
-	if( g_library->api.database.user.key_del( py_username, py_password, py_identifier, &status ) != TT_OK ) {
+	if( g_library->api.database.user.modify( py_username, py_password, TT_MODIFY__USER_KEY_DEL, py_identifier, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.user.key_del failed" );
 		return NULL;
 	}

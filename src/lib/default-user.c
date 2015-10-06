@@ -18,8 +18,14 @@
 #include "libtokentube.h"
 
 
+int default__impl__user_password(const char* username, const char* old_password, const char* new_password, tt_status_t* status);
+int default__impl__user_key_add(const char* username, const char* password, const char* identifier, tt_status_t* status);
+int default__impl__user_key_del(const char* username, const char* password, const char* identifier, tt_status_t* status);
+
+
 __attribute__ ((visibility ("hidden")))
-int default__api__user_create(const char* username, const char* password) {
+int default__api__user_create(const char* username, const char* password, tt_status_t* status) {
+	dflt_user_t  user = TT_USER__UNDEFINED;
 	char       path[FILENAME_MAX+1] = {0};
 	size_t     path_size = sizeof(path);
 	char*      filename_start = NULL;
@@ -27,13 +33,13 @@ int default__api__user_create(const char* username, const char* password) {
 	size_t     key_offset = 0;
 	char       buffer[FILENAME_MAX+1] = {0};
 	size_t     buffer_size = sizeof(buffer);
-	dflt_user_t  user = TT_USER__UNDEFINED;
 
 	TT_TRACE( "plugin/default", "%s(username='%s',password='%s')", __FUNCTION__, username, password );
-	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' ) {
+	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || status == NULL ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
+	*status = TT_STATUS__UNDEFINED;
 	strncpy( user.crypto.cipher, libtokentube_crypto_get_cipher(), sizeof(user.crypto.cipher)-1 );
 	strncpy( user.crypto.hash, libtokentube_crypto_get_hash(), sizeof(user.crypto.hash)-1 );
 	strncpy( user.crypto.kdf, g_crypto_kdf, sizeof(user.crypto.kdf)-1 );
@@ -87,16 +93,71 @@ int default__api__user_create(const char* username, const char* password) {
 		return TT_ERR;
 	}
 	memset( &user, '\0', sizeof(user) );
+	*status = TT_STATUS__YES;
 	return TT_OK;
 }
 
 
 __attribute__ ((visibility ("hidden")))
-int default__api__user_update(const char* username, const char* old_password, const char* new_password, tt_status_t* status) {
+int default__api__user_modify(const char* username, const char* password, tt_modify_t action, void* data, tt_status_t* status) {
+	TT_TRACE( "plugin/default", "%s(username='%s',password='%s',data='%p')", __FUNCTION__, username, password, data );
+	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || data == NULL || status == NULL ) {
+		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	switch( action ) {
+		case TT_MODIFY__USER_PASSWORD:
+			return default__impl__user_password( username, password, data, status );
+			break;
+		case TT_MODIFY__USER_KEY_ADD:
+			return default__impl__user_key_add( username, password, data, status );
+			break;
+		case TT_MODIFY__USER_KEY_DEL:
+			return default__impl__user_key_del( username, password, data, status );
+			break;
+		default:
+			TT_LOG_ERROR( "plugin/default", "invalid action in %s()", __FUNCTION__ );
+	}
+	return TT_ERR;
+}
+
+
+__attribute__ ((visibility ("hidden")))
+int default__api__user_delete(const char* username, tt_status_t* status) {
+	TT_TRACE( "plugin/default", "%s(username='%s',status=%p)", __FUNCTION__, username, status );
+	if( username == NULL || username[0] == '\0' || status == NULL ) {
+		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	if( libtokentube_plugin__storage_delete( TT_FILE__USER, username, status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_user_delete() failed in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	return TT_OK;
+}
+
+
+__attribute__ ((visibility ("hidden")))
+int default__api__user_exists(const char* username, tt_status_t* status) {
+	TT_TRACE( "plugin/default", "%s(username='%s',status=%p)", __FUNCTION__, username, status );
+	if( username == NULL || username[0] == '\0' || status == NULL ) {
+		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	if( libtokentube_plugin__storage_exists( TT_FILE__USER, username, status ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__storage_exists() failed in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	return TT_OK;
+}
+
+
+__attribute__ ((visibility ("hidden")))
+int default__impl__user_password(const char* username, const char* old_password, const char* new_password, tt_status_t* status) {
 	dflt_user_t  user = TT_USER__UNDEFINED;
 	size_t     key_offset = 0;
 
-	TT_TRACE( "plugin/default", "%s(username='%s',old_password='%s',new_password='%s')", __FUNCTION__, username, old_password, new_password );
+	TT_TRACE( "plugin/default", "%s(username='%s',old_password='%s',new_password='%s',status='%p')", __FUNCTION__, username, old_password, new_password, status );
 	if( username == NULL || username[0] == '\0' || old_password == NULL || old_password[0] == '\0' || new_password == NULL || new_password[0] == '\0' || status == NULL ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
@@ -145,37 +206,7 @@ int default__api__user_update(const char* username, const char* old_password, co
 
 
 __attribute__ ((visibility ("hidden")))
-int default__api__user_delete(const char* username, tt_status_t* status) {
-	TT_TRACE( "plugin/default", "%s(username='%s',status=%p)", __FUNCTION__, username, status );
-	if( username == NULL || username[0] == '\0' || status == NULL ) {
-		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
-		return TT_ERR;
-	}
-	if( libtokentube_plugin__storage_delete( TT_FILE__USER, username, status ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_user_delete() failed in %s()", __FUNCTION__ );
-		return TT_ERR;
-	}
-	return TT_OK;
-}
-
-
-__attribute__ ((visibility ("hidden")))
-int default__api__user_exists(const char* username, tt_status_t* status) {
-	TT_TRACE( "plugin/default", "%s(username='%s',status=%p)", __FUNCTION__, username, status );
-	if( username == NULL || username[0] == '\0' || status == NULL ) {
-		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
-		return TT_ERR;
-	}
-	if( libtokentube_plugin__storage_exists( TT_FILE__USER, username, status ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "libtokentube_plugin__storage_exists() failed in %s()", __FUNCTION__ );
-		return TT_ERR;
-	}
-	return TT_OK;
-}
-
-
-__attribute__ ((visibility ("hidden")))
-int default__api__user_key_add(const char* username, const char* password, const char* identifier, tt_status_t* status) {
+int default__impl__user_key_add(const char* username, const char* password, const char* identifier, tt_status_t* status) {
 	dflt_user_t  user = TT_USER__UNDEFINED;
 	size_t       identifier_size = 0;
 	size_t       key_offset = 0;
@@ -236,7 +267,7 @@ int default__api__user_key_add(const char* username, const char* password, const
 
 
 __attribute__ ((visibility ("hidden")))
-int default__api__user_key_del(const char* username, const char* password, const char* identifier, tt_status_t* status) {
+int default__impl__user_key_del(const char* username, const char* password, const char* identifier, tt_status_t* status) {
 	dflt_user_t  user = TT_USER__UNDEFINED;
 	size_t       identifier_size = 0;
 	size_t       key_offset = 0;

@@ -58,7 +58,7 @@ static PyMethodDef g_tokentube_funcs[] = {
 	{ "configure",  (PyCFunction)py_tt_configure,  METH_VARARGS, "configuration function" },
 	{ "finalize",   (PyCFunction)py_tt_finalize,   METH_VARARGS, "finalize function" },
 	{ "user_create", (PyCFunction)py_tt_user_create, METH_VARARGS, "user create function" },
-	{ "user_update", (PyCFunction)py_tt_user_update, METH_VARARGS, "user update function" },
+	{ "user_chpass", (PyCFunction)py_tt_user_chpass, METH_VARARGS, "user chpass function" },
 	{ "user_delete", (PyCFunction)py_tt_user_delete, METH_VARARGS, "user delete function" },
 	{ "user_exists", (PyCFunction)py_tt_user_exists, METH_VARARGS, "user exists function" },
 	{ "user_key_add", (PyCFunction)py_tt_user_key_add, METH_VARARGS, "user add-key function" },

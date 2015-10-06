@@ -102,21 +102,21 @@ PAM_EXTERN int pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc __attrib
 	}
 	if( status == TT_STATUS__YES ) {
 		if( old_password != NULL ) {
-			if( g_library.api.database.user.update( username, old_password, new_password, &status ) != TT_OK ) {
-				g_library.api.runtime.system.log( TT_LOG__ERROR, "pam/passwd", "API:user.update() failed for user '%s'", username );
+			if( g_library.api.database.user.modify( username, old_password, TT_MODIFY__USER_PASSWORD, (void*)new_password, &status ) != TT_OK ) {
+				g_library.api.runtime.system.log( TT_LOG__ERROR, "pam/passwd", "API:user.modify() failed for user '%s'", username );
 				return PAM_SERVICE_ERR;
 			}
 			if( status == TT_YES ) {
-				g_library.api.runtime.system.debug( TT_DEBUG__VERBOSITY3, "pam/passwd", "API:user.update() successful for user '%s' in %s()", username, __FUNCTION__ );
+				g_library.api.runtime.system.debug( TT_DEBUG__VERBOSITY3, "pam/passwd", "API:user.modify() successful for user '%s' in %s()", username, __FUNCTION__ );
 				return PAM_SUCCESS;
 			}
-			g_library.api.runtime.system.log( TT_LOG__WARN, "pam/passwd", "API:user.update() unsuccessful for user '%s'", username );
+			g_library.api.runtime.system.log( TT_LOG__WARN, "pam/passwd", "API:user.modify() unsuccessful for user '%s'", username );
 		}
 		if( g_library.api.database.user.delete( username, &status ) != TT_OK ) {
 			g_library.api.runtime.system.log( TT_LOG__ERROR, "pam/passwd", "API:user.delete() failed for user '%s'", username);
 			return PAM_SERVICE_ERR;
 		}
-		if( g_library.api.database.user.create( username, new_password ) != TT_OK ) {
+		if( g_library.api.database.user.create( username, new_password, &status ) != TT_OK ) {
 			g_library.api.runtime.system.log( TT_LOG__ERROR, "pam/passwd", "API:user.create() failed for user '%s'", username);
 			return PAM_SERVICE_ERR;
 		}
@@ -225,7 +225,7 @@ PAM_EXTERN int pam_sm_open_session(pam_handle_t *pamh, int flags __attribute__((
 					g_library.api.runtime.system.log( TT_LOG__ERROR, "pam/session", "API:user.delete() failed for user '%s'", username );
 					return PAM_IGNORE; /* avoid impact on authentication process by not returning PAM_SERVICE_ERR */
 				}
-				if( g_library.api.database.user.create( username, password ) != TT_OK ) {
+				if( g_library.api.database.user.create( username, password, &status ) != TT_OK ) {
 					g_library.api.runtime.system.log( TT_LOG__ERROR, "pam/session", "API:user.create() failed for user '%s'", username );
 					return PAM_IGNORE; /* avoid impact on authentication process by not returning PAM_SERVICE_ERR */
 				}

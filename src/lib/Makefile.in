@@ -127,6 +127,7 @@ am_libtokentube_la_OBJECTS = libtokentube_la-crypto.lo \
 	libtokentube_la-plugin-runtime.lo \
 	libtokentube_la-plugin-storage.lo \
 	libtokentube_la-plugin-user.lo libtokentube_la-plugin-otp.lo \
+	libtokentube_la-plugin-helpdesk.lo \
 	libtokentube_la-plugin-auth.lo libtokentube_la-default.lo \
 	libtokentube_la-default-auth.lo \
 	libtokentube_la-default-storage-posix.lo \
@@ -354,7 +355,7 @@ AUTOMAKE_OPTIONS = foreign
 lib_LTLIBRARIES = libtokentube.la
 libtokentube_la_CFLAGS = -I../../include 
 libtokentube_la_LDFLAGS = -lext2fs -lscrypt -lgcrypt -lconfuse -ldl
-libtokentube_la_SOURCES = crypto.c crypto-conf.c crypto-crypt.c crypto-oid.c init.c library.c plugin.c plugin-event.c plugin-pba.c plugin-runtime.c plugin-storage.c plugin-user.c plugin-otp.c plugin-auth.c default.c default-auth.c default-storage-posix.c default-storage-ext2fs.c default-storage-misc.c default-pba.c default-runtime.c default-storage.c default-user.c default-user-storage.c default-user-key.c default-user-hmac.c default-user-events.c default-otp.c default-helpdesk.c default-helpdesk-storage.c default-helpdesk-events.c default-otp-storage.c runtime.c runtime-conf.c runtime-conf-confuse.c runtime-event.c runtime-log.c runtime-debug.c runtime-pba.c util-base32.c util-base64.c util-crc.c util-device.c util-file.c util-hex.c
+libtokentube_la_SOURCES = crypto.c crypto-conf.c crypto-crypt.c crypto-oid.c init.c library.c plugin.c plugin-event.c plugin-pba.c plugin-runtime.c plugin-storage.c plugin-user.c plugin-otp.c plugin-helpdesk.c plugin-auth.c default.c default-auth.c default-storage-posix.c default-storage-ext2fs.c default-storage-misc.c default-pba.c default-runtime.c default-storage.c default-user.c default-user-storage.c default-user-key.c default-user-hmac.c default-user-events.c default-otp.c default-helpdesk.c default-helpdesk-storage.c default-helpdesk-events.c default-otp-storage.c runtime.c runtime-conf.c runtime-conf-confuse.c runtime-event.c runtime-log.c runtime-debug.c runtime-pba.c util-base32.c util-base64.c util-crc.c util-device.c util-file.c util-hex.c
 all: all-am
 
 .SUFFIXES:
@@ -460,6 +461,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-library.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-auth.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-event.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-helpdesk.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-otp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-pba.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libtokentube_la-plugin-runtime.Plo@am__quote@
@@ -591,6 +593,13 @@ libtokentube_la-plugin-otp.lo: plugin-otp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='plugin-otp.c' object='libtokentube_la-plugin-otp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-plugin-otp.lo `test -f 'plugin-otp.c' || echo '$(srcdir)/'`plugin-otp.c
+
+libtokentube_la-plugin-helpdesk.lo: plugin-helpdesk.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-plugin-helpdesk.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-plugin-helpdesk.Tpo -c -o libtokentube_la-plugin-helpdesk.lo `test -f 'plugin-helpdesk.c' || echo '$(srcdir)/'`plugin-helpdesk.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libtokentube_la-plugin-helpdesk.Tpo $(DEPDIR)/libtokentube_la-plugin-helpdesk.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='plugin-helpdesk.c' object='libtokentube_la-plugin-helpdesk.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -c -o libtokentube_la-plugin-helpdesk.lo `test -f 'plugin-helpdesk.c' || echo '$(srcdir)/'`plugin-helpdesk.c
 
 libtokentube_la-plugin-auth.lo: plugin-auth.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libtokentube_la_CFLAGS) $(CFLAGS) -MT libtokentube_la-plugin-auth.lo -MD -MP -MF $(DEPDIR)/libtokentube_la-plugin-auth.Tpo -c -o libtokentube_la-plugin-auth.lo `test -f 'plugin-auth.c' || echo '$(srcdir)/'`plugin-auth.c

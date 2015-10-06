@@ -165,7 +165,7 @@ int default__api__auth_user_autoenrollment(const char* username, const char* pas
 		*status = TT_STATUS__NO;
 	}
 	if( *status == TT_STATUS__YES ) {
-		if( libtokentube_plugin__user_create( username, password ) != TT_OK ) {
+		if( libtokentube_plugin__user_create( username, password, status ) != TT_OK ) {
 			TT_LOG_ERROR( "plugin/default", "API:user.create failed in %s()", __FUNCTION__ );
 			return TT_ERR;
 		}

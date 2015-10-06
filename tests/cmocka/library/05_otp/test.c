@@ -14,7 +14,7 @@ static void test_otp_create_failure(void **state) {
 	library = (tt_library_t*)*state;
 	assert_true( library != NULL );
 	status = TT_STATUS__UNDEFINED;
-	assert_true( library->api.database.otp.create( NULL ) == TT_ERR );
+	assert_true( library->api.database.otp.create( NULL, &status ) == TT_ERR );
 	assert_true( library->api.database.otp.exists( NULL, &status ) == TT_ERR );
 	assert_true( status == TT_STATUS__UNDEFINED );
 }
@@ -27,7 +27,7 @@ static void test_otp_create_success(void **state) {
 	library = (tt_library_t*)*state;
 	assert_true( library != NULL );
 	status = TT_STATUS__UNDEFINED;
-	assert_true( library->api.database.otp.create( "test" ) == TT_OK );
+	assert_true( library->api.database.otp.create( "test", &status ) == TT_OK );
 	assert_true( library->api.database.otp.exists( "test", &status ) == TT_OK );
 	assert_true( status == TT_YES );
 }
@@ -49,7 +49,7 @@ static void test_otp_delete_success(void **state) {
 	tt_library_t*   library;
 
 	library = (tt_library_t*)*state;
-	assert_true( library->api.database.otp.create( "test" ) == TT_OK );
+	assert_true( library->api.database.otp.create( "test", &status ) == TT_OK );
 	assert_true( library->api.database.otp.exists( "test", &status ) == TT_OK );
 	assert_true( status == TT_YES );
 	assert_true( library->api.database.otp.delete( "test", &status ) == TT_OK );
@@ -72,7 +72,7 @@ static void test_helpdesk(void **state) {
 
 	library = (tt_library_t*)*state;
 
-	assert_true( library->api.database.otp.create( "test" ) == TT_OK );
+	assert_true( library->api.database.otp.create( "test", &status ) == TT_OK );
 	assert_true( library->api.auth.otp.challenge( "test", challenge, &challenge_size ) == TT_OK );
 	assert_int_equal( challenge_size, 20 );
 

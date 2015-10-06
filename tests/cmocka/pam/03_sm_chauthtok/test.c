@@ -21,11 +21,12 @@ static void test_pam_sm_chauthtok(void **state) {
 static void self_setup(void **state) {
 	(void)state; /* unused */
 	tt_library_t	library;
+	tt_status_t	status;
 
 	assert_true( tt_initialize( TT_VERSION ) == TT_OK );
 	assert_true( tt_configure( "etc/tokentube/tokentube.conf" ) == TT_OK );
 	assert_true( tt_discover( &library ) == TT_OK );
-	assert_true( library.api.database.user.create( "user", "pass" ) == TT_OK );
+	assert_true( library.api.database.user.create( "user", "pass", &status ) == TT_OK );
 	tt_finalize();
 }
 
