@@ -23,12 +23,9 @@ Item 2c: Challenge-Response/One-Time-Password Protocol
 - server (helpdesk) calculates a corresponding response-code
   - server has LUKS key in plaintext: hashes n-times the LUKS key according to
     current hash-depths (first OTP 1, then +1 for each request)
-  - server verifies that the first block of the challenge-code matches crc16 of
-    the calculated hash-value (for usability improvements in order to detect
-    typos)
   - server calculates response: challenge ^ hash-value ^ LUKS-key 
 - client (src/bin/pba) XOR's the challenge, the response and the hash-value stored
-  in the OTP-file ("luks|data") and increases the depth of the hash-chain (by
+  in the OTP-file ("otp|key-data") and increases the depth of the hash-chain (by
   simply hashing the current value), thus updating the OTP file (Item 2a)
 
 

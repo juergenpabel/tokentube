@@ -23,108 +23,293 @@
 
     <para>The main configuration file is located at
     <filename>/etc/tokentube/tokentube.conf</filename>, although another
-    location can be specified at program invocation time. The main
-    configuration file must refer to another configuration file located at
-    <filename>/boot/tokentube/crypto.conf</filename>, which is required in
-    order to be accessible at boot time for the
-    Pre-Boot-Authentication.</para>
+    location can be specified at program invocation time.</para>
 
     <para>For clarification purposes only: The following configuration
     directives are expressed by their full formal name. Given the following
     configuration snippet example:</para>
 
     <literallayout>storage {
-    files {
-        owner = "A"
-        group = "B"
+    user-files {
+        directory = /boot/tokentube/usr
+        owner = "root"
+        group = "adm"
+        perm = 660
     }
 }</literallayout>
 
-    <para>The configuration directive "storage.files.owner" would thus yield
-    the value "A" and "storage.files.group" would yield the value "B" in this
+    <para>The configuration directive "storage.user-files.owner" would thus yield
+    the value "root" and "storage.user-files.group" would yield the value "adm" in this
     example.</para>
 
-    <para><emphasis role="bold">Section "storage"</emphasis></para>
-
+    <para><emphasis role="bold">Section "storage.user-files"</emphasis></para>
+    <para>This section configures the storage aspects (as used by the "default" plugin) for
+    the user records, which contain the (password encrypted) keys.</para>
     <variablelist>
+
       <varlistentry>
-        <term>storage.files.owner</term>
-
+        <term>storage.user-files.directory</term>
         <listitem>
-          <para>Specifies the owner of any files created by the default
-          user/otp database implementation (refers to files located in
-          <filename>/boot/toketube/user/</filename> and
-          <filename>/boot/tokentube/otp/</filename>).</para>
+          <para>Specifies the directory in which the files that represent
+          individual users are located (if no other storage-subsystem is
+          used (provided by plugins).</para>
+          <para>This configuration directive is required and has no default value.
+          By convention the directory <filename>/boot/tokentube/user</filename> is used.</para>
+        </listitem>
+      </varlistentry>
 
+      <varlistentry>
+        <term>storage.user-files.filename-hash</term>
+        <listitem>
+          <para>Specifies the to-be-used hash-algorithm for calculating the filename
+          for the files that represent individual users.</para>
+          <para>The hash may be specified by name or by its OID notation (or "null").</para>
+          <para>This configuration directive is required and has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.user-files.owner</term>
+        <listitem>
+          <para>Specifies the to-be-set owner of the files that represent
+          individual users.</para>
           <para>The owner may be specified by name or by the numeric
           value.</para>
-
-          <para>This configuration directive has no default value.</para>
+          <para>If configuration directive is left unconfigured then any
+          created files will be assigned to the user of the creating process.</para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
-        <term>storage.files.group</term>
-
+        <term>storage.user-files.group</term>
         <listitem>
-          <para>Specifies the group of any files created by the default
-          user/otp database implementation (refers to files located in
-          <filename>/boot/toketube/user/</filename> and
-          <filename>/boot/tokentube/otp/</filename>).</para>
-
+          <para>Specifies the to-be-set group of the files that represent
+          individual users.</para>
           <para>The group may be specified by name or by the numeric
           value.</para>
-
-          <para>This configuration directive has no default value.</para>
+          <para>If configuration directive is left unconfigured then any
+          created files will be assigned the primary group of the creating process.</para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
-        <term>storage.files.permission</term>
-
+        <term>storage.user-files.permission</term>
         <listitem>
-          <para>Specifies the permission of any files created by the default
-          user/otp database implementation (refers to files located in
-          <filename>/boot/toketube/user/</filename> and
-          <filename>/boot/tokentube/otp/</filename>).</para>
-
-          <para>The permission must be specified in standard octal
-          notation.</para>
-
-          <para>This configuration directive has no default value.</para>
+          <para>Specifies the to-be-set permission of the files that represent
+          individual users.</para>
+          <para>The permission must be specified in octal notation.</para>
+          <para>If configuration directive is left unconfigured then any
+          created files will obtain the permissions as designated by the
+          umask of the creating process.</para>
         </listitem>
       </varlistentry>
 
-      <varlistentry>
-        <term>storage.luks-key.file</term>
-
-        <listitem>
-          <para>Specifies the file (configuring an absolute path is highly
-          recommended) which stores a plaintext copy of the cryptographic key
-          used for LUKS.</para>
-
-          <para>This configuration directive is optional and the cryptographic
-          key is only neccessary when creating new users or OTP records in the
-          TokenTube database.</para>
-
-          <para>It is common practise to store the cryptographic key in
-          <filename>/etc/tokentube/keys/luks.key</filename> in order to allow
-          a convenient creation of users/OTP records in the TokenTube
-          database. This does not incur a security risk if
-          <filename>/etc/tokentube/keys/luks.key</filename> is located on the
-          encrypted filesystem.</para>
-
-          <para>This configuration directive has no default value.</para>
-        </listitem>
-      </varlistentry>
     </variablelist>
 
+
+    <para><emphasis role="bold">Section "storage.otp-files"</emphasis></para>
+    <para>This section configures the storage aspects (as used by the "default" plugin) for
+    the one-time-password records, which contain the (challenge-response encrypted) keys.</para>
+    <variablelist>
+
+      <varlistentry>
+        <term>storage.otp-files.directory</term>
+        <listitem>
+          <para>Specifies the directory in which the files that represent
+          individual OTP records are located (if no other storage-subsystem is
+          used (provided by plugins).</para>
+          <para>This configuration directive is required and has no default value.
+          By convention the directory <filename>/boot/tokentube/otp</filename> is used.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.otp-files.filename-hash</term>
+        <listitem>
+          <para>Specifies the to-be-used hash-algorithm for calculating the filename
+          for the files that represent individual OTP records.</para>
+          <para>The hash may be specified by name or by its OID notation (or "null").</para>
+          <para>This configuration directive is required and has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.otp-files.owner</term>
+        <listitem>
+          <para>Specifies the to-be-set owner of the files that represent
+          individual OTP records.</para>
+          <para>The owner may be specified by name or by the numeric
+          value.</para>
+          <para>If configuration directive is left unconfigured then any
+          created files will be assigned to the user of the creating process.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.otp-files.group</term>
+        <listitem>
+          <para>Specifies the to-be-set group of the files that represent
+          individual users.</para>
+          <para>The group may be specified by name or by the numeric
+          value.</para>
+          <para>If configuration directive is left unconfigured then any
+          created files will be assigned the primary group of the creating process.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.otp-files.permission</term>
+        <listitem>
+          <para>Specifies the to-be-set permission of the files that represent
+          individual users.</para>
+          <para>The permission must be specified in octal notation.</para>
+          <para>If configuration directive is left unconfigured then any
+          created files will obtain the permissions as designated by the
+          umask of the creating process.</para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+
+    <para><emphasis role="bold">Section "storage.uhd-files"</emphasis></para>
+    <para>This section configures the storage aspects (as used by the "default" plugin) for
+    the one-time-password support records, which contain the keys and state information
+    for the associated OTP record.</para>
+    <variablelist>
+
+      <varlistentry>
+        <term>storage.uhd-files.directory</term>
+        <listitem>
+          <para>Specifies the directory in which the files that represent
+          individual UHD records are located (if no other storage-subsystem is
+          used (provided by plugins).</para>
+          <para>This configuration directive is required and has no default value.
+          By convention the directory <filename>/var/spool/tokentube/helpdesk</filename> is used.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.uhd-files.filename-hash</term>
+        <listitem>
+          <para>Specifies the to-be-used hash-algorithm for calculating the filename
+          for the files that represent individual UHD records.</para>
+          <para>The hash may be specified by name or by its OID notation (or "null").</para>
+          <para>This configuration directive is required and has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.uhd-files.owner</term>
+        <listitem>
+          <para>Specifies the to-be-set owner of the files that represent
+          individual UHD records.</para>
+          <para>The owner may be specified by name or by the numeric
+          value.</para>
+          <para>If configuration directive is left unconfigured then any
+          created files will be assigned to the user of the creating process.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.uhd-files.group</term>
+        <listitem>
+          <para>Specifies the to-be-set group of the files that represent
+          individual users.</para>
+          <para>The group may be specified by name or by the numeric
+          value.</para>
+          <para>If configuration directive is left unconfigured then any
+          created files will be assigned the primary group of the creating process.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.uhd-files.permission</term>
+        <listitem>
+          <para>Specifies the to-be-set permission of the files that represent
+          individual users.</para>
+          <para>The permission must be specified in octal notation.</para>
+          <para>If configuration directive is left unconfigured then any
+          created files will obtain the permissions as designated by the
+          umask of the creating process.</para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+
+    <para><emphasis role="bold">Section "storage.key-files"</emphasis></para>
+    <para>This section configures the storage aspects (as used by the "default" plugin) for
+    the actual keys that will be used for the password baser user authentication and/or 
+    the OTP records.</para>
+    <variablelist>
+
+      <varlistentry>
+        <term>storage.key-files.directory</term>
+        <listitem>
+          <para>Specifies the directory in which the files that represent
+          individual keys are located (if no other storage-subsystem is
+          used (provided by plugins).</para>
+          <para>This configuration directive is required and has no default value.
+          By convention the directory <filename>/etc/tokentube/keys</filename> is used.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.key-files.filename-hash</term>
+        <listitem>
+          <para>Specifies the to-be-used hash-algorithm for calculating the filename
+          for the files that represent individual key records.</para>
+          <para>The hash may be specified by name or by its OID notation (or "null").</para>
+          <para>This configuration directive is required and has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.key-files.owner</term>
+        <listitem>
+          <para>Specifies the to-be-set owner of the files that represent
+          individual key records.</para>
+          <para>The owner may be specified by name or by the numeric
+          value.</para>
+          <para>If configuration directive is left unconfigured then any
+          created files will be assigned to the user of the creating process.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.key-files.group</term>
+        <listitem>
+          <para>Specifies the to-be-set group of the files that represent
+          individual users.</para>
+          <para>The group may be specified by name or by the numeric
+          value.</para>
+          <para>If configuration directive is left unconfigured then any
+          created files will be assigned the primary group of the creating process.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>storage.key-files.permission</term>
+        <listitem>
+          <para>Specifies the to-be-set permission of the files that represent
+          individual users.</para>
+          <para>The permission must be specified in octal notation.</para>
+          <para>If configuration directive is left unconfigured then any
+          created files will obtain the permissions as designated by the
+          umask of the creating process.</para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+
+
     <para><emphasis role="bold">Section "user"</emphasis></para>
+    <para>This section configures the storage aspects (as used by the "default" plugin) for
+    handling user records, most notably the conditions for automatically creating (enrolling)
+    user accounts not yet managed by tokentube.</para>
 
     <variablelist>
       <varlistentry>
         <term>user.auto-enrollment.uid-minimum</term>
-
         <listitem>
           <para>Specifies the minimum numeric uid value a user account must
           have in order to be automatically enrolled to TokenTube (creation of
@@ -178,6 +363,20 @@
           user account must be assigned to (at least to one of them) in order
           to be automatically enrolled to TokenTube (resulting in the creation
           of a user record in the TokenTube database) upon user login.</para>
+
+          <para>This configuration directive has no default value.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>user.symlink-directory</term>
+        <listitem>
+          <para>Specifies the directory in which (if configured) symlinks to
+          the actual user files (refer to storage.user-files.directory and
+          storage.user-files.filename-hash) are located. This is useful when
+          enumeration of enrolled users is required since the actual username
+          is obfuscated in the user database (refer to 
+          storage.user-files.filename-hash).</para>
 
           <para>This configuration directive has no default value.</para>
         </listitem>

@@ -99,7 +99,7 @@
     is not provided as an argument then the program will ask for it.</para>
 
     <para><emphasis
-    remap="B">user-update</emphasis> [[--username|-u] USERNAME]
+    remap="B">user-chpass</emphasis> [[--username|-u] USERNAME]
     [[--cur-password|-p] PASSWORD] [[--new-password|-n] PASSWORD]</para>
 
     <para>Updates the password of a user in the TokenTube database (as
@@ -110,18 +110,6 @@
     reasons it is recommended to not provide the <emphasis
     remap="B">cur-password</emphasis> and <emphasis
     remap="B">new-password</emphasis> parameters via arguments - unless the
-    execution environment is considered trustworthy).</para>
-
-    <para><emphasis
-    remap="B">user-verify</emphasis> [[--username|-u] USERNAME]
-    [[--password|-p] PASSWORD]</para>
-
-    <para>Verifies the password of a user in the TokenTube database (as
-    specified in the configuration). If the <emphasis
-    remap="B">username</emphasis> and <emphasis remap="B">password</emphasis>
-    parameters are not provided as arguments then the program will ask for
-    them (for security reasons it is recommended to not provide the <emphasis
-    remap="B">password</emphasis> parameter via argument - unless the
     execution environment is considered trustworthy).</para>
 
     <para><emphasis remap="B">OTP ACTIONS</emphasis></para>
@@ -147,30 +135,30 @@
     the configuration). If the identifier parameter is not provided as an
     argument then the program will ask for it.</para>
 
-    <para><emphasis remap="B">otp-challenge</emphasis> [[--identifier|-i]
-    IDENTIFIER]</para>
+    <para><emphasis remap="B">AUTH ACTIONS</emphasis></para>
 
-    <para>Generates a (random) challenge for and according to the provided OTP
-    record (as specified in the configuration). If the identifier parameter is
-    not provided as an argument then the program will ask for it.</para>
+    <para><emphasis
+    remap="B">auth-user</emphasis> [[--username|-u] USERNAME]
+    [[--password|-p] PASSWORD]</para>
 
-    <para><emphasis remap="B">otp-response</emphasis> [[--identifier|-i]
-    IDENTIFIER] [[--challenge|-x] CHALLENGE]</para>
+    <para>Verifies the password of a user in the TokenTube database (as
+    specified in the configuration). If the <emphasis
+    remap="B">username</emphasis> and <emphasis remap="B">password</emphasis>
+    parameters are not provided as arguments then the program will ask for
+    them (for security reasons it is recommended to not provide the <emphasis
+    remap="B">password</emphasis> parameter via argument - unless the
+    execution environment is considered trustworthy).</para>
 
-    <para>Generates a (calculated) response for and according to the provided
-    OTP record (as specified in the configuration) and the provided challenge.
-    If the identifier and/or challenge parameter is not provided as an
-    argument then the program will ask for it. <emphasis role="bold">This
-    command is not intended to be executed on the target system.</emphasis>
-    </para>
-
-    <para><emphasis remap="B">otp-apply</emphasis> [[--identifier|-i]
+    <para><emphasis remap="B">auth-otp</emphasis> [[--identifier|-i]
     IDENTIFIER] [[--challenge|-x] CHALLENGE] [[--response|-y] RESPONSE]</para>
 
-    <para>Calculates the cryptographic key based on the provided challenge,
-    response and OTP record from the TokenTube database (as specified in the
-    configuration). If successful, the OTP record in the TokenTube database is
-    updated to reflect the execution of a one-time-password cycle.</para>
+    <para>Depending on the provided arguments it will compute the logically next
+    data value. If only an identifier is provided (if none is provided the program
+    will ask for it) then a challenge for the OTP record is computed and displayed.
+    If a challenge is provided it will compute and display the matching response
+    (by loading the matching UHD record). If a challenge and a response is provided
+    then it will compute the key and display it in hex-notation.</para>
+
   </refsect1>
 
   <refsect1 id="tokentube-see_also">
