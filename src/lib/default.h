@@ -121,14 +121,14 @@ int  default__impl__user_hmac_set(const char* username, const char* password, df
 int  default__impl__user_hmac_test(const char* username, const char* password, dflt_user_t* user, tt_status_t* status);
 
 
-int  default__storage_ext2fs_load(tt_file_t type, const char* filename, char* data, size_t* data_size);
-int  default__storage_ext2fs_save(tt_file_t type, const char* filename, const char* data, const size_t data_size);
-int  default__storage_ext2fs_exists(tt_file_t type, const char* filename, tt_status_t* status);
-int  default__storage_ext2fs_delete(tt_file_t type, const char* filename, tt_status_t* status);
-int  default__storage_posix_load(tt_file_t type, const char* filename, char* data, size_t* data_size);
-int  default__storage_posix_save(tt_file_t type, const char* filename, const char* data, const size_t data_size);
-int  default__storage_posix_exists(tt_file_t type, const char* filename, tt_status_t* status);
-int  default__storage_posix_delete(tt_file_t type, const char* filename, tt_status_t* status);
+int  default__storage_ext2fs_load(tt_file_t type, const char* identifier, const char* filename, char* data, size_t* data_size);
+int  default__storage_ext2fs_save(tt_file_t type, const char* identifier, const char* filename, const char* data, const size_t data_size);
+int  default__storage_ext2fs_exists(tt_file_t type, const char* identifier, const char* filename, tt_status_t* status);
+int  default__storage_ext2fs_delete(tt_file_t type, const char* identifier, const char* filename, tt_status_t* status);
+int  default__storage_posix_load(tt_file_t type, const char* identifier, const char* filename, char* data, size_t* data_size);
+int  default__storage_posix_save(tt_file_t type, const char* identifier, const char* filename, const char* data, const size_t data_size);
+int  default__storage_posix_exists(tt_file_t type, const char* identifier, const char* filename, tt_status_t* status);
+int  default__storage_posix_delete(tt_file_t type, const char* identifier, const char* filename, tt_status_t* status);
 
 int  default__impl__storage_get_filename(tt_file_t type, const char* identifier, char* data, const size_t data_size);
 

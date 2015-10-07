@@ -38,19 +38,19 @@ int default__api__storage_load(tt_file_t type, const char* identifier, char* buf
 				for( pos=0; 6+pos<sizeof(filename); pos++ ) {
 					filename[pos] = filename[6+pos];
 				}
-				if( default__storage_ext2fs_load( type, filename, buffer, buffer_size ) != TT_OK ) {
+				if( default__storage_ext2fs_load( type, identifier, filename, buffer, buffer_size ) != TT_OK ) {
 					TT_LOG_ERROR( "plugin/default", "default__storage_ext2fs_load() failed in %s()", __FUNCTION__ );
 					return TT_ERR;
 				}
 			} else {
-				if( default__storage_posix_load( type, filename, buffer, buffer_size ) != TT_OK ) {
+				if( default__storage_posix_load( type, identifier, filename, buffer, buffer_size ) != TT_OK ) {
 					TT_LOG_ERROR( "plugin/default", "default__storage_posix_load() failed in %s()", __FUNCTION__ );
 					return TT_ERR;
 				}
 			}
 			break;
 		case TT_RUNTIME__STANDARD:
-			if( default__storage_posix_load( type, filename, buffer, buffer_size ) != TT_OK ) {
+			if( default__storage_posix_load( type, identifier, filename, buffer, buffer_size ) != TT_OK ) {
 				TT_LOG_ERROR( "plugin/default", "default__storage_posix_load() failed in %s()", __FUNCTION__ );
 				return TT_ERR;
 			}
@@ -88,19 +88,19 @@ int default__api__storage_save(tt_file_t type, const char* identifier, const cha
 				for( pos=0; 6+pos<sizeof(filename); pos++ ) {
 					filename[pos] = filename[6+pos];
 				}
-				if( default__storage_ext2fs_save( type, filename, buffer, buffer_size ) != TT_OK ) {
+				if( default__storage_ext2fs_save( type, identifier, filename, buffer, buffer_size ) != TT_OK ) {
 					TT_LOG_ERROR( "plugin/default", "default__storage_ext2fs_save() failed in %s()", __FUNCTION__ );
 					return TT_ERR;
 				}
 			} else {
-				if( default__storage_posix_save( type, filename, buffer, buffer_size ) != TT_OK ) {
+				if( default__storage_posix_save( type, identifier, filename, buffer, buffer_size ) != TT_OK ) {
 					TT_LOG_ERROR( "plugin/default", "default__storage_posix_save() failed in %s()", __FUNCTION__ );
 					return TT_ERR;
 				}
 			}
 			break;
 		case TT_RUNTIME__STANDARD:
-			if( default__storage_posix_save( type, filename, buffer, buffer_size ) != TT_OK ) {
+			if( default__storage_posix_save( type, identifier, filename, buffer, buffer_size ) != TT_OK ) {
 				TT_LOG_ERROR( "plugin/default", "default__storage_posix_save() failed in %s()", __FUNCTION__ );
 				return TT_ERR;
 			}
@@ -138,19 +138,19 @@ int default__api__storage_exists(tt_file_t type, const char* identifier, tt_stat
 				for( pos=0; 6+pos<sizeof(filename); pos++ ) {
 					filename[pos] = filename[6+pos];
 				}
-				if( default__storage_ext2fs_exists( type, filename, status ) != TT_OK ) {
+				if( default__storage_ext2fs_exists( type, identifier, filename, status ) != TT_OK ) {
 					TT_LOG_ERROR( "plugin/default", "default__storage_ext2fs_exists() failed in %s()", __FUNCTION__ );
 					return TT_ERR;
 				}
 			} else {
-				if( default__storage_posix_exists( type, filename, status ) != TT_OK ) {
+				if( default__storage_posix_exists( type, identifier, filename, status ) != TT_OK ) {
 					TT_LOG_ERROR( "plugin/default", "default__storage_posix_exists() failed in %s()", __FUNCTION__ );
 					return TT_ERR;
 				}
 			}
 			break;
 		case TT_RUNTIME__STANDARD:
-			if( default__storage_posix_exists( type, filename, status ) != TT_OK ) {
+			if( default__storage_posix_exists( type, identifier, filename, status ) != TT_OK ) {
 				TT_LOG_ERROR( "plugin/default", "default__storage_posix_exists() failed in %s()", __FUNCTION__ );
 				return TT_ERR;
 			}
@@ -188,19 +188,19 @@ int default__api__storage_delete(tt_file_t type, const char* identifier, tt_stat
 				for( pos=0; 6+pos<sizeof(filename); pos++ ) {
 					filename[pos] = filename[6+pos];
 				}
-				if( default__storage_ext2fs_delete( type, filename, status ) != TT_OK ) {
+				if( default__storage_ext2fs_delete( type, identifier, filename, status ) != TT_OK ) {
 					TT_LOG_ERROR( "plugin/default", "default__storage_ext2fs_delete() failed in %s()", __FUNCTION__ );
 					return TT_ERR;
 				}
 			} else {
-				if( default__storage_posix_delete( type, filename, status ) != TT_OK ) {
+				if( default__storage_posix_delete( type, identifier, filename, status ) != TT_OK ) {
 					TT_LOG_ERROR( "plugin/default", "default__storage_posix_delete() failed in %s()", __FUNCTION__ );
 					return TT_ERR;
 				}
 			}
 			break;
 		case TT_RUNTIME__STANDARD:
-			if( default__storage_posix_delete( type, filename, status ) != TT_OK ) {
+			if( default__storage_posix_delete( type, identifier, filename, status ) != TT_OK ) {
 				TT_LOG_ERROR( "plugin/default", "default__storage_posix_delete() failed in %s()", __FUNCTION__ );
 				return TT_ERR;
 			}

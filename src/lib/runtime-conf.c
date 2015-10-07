@@ -42,7 +42,7 @@ static cfg_opt_t opt_tokentube_storage_files[] = {
 	CFG_STR("filename-hash", "", CFGF_NONE),
 	CFG_STR("owner", "", CFGF_NONE),
 	CFG_STR("group", "", CFGF_NONE),
-	CFG_STR("permission",  "", CFGF_NONE),
+	CFG_STR("perm",  "", CFGF_NONE),
 	CFG_END()
 };
 

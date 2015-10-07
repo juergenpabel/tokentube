@@ -15,14 +15,14 @@
 
 
 __attribute__ ((visibility ("hidden")))
-int default__storage_posix_load(tt_file_t type, const char* filename, char* buffer, size_t* buffer_size) {
+int default__storage_posix_load(tt_file_t type, const char* identifier, const char* filename, char* buffer, size_t* buffer_size) {
         struct stat	st = {0};
 	struct dirent*	entry = NULL;
 	DIR*		dir = NULL;
 	int		pos = 0, fd = -1;
 
-	TT_TRACE( "library/plugin", "%s(filename='%s',buffer=%p,buffer_size=%p)", __FUNCTION__, filename, buffer, buffer_size );
-	if( type == TT_FILE__UNDEFINED || filename == NULL || filename[0] == '\0' || buffer == NULL || buffer_size == NULL || *buffer_size == 0 ) {
+	TT_TRACE( "library/plugin", "%s(type=%zd,identifier='%s',filename='%s',buffer=%p,buffer_size=%p)", __FUNCTION__, type, identifier, filename, buffer, buffer_size );
+	if( type == TT_FILE__UNDEFINED || identifier == NULL || filename == NULL || filename[0] == '\0' || buffer == NULL || buffer_size == NULL || *buffer_size == 0 ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -77,13 +77,13 @@ int default__storage_posix_load(tt_file_t type, const char* filename, char* buff
 
 
 __attribute__ ((visibility ("hidden")))
-int default__storage_posix_save(tt_file_t type, const char* filename, const char* buffer, const size_t buffer_size) {
+int default__storage_posix_save(tt_file_t type, const char* identifier, const char* filename, const char* buffer, const size_t buffer_size) {
 	char		username[TT_USERNAME_CHAR_MAX+1] = {0};
 	size_t		username_size = sizeof(username);
 	char		groupname[TT_USERNAME_CHAR_MAX+1] = {0};
 	size_t		groupname_size = sizeof(groupname);
-	char		permission[5] = {0};
-	size_t		permission_size = sizeof(permission);
+	char		perm[5] = {0};
+	size_t		perm_size = sizeof(perm);
 	const char*     conf_owner = NULL;
 	const char*     conf_group = NULL;
 	const char*     conf_perm = NULL;
@@ -94,8 +94,8 @@ int default__storage_posix_save(tt_file_t type, const char* filename, const char
 	mode_t		mode = 0;
 	int		fd = -1;
 
-	TT_TRACE( "library/plugin", "%s(filename=%d,buffer=%p,buffer_size='%zd')", __FUNCTION__, filename, buffer, buffer_size );
-	if( type == TT_FILE__UNDEFINED || filename == NULL || filename[0] == '\0' || buffer == NULL || buffer_size == 0 ) {
+	TT_TRACE( "library/plugin", "%s(type=%zd,identifier='%s',filename=%d,buffer=%p,buffer_size='%zd')", __FUNCTION__, type, identifier, filename, buffer, buffer_size );
+	if( type == TT_FILE__UNDEFINED || identifier == NULL || filename == NULL || filename[0] == '\0' || buffer == NULL || buffer_size == 0 ) {
         	TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -103,20 +103,20 @@ int default__storage_posix_save(tt_file_t type, const char* filename, const char
 		case TT_FILE__KEY:
 			conf_owner = "storage|key-files|owner";
 			conf_group = "storage|key-files|group";
-			conf_perm  = "storage|key-files|permission";
+			conf_perm  = "storage|key-files|perm";
 		case TT_FILE__USER:
 			conf_owner = "storage|user-files|owner";
 			conf_group = "storage|user-files|group";
-			conf_perm  = "storage|user-files|permission";
+			conf_perm  = "storage|user-files|perm";
 			break;
 		case TT_FILE__OTP:
 			conf_owner = "storage|otp-files|owner";
 			conf_group = "storage|otp-files|group";
-			conf_perm  = "storage|otp-files|permission";
+			conf_perm  = "storage|otp-files|perm";
 		case TT_FILE__UHD:
 			conf_owner = "storage|uhd-files|owner";
 			conf_group = "storage|uhd-files|group";
-			conf_perm  = "storage|uhd-files|permission";
+			conf_perm  = "storage|uhd-files|perm";
 			break;
 		default:
 			break;
@@ -129,11 +129,15 @@ int default__storage_posix_save(tt_file_t type, const char* filename, const char
 		TT_LOG_ERROR( "plugin/default", "reading %s failed in %s()", conf_group, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_conf_read_str( conf_perm, permission, &permission_size ) != TT_OK ) {
+	if( libtokentube_conf_read_str( conf_perm, perm, &perm_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "reading %s failed in %s()", conf_perm, __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( username[0] != '\0' ) {
+		if( strncasecmp( username, "$USER", sizeof(username) ) == 0 ) {
+			strncpy( username, identifier, sizeof(username)-1 );
+			username_size = strnlen( username, sizeof(username) );
+		}
 		owner = getpwnam( username );
 		if( owner == NULL ) {
 			TT_LOG_ERROR( "plugin/default", "getpwnam() failed for username='%s' in %s()", username, __FUNCTION__ );
@@ -142,6 +146,20 @@ int default__storage_posix_save(tt_file_t type, const char* filename, const char
 		uid = owner->pw_uid;
 	}
 	if( groupname[0] != '\0' ) {
+		if( strncasecmp( groupname, "$GROUP", sizeof(groupname) ) == 0 ) {
+			owner = getpwnam( identifier );
+			if( owner == NULL ) {
+				TT_LOG_ERROR( "plugin/default", "getpwnam() failed for username='%s' in %s()", identifier, __FUNCTION__ );
+				return TT_ERR;
+			}
+			group = getgrgid( owner->pw_gid );
+			if( group == NULL ) {
+				TT_LOG_ERROR( "plugin/default", "getgrgid() failed for gid=%zd in %s()", owner->pw_gid, __FUNCTION__ );
+				return TT_ERR;
+			}
+			strncpy( groupname, group->gr_name, sizeof(groupname)-1 );
+			groupname_size = strnlen( groupname, sizeof(groupname) );
+		}
 		group = getgrnam( groupname );
 		if( group == NULL ) {
 			TT_LOG_ERROR( "plugin/default", "getgrnam() failed for groupname='%s' in %s()", groupname, __FUNCTION__ );
@@ -149,12 +167,13 @@ int default__storage_posix_save(tt_file_t type, const char* filename, const char
 		}
 		gid = group->gr_gid;
 	}
-	if( permission[0] != '\0' ) {
-		mode = strtol( permission, NULL, 8 );
-		if( mode == 0 ) {
-			mode = S_IRWXU|S_IRGRP|S_IXGRP;
-			TT_LOG_WARN( "plugin/default", "strtol() failed for mode='%s' in %s()", permission, __FUNCTION__ );
-		}
+	if( perm[0] != '\0' ) {
+		mode = strtol( perm, NULL, 8 );
+	}
+	if( mode == 0 ) {
+		mode = umask( 0 );
+		umask( mode );
+		mode = ( S_IRWXU | S_IRWXG | S_IRWXO )  ^ mode;
 	}
 	fd = open( filename, O_CREAT|O_WRONLY|O_TRUNC, mode );
 	if( fd < 0 ) {
@@ -163,7 +182,7 @@ int default__storage_posix_save(tt_file_t type, const char* filename, const char
 	}
 	if( (int)uid != -1 || (int)gid != -1 ) {
 		if( fchown( fd, uid, gid ) < 0 ) {
-			TT_LOG_ERROR( "plugin/default", "fchown() failed for '%s' in %s()", filename, __FUNCTION__ );
+			TT_LOG_ERROR( "plugin/default", "fchown() failed for '%s' with '%s' in %s()", filename, strerror( errno ), __FUNCTION__ );
 			unlink( filename );
 			close( fd );
 			return TT_ERR;
@@ -189,11 +208,11 @@ int default__storage_posix_save(tt_file_t type, const char* filename, const char
 
 
 __attribute__ ((visibility ("hidden")))
-int default__storage_posix_exists(tt_file_t type, const char* filename, tt_status_t* status) {
+int default__storage_posix_exists(tt_file_t type, const char* identifier, const char* filename, tt_status_t* status) {
         struct stat	st;
 
-	TT_TRACE( "library/plugin", "%s(filename=%d,status=%p)", __FUNCTION__, filename, status );
-	if( type == TT_FILE__UNDEFINED || filename == NULL || filename[0] == '\0' || status == NULL ) {
+	TT_TRACE( "library/plugin", "%s(type=%zd,identifier='%s',filename=%d,status=%p)", __FUNCTION__, type, identifier, filename, status );
+	if( type == TT_FILE__UNDEFINED || identifier == NULL || filename == NULL || filename[0] == '\0' || status == NULL ) {
         	TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -211,9 +230,9 @@ int default__storage_posix_exists(tt_file_t type, const char* filename, tt_statu
 
 
 __attribute__ ((visibility ("hidden")))
-int default__storage_posix_delete(tt_file_t type, const char* filename, tt_status_t* status) {
-	TT_TRACE( "library/plugin", "%s(filename=%d,status=%p)", __FUNCTION__, filename, status );
-	if( type == TT_FILE__UNDEFINED || filename == NULL || filename[0] == '\0' || status == NULL ) {
+int default__storage_posix_delete(tt_file_t type, const char* identifier, const char* filename, tt_status_t* status) {
+	TT_TRACE( "library/plugin", "%s(type=%zd,identifier='%s',filename=%d,status=%p)", __FUNCTION__, type, identifier, filename, status );
+	if( type == TT_FILE__UNDEFINED || identifier == NULL || filename == NULL || filename[0] == '\0' || status == NULL ) {
         	TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}

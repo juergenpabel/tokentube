@@ -53,7 +53,7 @@ int default__api__user_create(const char* username, const char* password, tt_sta
 		strncpy( path, "/etc/tokentube/keys", sizeof(path) );
 	}
 	TT_DEBUG3( "plugin/default", "loading all keys from '%s' in %s()", path, __FUNCTION__ );
-	if( default__storage_posix_load( TT_FILE__KEY, path, buffer, &buffer_size ) != TT_OK ) {
+	if( default__storage_posix_load( TT_FILE__KEY, username, path, buffer, &buffer_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "default__storage_posix_load() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
@@ -67,7 +67,7 @@ int default__api__user_create(const char* username, const char* password, tt_sta
 			strncpy( user.key[key_offset].data.key, basename( filename_start ), sizeof(user.key[key_offset].data.key) );
 			user.key[key_offset].data.key_size = strnlen( user.key[key_offset].data.key, TT_IDENTIFIER_CHAR_MAX );
 			user.key[key_offset].data.value_size = sizeof(user.key[key_offset].data.value);
-			if( default__storage_posix_load( TT_FILE__KEY, filename_start, user.key[key_offset].data.value, &user.key[key_offset].data.value_size ) != TT_OK ) {
+			if( default__storage_posix_load( TT_FILE__KEY, username, filename_start, user.key[key_offset].data.value, &user.key[key_offset].data.value_size ) != TT_OK ) {
 				TT_LOG_ERROR( "plugin/default", "default__storage_posix_load() failed in %s()", __FUNCTION__ );
 				memset( &user, '\0', sizeof(user) );
 				return TT_ERR;
