@@ -49,9 +49,6 @@ int default__api__user_create(const char* username, const char* password, tt_sta
 		TT_LOG_ERROR( "plugin/default", "libtokentube_conf_read_str() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( strnlen( path, sizeof(path) ) == 0 ) {
-		strncpy( path, "/etc/tokentube/keys", sizeof(path) );
-	}
 	TT_DEBUG3( "plugin/default", "loading all keys from '%s' in %s()", path, __FUNCTION__ );
 	if( default__storage_posix_load( TT_FILE__KEY, username, path, buffer, &buffer_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "default__storage_posix_load() failed in %s()", __FUNCTION__ );

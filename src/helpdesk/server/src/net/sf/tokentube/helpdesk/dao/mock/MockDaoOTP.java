@@ -1,7 +1,5 @@
 package net.sf.tokentube.helpdesk.stripes.dao.mock;
 
-import java.util.Date;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,9 +55,6 @@ public class MockDaoOTP implements DaoOTP {
     private static final String[] RAW_DATA = {
         "LAPTOP-4711,00000000000000000000000000000000,SHA-256,64,1,2015-05-01 00:00,2015-05-01 00:00"
     };
-
-    private static final DateFormat dateFormat =
-        new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     private MockDaoOTP() {
         try {

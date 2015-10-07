@@ -26,7 +26,6 @@ public class GenerateActionBean extends BaseActionBean {
 
     public Resolution generate() {
         OTP otp;
-        String luksKey;
         byte[] keyValue;
         byte[] hashValue;
         byte[] responseValue;
@@ -34,8 +33,6 @@ public class GenerateActionBean extends BaseActionBean {
         String response;
 
         otp = getOTP();
-        luksKey = otp.getLuksKey();
-
         try {
             byte[] key = new byte[32];
             byte[] hash = new byte[32];

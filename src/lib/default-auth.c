@@ -199,8 +199,8 @@ int default__api__auth_otp_challenge( const char* identifier, char* challenge, s
 		TT_LOG_ERROR( "plugin/default", "crc16() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	data[0] = (crc >> 0) & 0xff;
-	data[1] = (crc >> 8) & 0xff;
+	data[0] = (crc >> 8) & 0xff;
+	data[1] = (crc >> 0) & 0xff;
 	for( i=0; i<otp.bits/8; i++ ) {
 		data[2+i] = random() & 0xff;
 	}
@@ -354,8 +354,8 @@ int default__api__auth_otp_loadkey(const char* identifier, const char* challenge
 		TT_LOG_ERROR( "plugin/default", "API:crc16() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( (response_raw[0] & 0xff) != ((crc >> 0) & 0xff) || (response_raw[1] & 0xff) != ((crc >> 8) & 0xff) ) {
-		TT_LOG_ERROR( "plugin/default", "crc(response)[%x%x] != hash(otp.data)[%x%x] in %s()", ((crc >> 0) & 0xff), ((crc >> 8) & 0xff), response_raw[0] & 0xff, response_raw[1] & 0xff, __FUNCTION__ );
+	if( (response_raw[0] & 0xff) != ((crc >> 8) & 0xff) || (response_raw[1] & 0xff) != ((crc >> 0) & 0xff) ) {
+		TT_LOG_ERROR( "plugin/default", "crc(response)[%x%x] != hash(otp.data)[%x%x] in %s()", ((crc >> 8) & 0xff), ((crc >> 0) & 0xff), response_raw[0] & 0xff, response_raw[1] & 0xff, __FUNCTION__ );
 		return TT_ERR;
 	}
 	otp.data_size = *key_size;

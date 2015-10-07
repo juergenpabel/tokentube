@@ -1,6 +1,5 @@
 package net.sf.tokentube.helpdesk.stripes.action.otp;
 
-import java.util.List;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.validation.Validate;
@@ -12,12 +11,13 @@ import net.sourceforge.stripes.action.SimpleMessage;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sf.tokentube.helpdesk.stripes.model.OTP;
 
+
 @UrlBinding("/otp/delete/{id}")
 public class DeleteActionBean extends BaseActionBean {
 
     @DefaultHandler
     public Resolution show() {
-        return new ForwardResolution(super.DELETE);
+        return new ForwardResolution(BaseActionBean.DELETE);
     }
 
     @DontValidate

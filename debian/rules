@@ -98,6 +98,9 @@ install: build
 	chmod 755 $(CURDIR)/debian/tokentube/etc/tokentube/conf.d
 	install -m 0644 $(CURDIR)/conf/etc_tokentube_conf.d_plugin-exec.conf $(CURDIR)/debian/tokentube/etc/tokentube/conf.d/plugin-exec.conf
 
+	mkdir -p  $(CURDIR)/debian/tokentube/etc/tokentube/user/
+	chmod 755 $(CURDIR)/debian/tokentube/etc/tokentube/user/
+
 	mkdir -p  $(CURDIR)/debian/tokentube/var/spool/tokentube/helpdesk/
 	chmod 775 $(CURDIR)/debian/tokentube/var/spool/tokentube/helpdesk/
 
@@ -116,13 +119,13 @@ install: build
 	ln -sf /usr/lib/python3.4/site-packages/tokentube_cli $(CURDIR)/debian/tokentube/usr/lib/python3/dist-packages/tokentube_cli
 
 	# tokentube-plugin-helpdesk
-	mkdir -p  $(CURDIR)/debian/tokentube-plugin-helpdesk/etc/tokentube/conf.d
-	chmod 755 $(CURDIR)/debian/tokentube-plugin-helpdesk/etc/tokentube/conf.d
-	install -m 0644 $(CURDIR)/conf/etc_tokentube_conf.d_plugin-helpdesk.conf $(CURDIR)/debian/tokentube-plugin-helpdesk/etc/tokentube/conf.d/plugin-helpdesk.conf
+#TODO	mkdir -p  $(CURDIR)/debian/tokentube-plugin-helpdesk/etc/tokentube/conf.d
+#TODO	chmod 755 $(CURDIR)/debian/tokentube-plugin-helpdesk/etc/tokentube/conf.d
+#TODO	install -m 0644 $(CURDIR)/conf/etc_tokentube_conf.d_plugin-helpdesk.conf $(CURDIR)/debian/tokentube-plugin-helpdesk/etc/tokentube/conf.d/plugin-helpdesk.conf
 
-	mkdir -p  $(CURDIR)/debian/tokentube-plugin-helpdesk/usr/lib/tokentube/plugins.d
-	chmod 755 $(CURDIR)/debian/tokentube-plugin-helpdesk/usr/lib/tokentube/plugins.d
-	mv $(CURDIR)/debian/tokentube/usr/lib/tokentube/plugins.d/libtokentube-plugin-helpdesk.* $(CURDIR)/debian/tokentube-plugin-helpdesk/usr/lib/tokentube/plugins.d
+#TODO	mkdir -p  $(CURDIR)/debian/tokentube-plugin-helpdesk/usr/lib/tokentube/plugins.d
+#TODO	chmod 755 $(CURDIR)/debian/tokentube-plugin-helpdesk/usr/lib/tokentube/plugins.d
+#TODO	mv $(CURDIR)/debian/tokentube/usr/lib/tokentube/plugins.d/libtokentube-plugin-helpdesk.* $(CURDIR)/debian/tokentube-plugin-helpdesk/usr/lib/tokentube/plugins.d
 
 	# tokentube-plugin-python
 	mkdir -p  $(CURDIR)/debian/tokentube-plugin-python/usr/lib/tokentube/plugins.d

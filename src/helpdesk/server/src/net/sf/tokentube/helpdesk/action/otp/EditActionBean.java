@@ -9,12 +9,8 @@ import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.SimpleMessage;
 import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.validation.EmailTypeConverter;
-import net.sourceforge.stripes.validation.SimpleError;
 import net.sourceforge.stripes.validation.Validate;
 import net.sourceforge.stripes.validation.ValidateNestedProperties;
-import net.sourceforge.stripes.validation.ValidationErrors;
-import net.sourceforge.stripes.validation.ValidationMethod;
 import net.sf.tokentube.helpdesk.stripes.model.OTP;
 
 @UrlBinding("/otp/edit/{id}")
@@ -22,7 +18,7 @@ public class EditActionBean extends BaseActionBean {
 
     @DefaultHandler
     public Resolution edit() {
-        return new ForwardResolution(super.EDIT);
+        return new ForwardResolution(BaseActionBean.EDIT);
     }
 
     @ValidateNestedProperties({
