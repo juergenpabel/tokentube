@@ -1,6 +1,0 @@
-tokentube for Debian
---------------------
-
-Requires an already configured cryptsetup environment (including already encrypted partitions).
-
- -- Jürgen Pabel <juergen@pabel.net>  Fri, 24 Jul 2009 01:26:46 +0200
