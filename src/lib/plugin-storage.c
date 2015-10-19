@@ -15,7 +15,7 @@ int libtokentube_plugin__storage_load(tt_file_t type, const char* identifier, ch
 	size_t		i;
 
 	TT_TRACE( "library/plugin", "%s(type=%d,identifier='%s')", __FUNCTION__, (int)type, identifier );
-	if( type == TT_FILE__UNDEFINED || identifier == NULL || identifier[0] == '\0' || buffer == NULL || buffer_len == NULL || *buffer_len == 0 ) {
+	if( type == TT_FILE__UNDEFINED || identifier == NULL || buffer == NULL || buffer_len == NULL || *buffer_len == 0 ) {
 		TT_LOG_ERROR( "library/plugin", "invalid parameters in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}

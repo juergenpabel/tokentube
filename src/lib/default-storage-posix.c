@@ -16,7 +16,7 @@
 
 __attribute__ ((visibility ("hidden")))
 int default__storage_posix_load(tt_file_t type, const char* identifier, const char* filename, char* buffer, size_t* buffer_size) {
-        struct stat	st = {0};
+	struct stat	st = {0};
 	struct dirent*	entry = NULL;
 	DIR*		dir = NULL;
 	int		pos = 0, fd = -1;

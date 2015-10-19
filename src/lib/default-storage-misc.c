@@ -69,25 +69,28 @@ int default__impl__storage_get_filename(tt_file_t file, const char* identifier, 
 		TT_LOG_ERROR( "plugin/default", "reading %s failed in %s()", conf_filehash, __FUNCTION__ );
 		return TT_ERR;
 	}
-	snprintf( buffer, buffer_size-1, "%s/", directory );
-	filename = identifier;
-	if( strncasecmp( filehash, "null", 5 ) != 0 ) {
-		if( libtokentube_crypto_hash_impl( libtokentube_name2oid( filehash ), identifier, strnlen( identifier, TT_IDENTIFIER_CHAR_MAX ), uuid, &uuid_size ) != TT_OK ) {
-			TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
+	strncpy( buffer, directory, buffer_size-1 );
+	if( identifier[0] != '\0' ) {
+		filename = identifier;
+		if( strncasecmp( filehash, "null", 5 ) != 0 ) {
+			if( libtokentube_crypto_hash_impl( libtokentube_name2oid( filehash ), identifier, strnlen( identifier, TT_IDENTIFIER_CHAR_MAX ), uuid, &uuid_size ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
+				return TT_ERR;
+			}
+			directory_size = sizeof(directory);
+			if( libtokentube_util_hex_encode( uuid, uuid_size, directory, &directory_size ) != TT_OK ) {
+				TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
+				return TT_ERR;
+			}
+			filename = directory;
+		}
+		if( directory_size + 1 + strnlen( filename, TT_IDENTIFIER_CHAR_MAX ) >= buffer_size ) {
+			TT_LOG_ERROR( "plugin/default", "buffer too small for filename in %s()", __FUNCTION__ );
 			return TT_ERR;
 		}
-		directory_size = sizeof(directory);
-		if( libtokentube_util_hex_encode( uuid, uuid_size, directory, &directory_size ) != TT_OK ) {
-			TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
-			return TT_ERR;
-		}
-		filename = directory;
+		strncat( buffer, "/", buffer_size - strnlen( buffer, buffer_size ) - 1 );
+		strncat( buffer, filename, buffer_size - strnlen( buffer, buffer_size ) - 1 );
 	}
-	if( directory_size + strnlen( filename, TT_IDENTIFIER_CHAR_MAX ) >= buffer_size ) {
-		TT_LOG_ERROR( "plugin/default", "buffer too small for filename in %s()", __FUNCTION__ );
-		return TT_ERR;
-	}
-	strncat( buffer, filename, buffer_size - strnlen( buffer, buffer_size ) - 1 );
        	TT_DEBUG2( "plugin/default", "returning '%s' in %s()", buffer, __FUNCTION__ );
 	return TT_OK;
 }

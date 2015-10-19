@@ -93,9 +93,11 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(libexecdir)"
 PROGRAMS = $(libexec_PROGRAMS)
 am_pba_OBJECTS = pba-pba.$(OBJEXT) pba-pba-init.$(OBJEXT) \
-	pba-pba-user.$(OBJEXT) pba-pba-ssod.$(OBJEXT) \
-	pba-pba-otp.$(OBJEXT) pba-pba-plymouth.$(OBJEXT) \
-	pba-pba-otp-plymouth.$(OBJEXT)
+	pba-pba-plain.$(OBJEXT) pba-pba-user.$(OBJEXT) \
+	pba-pba-ssod.$(OBJEXT) pba-pba-otp.$(OBJEXT) \
+	pba-pba-plymouth-splash.$(OBJEXT) \
+	pba-pba-plymouth-plain.$(OBJEXT) \
+	pba-pba-plymouth-user.$(OBJEXT) pba-pba-plymouth-otp.$(OBJEXT)
 pba_OBJECTS = $(am_pba_OBJECTS)
 pba_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -293,7 +295,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-pba_SOURCES = pba.c pba-init.c pba-user.c pba-ssod.c pba-otp.c pba-plymouth.c pba-otp-plymouth.c
+pba_SOURCES = pba.c pba-init.c pba-plain.c pba-user.c pba-ssod.c pba-otp.c pba-plymouth-splash.c pba-plymouth-plain.c pba-plymouth-user.c pba-plymouth-otp.c
 pba_CFLAGS = -Wno-unused-result -I../../../include -I../../lib -I/usr/include/plymouth-1/ply
 pba_LDFLAGS = -L../../lib/ -lply -lply-boot-client -lconfuse -ltokentube
 all: all-am
@@ -391,9 +393,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pba-pba-init.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pba-pba-otp-plymouth.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pba-pba-otp.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pba-pba-plymouth.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pba-pba-plain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pba-pba-plymouth-otp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pba-pba-plymouth-plain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pba-pba-plymouth-splash.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pba-pba-plymouth-user.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pba-pba-ssod.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pba-pba-user.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pba-pba.Po@am__quote@
@@ -447,6 +452,20 @@ pba-pba-init.obj: pba-init.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-init.obj `if test -f 'pba-init.c'; then $(CYGPATH_W) 'pba-init.c'; else $(CYGPATH_W) '$(srcdir)/pba-init.c'; fi`
 
+pba-pba-plain.o: pba-plain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-plain.o -MD -MP -MF $(DEPDIR)/pba-pba-plain.Tpo -c -o pba-pba-plain.o `test -f 'pba-plain.c' || echo '$(srcdir)/'`pba-plain.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-plain.Tpo $(DEPDIR)/pba-pba-plain.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pba-plain.c' object='pba-pba-plain.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-plain.o `test -f 'pba-plain.c' || echo '$(srcdir)/'`pba-plain.c
+
+pba-pba-plain.obj: pba-plain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-plain.obj -MD -MP -MF $(DEPDIR)/pba-pba-plain.Tpo -c -o pba-pba-plain.obj `if test -f 'pba-plain.c'; then $(CYGPATH_W) 'pba-plain.c'; else $(CYGPATH_W) '$(srcdir)/pba-plain.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-plain.Tpo $(DEPDIR)/pba-pba-plain.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pba-plain.c' object='pba-pba-plain.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-plain.obj `if test -f 'pba-plain.c'; then $(CYGPATH_W) 'pba-plain.c'; else $(CYGPATH_W) '$(srcdir)/pba-plain.c'; fi`
+
 pba-pba-user.o: pba-user.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-user.o -MD -MP -MF $(DEPDIR)/pba-pba-user.Tpo -c -o pba-pba-user.o `test -f 'pba-user.c' || echo '$(srcdir)/'`pba-user.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-user.Tpo $(DEPDIR)/pba-pba-user.Po
@@ -489,33 +508,61 @@ pba-pba-otp.obj: pba-otp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-otp.obj `if test -f 'pba-otp.c'; then $(CYGPATH_W) 'pba-otp.c'; else $(CYGPATH_W) '$(srcdir)/pba-otp.c'; fi`
 
-pba-pba-plymouth.o: pba-plymouth.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-plymouth.o -MD -MP -MF $(DEPDIR)/pba-pba-plymouth.Tpo -c -o pba-pba-plymouth.o `test -f 'pba-plymouth.c' || echo '$(srcdir)/'`pba-plymouth.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-plymouth.Tpo $(DEPDIR)/pba-pba-plymouth.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pba-plymouth.c' object='pba-pba-plymouth.o' libtool=no @AMDEPBACKSLASH@
+pba-pba-plymouth-splash.o: pba-plymouth-splash.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-plymouth-splash.o -MD -MP -MF $(DEPDIR)/pba-pba-plymouth-splash.Tpo -c -o pba-pba-plymouth-splash.o `test -f 'pba-plymouth-splash.c' || echo '$(srcdir)/'`pba-plymouth-splash.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-plymouth-splash.Tpo $(DEPDIR)/pba-pba-plymouth-splash.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pba-plymouth-splash.c' object='pba-pba-plymouth-splash.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-plymouth.o `test -f 'pba-plymouth.c' || echo '$(srcdir)/'`pba-plymouth.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-plymouth-splash.o `test -f 'pba-plymouth-splash.c' || echo '$(srcdir)/'`pba-plymouth-splash.c
 
-pba-pba-plymouth.obj: pba-plymouth.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-plymouth.obj -MD -MP -MF $(DEPDIR)/pba-pba-plymouth.Tpo -c -o pba-pba-plymouth.obj `if test -f 'pba-plymouth.c'; then $(CYGPATH_W) 'pba-plymouth.c'; else $(CYGPATH_W) '$(srcdir)/pba-plymouth.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-plymouth.Tpo $(DEPDIR)/pba-pba-plymouth.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pba-plymouth.c' object='pba-pba-plymouth.obj' libtool=no @AMDEPBACKSLASH@
+pba-pba-plymouth-splash.obj: pba-plymouth-splash.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-plymouth-splash.obj -MD -MP -MF $(DEPDIR)/pba-pba-plymouth-splash.Tpo -c -o pba-pba-plymouth-splash.obj `if test -f 'pba-plymouth-splash.c'; then $(CYGPATH_W) 'pba-plymouth-splash.c'; else $(CYGPATH_W) '$(srcdir)/pba-plymouth-splash.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-plymouth-splash.Tpo $(DEPDIR)/pba-pba-plymouth-splash.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pba-plymouth-splash.c' object='pba-pba-plymouth-splash.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-plymouth.obj `if test -f 'pba-plymouth.c'; then $(CYGPATH_W) 'pba-plymouth.c'; else $(CYGPATH_W) '$(srcdir)/pba-plymouth.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-plymouth-splash.obj `if test -f 'pba-plymouth-splash.c'; then $(CYGPATH_W) 'pba-plymouth-splash.c'; else $(CYGPATH_W) '$(srcdir)/pba-plymouth-splash.c'; fi`
 
-pba-pba-otp-plymouth.o: pba-otp-plymouth.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-otp-plymouth.o -MD -MP -MF $(DEPDIR)/pba-pba-otp-plymouth.Tpo -c -o pba-pba-otp-plymouth.o `test -f 'pba-otp-plymouth.c' || echo '$(srcdir)/'`pba-otp-plymouth.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-otp-plymouth.Tpo $(DEPDIR)/pba-pba-otp-plymouth.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pba-otp-plymouth.c' object='pba-pba-otp-plymouth.o' libtool=no @AMDEPBACKSLASH@
+pba-pba-plymouth-plain.o: pba-plymouth-plain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-plymouth-plain.o -MD -MP -MF $(DEPDIR)/pba-pba-plymouth-plain.Tpo -c -o pba-pba-plymouth-plain.o `test -f 'pba-plymouth-plain.c' || echo '$(srcdir)/'`pba-plymouth-plain.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-plymouth-plain.Tpo $(DEPDIR)/pba-pba-plymouth-plain.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pba-plymouth-plain.c' object='pba-pba-plymouth-plain.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-otp-plymouth.o `test -f 'pba-otp-plymouth.c' || echo '$(srcdir)/'`pba-otp-plymouth.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-plymouth-plain.o `test -f 'pba-plymouth-plain.c' || echo '$(srcdir)/'`pba-plymouth-plain.c
 
-pba-pba-otp-plymouth.obj: pba-otp-plymouth.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-otp-plymouth.obj -MD -MP -MF $(DEPDIR)/pba-pba-otp-plymouth.Tpo -c -o pba-pba-otp-plymouth.obj `if test -f 'pba-otp-plymouth.c'; then $(CYGPATH_W) 'pba-otp-plymouth.c'; else $(CYGPATH_W) '$(srcdir)/pba-otp-plymouth.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-otp-plymouth.Tpo $(DEPDIR)/pba-pba-otp-plymouth.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pba-otp-plymouth.c' object='pba-pba-otp-plymouth.obj' libtool=no @AMDEPBACKSLASH@
+pba-pba-plymouth-plain.obj: pba-plymouth-plain.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-plymouth-plain.obj -MD -MP -MF $(DEPDIR)/pba-pba-plymouth-plain.Tpo -c -o pba-pba-plymouth-plain.obj `if test -f 'pba-plymouth-plain.c'; then $(CYGPATH_W) 'pba-plymouth-plain.c'; else $(CYGPATH_W) '$(srcdir)/pba-plymouth-plain.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-plymouth-plain.Tpo $(DEPDIR)/pba-pba-plymouth-plain.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pba-plymouth-plain.c' object='pba-pba-plymouth-plain.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-otp-plymouth.obj `if test -f 'pba-otp-plymouth.c'; then $(CYGPATH_W) 'pba-otp-plymouth.c'; else $(CYGPATH_W) '$(srcdir)/pba-otp-plymouth.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-plymouth-plain.obj `if test -f 'pba-plymouth-plain.c'; then $(CYGPATH_W) 'pba-plymouth-plain.c'; else $(CYGPATH_W) '$(srcdir)/pba-plymouth-plain.c'; fi`
+
+pba-pba-plymouth-user.o: pba-plymouth-user.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-plymouth-user.o -MD -MP -MF $(DEPDIR)/pba-pba-plymouth-user.Tpo -c -o pba-pba-plymouth-user.o `test -f 'pba-plymouth-user.c' || echo '$(srcdir)/'`pba-plymouth-user.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-plymouth-user.Tpo $(DEPDIR)/pba-pba-plymouth-user.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pba-plymouth-user.c' object='pba-pba-plymouth-user.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-plymouth-user.o `test -f 'pba-plymouth-user.c' || echo '$(srcdir)/'`pba-plymouth-user.c
+
+pba-pba-plymouth-user.obj: pba-plymouth-user.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-plymouth-user.obj -MD -MP -MF $(DEPDIR)/pba-pba-plymouth-user.Tpo -c -o pba-pba-plymouth-user.obj `if test -f 'pba-plymouth-user.c'; then $(CYGPATH_W) 'pba-plymouth-user.c'; else $(CYGPATH_W) '$(srcdir)/pba-plymouth-user.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-plymouth-user.Tpo $(DEPDIR)/pba-pba-plymouth-user.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pba-plymouth-user.c' object='pba-pba-plymouth-user.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-plymouth-user.obj `if test -f 'pba-plymouth-user.c'; then $(CYGPATH_W) 'pba-plymouth-user.c'; else $(CYGPATH_W) '$(srcdir)/pba-plymouth-user.c'; fi`
+
+pba-pba-plymouth-otp.o: pba-plymouth-otp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-plymouth-otp.o -MD -MP -MF $(DEPDIR)/pba-pba-plymouth-otp.Tpo -c -o pba-pba-plymouth-otp.o `test -f 'pba-plymouth-otp.c' || echo '$(srcdir)/'`pba-plymouth-otp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-plymouth-otp.Tpo $(DEPDIR)/pba-pba-plymouth-otp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pba-plymouth-otp.c' object='pba-pba-plymouth-otp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-plymouth-otp.o `test -f 'pba-plymouth-otp.c' || echo '$(srcdir)/'`pba-plymouth-otp.c
+
+pba-pba-plymouth-otp.obj: pba-plymouth-otp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -MT pba-pba-plymouth-otp.obj -MD -MP -MF $(DEPDIR)/pba-pba-plymouth-otp.Tpo -c -o pba-pba-plymouth-otp.obj `if test -f 'pba-plymouth-otp.c'; then $(CYGPATH_W) 'pba-plymouth-otp.c'; else $(CYGPATH_W) '$(srcdir)/pba-plymouth-otp.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/pba-pba-plymouth-otp.Tpo $(DEPDIR)/pba-pba-plymouth-otp.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pba-plymouth-otp.c' object='pba-pba-plymouth-otp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(pba_CFLAGS) $(CFLAGS) -c -o pba-pba-plymouth-otp.obj `if test -f 'pba-plymouth-otp.c'; then $(CYGPATH_W) 'pba-plymouth-otp.c'; else $(CYGPATH_W) '$(srcdir)/pba-plymouth-otp.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

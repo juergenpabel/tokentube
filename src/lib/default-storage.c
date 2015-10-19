@@ -20,7 +20,7 @@ int default__api__storage_load(tt_file_t type, const char* identifier, char* buf
 	size_t		pos = 0;
 
 	TT_TRACE( "library/plugin", "%s(type=%d,identifier='%s',buffer=%p,buffer_size=%p)", __FUNCTION__, type, identifier, buffer, buffer_size );
-	if( identifier == NULL || identifier[0] == '\0' || buffer == NULL || buffer_size == NULL || *buffer_size == 0 ) {
+	if( identifier == NULL || buffer == NULL || buffer_size == NULL || *buffer_size == 0 ) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}

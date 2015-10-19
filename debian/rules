@@ -76,16 +76,20 @@ install: build
 
 	mkdir -p  $(CURDIR)/debian/tokentube/boot/tokentube/
 	chmod 755 $(CURDIR)/debian/tokentube/boot/tokentube/
-	mkdir -p  $(CURDIR)/debian/tokentube/boot/tokentube/pba/
-	chmod 755 $(CURDIR)/debian/tokentube/boot/tokentube/pba/
+	install -m 0644 $(CURDIR)/conf/boot_tokentube_pba.conf $(CURDIR)/debian/tokentube/boot/tokentube/pba.conf
+	mkdir -p  $(CURDIR)/debian/tokentube/boot/tokentube/pba/conf.d
+	chmod 755 $(CURDIR)/debian/tokentube/boot/tokentube/pba/conf.d
+	install -m 0644 $(CURDIR)/conf/boot_tokentube_pba_conf.d_user.conf	$(CURDIR)/debian/tokentube/boot/tokentube/pba/conf.d/user.conf
+	install -m 0644 $(CURDIR)/conf/boot_tokentube_pba_conf.d_otp.conf	$(CURDIR)/debian/tokentube/boot/tokentube/pba/conf.d/otp.conf
+	touch 									$(CURDIR)/debian/tokentube/boot/tokentube/pba/conf.d/user-default.conf
+	mkdir -p  $(CURDIR)/debian/tokentube/boot/tokentube/pba/splash
+	chmod 755 $(CURDIR)/debian/tokentube/boot/tokentube/pba/splash
+	install -m 0644 $(CURDIR)/conf/boot_tokentube_pba_splash_english.txt $(CURDIR)/debian/tokentube/boot/tokentube/pba/splash/english.txt
+
 	mkdir -p  $(CURDIR)/debian/tokentube/boot/tokentube/user/
 	chmod 775 $(CURDIR)/debian/tokentube/boot/tokentube/user/
 	mkdir -p  $(CURDIR)/debian/tokentube/boot/tokentube/otp/
 	chmod 775 $(CURDIR)/debian/tokentube/boot/tokentube/otp/
-	install -m 0644 $(CURDIR)/conf/boot_tokentube_pba.conf		$(CURDIR)/debian/tokentube/boot/tokentube/pba.conf
-	install -m 0644 $(CURDIR)/conf/boot_tokentube_pba_user.conf	$(CURDIR)/debian/tokentube/boot/tokentube/pba/user.conf
-	touch 								$(CURDIR)/debian/tokentube/boot/tokentube/pba/user-default.conf
-	install -m 0644 $(CURDIR)/conf/boot_tokentube_pba_otp.conf	$(CURDIR)/debian/tokentube/boot/tokentube/pba/otp.conf
 
 	mkdir -p  $(CURDIR)/debian/tokentube/etc/tokentube/
 	chmod 755 $(CURDIR)/debian/tokentube/etc/tokentube/
@@ -118,14 +122,13 @@ install: build
 	ln -sf /usr/lib/python3.4/site-packages/tokentube.so  $(CURDIR)/debian/tokentube/usr/lib/python3/dist-packages/tokentube.so
 	ln -sf /usr/lib/python3.4/site-packages/tokentube_cli $(CURDIR)/debian/tokentube/usr/lib/python3/dist-packages/tokentube_cli
 
-	# tokentube-plugin-helpdesk
-#TODO	mkdir -p  $(CURDIR)/debian/tokentube-plugin-helpdesk/etc/tokentube/conf.d
-#TODO	chmod 755 $(CURDIR)/debian/tokentube-plugin-helpdesk/etc/tokentube/conf.d
-#TODO	install -m 0644 $(CURDIR)/conf/etc_tokentube_conf.d_plugin-helpdesk.conf $(CURDIR)/debian/tokentube-plugin-helpdesk/etc/tokentube/conf.d/plugin-helpdesk.conf
-
-#TODO	mkdir -p  $(CURDIR)/debian/tokentube-plugin-helpdesk/usr/lib/tokentube/plugins.d
-#TODO	chmod 755 $(CURDIR)/debian/tokentube-plugin-helpdesk/usr/lib/tokentube/plugins.d
-#TODO	mv $(CURDIR)/debian/tokentube/usr/lib/tokentube/plugins.d/libtokentube-plugin-helpdesk.* $(CURDIR)/debian/tokentube-plugin-helpdesk/usr/lib/tokentube/plugins.d
+	$(MAKE) DESTDIR=$(CURDIR)/debian/tokentube man
+	mkdir -p  $(CURDIR)/debian/tokentube/usr/share/man/man1
+	chmod 755 $(CURDIR)/debian/tokentube/usr/share/man/man1
+	cp        $(CURDIR)/doc/man/tokentube.1 $(CURDIR)/debian/tokentube/usr/share/man/man1/
+	mkdir -p  $(CURDIR)/debian/tokentube/usr/share/man/man5
+	chmod 755 $(CURDIR)/debian/tokentube/usr/share/man/man5
+	cp        $(CURDIR)/doc/man/tokentube.conf.5 $(CURDIR)/debian/tokentube/usr/share/man/man5/
 
 	# tokentube-plugin-python
 	mkdir -p  $(CURDIR)/debian/tokentube-plugin-python/usr/lib/tokentube/plugins.d
@@ -173,9 +176,9 @@ install: build
 	mkdir -p  $(CURDIR)/debian/tokentube-ssod/usr/share/initramfs-tools/hooks/
 	chmod 755 $(CURDIR)/debian/tokentube-ssod/usr/share/initramfs-tools/hooks/
 	install -m 0755 $(CURDIR)/debian/scripts/tokentube-ssod/initramfs-tools $(CURDIR)/debian/tokentube-ssod/usr/share/initramfs-tools/hooks/tokentube-ssod
-	mkdir -p  $(CURDIR)/debian/tokentube-ssod/boot/tokentube/pba
-	chmod 755 $(CURDIR)/debian/tokentube-ssod/boot/tokentube/pba
-	install -m 0644 $(CURDIR)/conf/boot_tokentube_pba_sso.conf $(CURDIR)/debian/tokentube-ssod/boot/tokentube/pba/sso.conf
+	mkdir -p  $(CURDIR)/debian/tokentube-ssod/boot/tokentube/pba/conf.d
+	chmod 755 $(CURDIR)/debian/tokentube-ssod/boot/tokentube/pba/conf.d
+	install -m 0644 $(CURDIR)/conf/boot_tokentube_pba_conf.d_sso.conf $(CURDIR)/debian/tokentube-ssod/boot/tokentube/pba/conf.d/sso.conf
 	mkdir -p  $(CURDIR)/debian/tokentube-ssod/etc/tokentube/sso
 	chmod 755 $(CURDIR)/debian/tokentube-ssod/etc/tokentube/sso
 	install -m 0644 $(CURDIR)/conf/etc_tokentube_sso_ssod.conf $(CURDIR)/debian/tokentube-ssod/etc/tokentube/sso/ssod.conf
@@ -194,6 +197,21 @@ install: build
 	install -m 0644 $(CURDIR)/debian/conf/tokentube-sso-lightdm/usr_share_xgreeters_tokentube-sso-lightdm-greeter.desktop $(CURDIR)/debian/tokentube-sso-lightdm/usr/share/xgreeters/tokentube-sso-lightdm-greeter.desktop
 	mkdir -p  $(CURDIR)/debian/tokentube-sso-lightdm/etc/lightdm/lightdm.conf.d
 	chmod 755 $(CURDIR)/debian/tokentube-sso-lightdm/etc/lightdm/lightdm.conf.d
+
+	# tokentube-helpdesk-server
+	$(MAKE) DESTDIR=$(CURDIR)/debian/tokentube-helpdesk helpdesk
+	mkdir -p  $(CURDIR)/debian/tokentube-helpdesk/var/lib/tomcat8/webapps/
+	chmod 755 $(CURDIR)/debian/tokentube-helpdesk/var/lib/tomcat8/webapps/
+	cp        $(CURDIR)/src/helpdesk/server/dist/tokentube.war $(CURDIR)/debian/tokentube-helpdesk/var/lib/tomcat8/webapps/
+
+	# tokentube-plugin-helpdesk
+	mkdir -p  $(CURDIR)/debian/tokentube-plugin-helpdesk/etc/tokentube/conf.d
+	chmod 755 $(CURDIR)/debian/tokentube-plugin-helpdesk/etc/tokentube/conf.d
+	install -m 0644 $(CURDIR)/conf/etc_tokentube_conf.d_plugin-helpdesk.conf $(CURDIR)/debian/tokentube-plugin-helpdesk/etc/tokentube/conf.d/plugin-helpdesk.conf
+
+	mkdir -p  $(CURDIR)/debian/tokentube-plugin-helpdesk/usr/lib/tokentube/plugins.d
+	chmod 755 $(CURDIR)/debian/tokentube-plugin-helpdesk/usr/lib/tokentube/plugins.d
+	cp        $(CURDIR)/src/helpdesk/client/plugin/.libs/libtokentube-plugin-helpdesk.* $(CURDIR)/debian/tokentube-plugin-helpdesk/usr/lib/tokentube/plugins.d
 
 	#tokentube-dev
 	mkdir -p  $(CURDIR)/debian/tokentube-dev/usr/

@@ -256,8 +256,8 @@ int default__api__auth_otp_response(const char* identifier, const char* challeng
 		TT_LOG_ERROR( "plugin/default", "challenge and reponse are of different length" );
 		return TT_ERR;
 	}
-	if( (char)((crc>>0) & 0xff) != challenge_raw[0] || (char)((crc>>8) & 0xff) != challenge_raw[1] ) {
-		TT_LOG_ERROR( "plugin/default", "CRC of challenge incorrect (%u %u, instead of %u %u)", (unsigned char)challenge_raw[0], (unsigned char)challenge_raw[1], ((crc>>0)&0xff), ((crc>>8)&0xff) );
+	if( (char)((crc>>8) & 0xff) != challenge_raw[0] || (char)((crc>>0) & 0xff) != challenge_raw[1] ) {
+		TT_LOG_ERROR( "plugin/default", "CRC of challenge incorrect ([%.2x%.2x], instead of [%.2x%.2x])", challenge_raw[0], challenge_raw[1], ((crc>>8)&0xff), ((crc>>0)&0xff) );
 		return TT_ERR;
 	}
 	for( i=0; i<uhd.otp_bits/8; i++ ) {
@@ -278,8 +278,8 @@ int default__api__auth_otp_response(const char* identifier, const char* challeng
 		TT_LOG_ERROR( "plugin/default", "API:crc16() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	response_raw[0] = (crc>>0) & 0xff;
-	response_raw[1] = (crc>>8) & 0xff;
+	response_raw[0] = (crc>>8) & 0xff;
+	response_raw[1] = (crc>>0) & 0xff;
 	if( libtokentube_util_base32_encode(response_raw, 2+uhd.otp_bits/8, response, response_size) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "API:base32_encode() failed in %s()", __FUNCTION__ );
 		return TT_ERR;

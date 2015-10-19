@@ -107,7 +107,7 @@ static cfg_opt_t opt_tokentube[] = {
 
 __attribute__ ((visibility ("hidden")))
 int libtokentube_conf_configure(const char* filename) {
-	char	buffer[TT_CONFIG_MAX] = {0};
+	char	buffer[TT_CONFIG_MAX+1] = {0};
 	size_t	buffer_size = sizeof(buffer);
 	int	err = TT_OK;
 

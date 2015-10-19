@@ -1,4 +1,5 @@
 /boot/tokentube/pba.conf
-/boot/tokentube/pba/user.conf
-/boot/tokentube/pba/user-default.conf
-/boot/tokentube/pba/otp.conf
+/boot/tokentube/pba/conf.d/user.conf
+/boot/tokentube/pba/conf.d/user-default.conf
+/boot/tokentube/pba/conf.d/otp.conf
+

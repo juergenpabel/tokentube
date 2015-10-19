@@ -9,8 +9,50 @@
 #include "pba.h"
 
 
+int pba_user_loadkey(tt_library_t* library, const char* user, size_t user_size, const char* pass, size_t pass_size, const char* identifier, char* key, size_t* key_size);
+
+
+int pba_user(cfg_t* cfg, tt_library_t* library, const char* identifier, char* key, size_t* key_size) {
+	char            username[TT_USERNAME_CHAR_MAX+1] = {0};
+	size_t          username_size = sizeof(username);
+	char            password[TT_PASSWORD_CHAR_MAX+1] = {0};
+	size_t          password_size = sizeof(password);
+	const char*     prompt_username = NULL;
+	const char*     prompt_password = NULL;
+	const char*     default_username = NULL;
+
+	prompt_username = cfg_getstr( cfg, "user|prompt-username" );
+	prompt_password = cfg_getstr( cfg, "user|prompt-password" );
+	default_username = cfg_getstr( cfg, "user|default-username" );
+	if( default_username != NULL ) {
+		if( getenv( "CRYPTTAB_TRIED" ) != NULL && atoi( getenv( "CRYPTTAB_TRIED" ) ) == 0 ) {
+			strncpy( username, default_username, sizeof(username)-1 );
+		}
+	}
+	if( pba_plymouth_user( "message-user", "message-pass", prompt_username, prompt_password, username, &username_size, password, &password_size ) != TT_OK ) {
+		library->api.runtime.system.log( TT_LOG__ERROR, "pba", "pba_plymouth_user() returned TT_ERR" );
+		memset( password, '\0', password_size );
+		return TT_ERR;
+	}
+	if( username[0] != '\0' ) {
+		if( pba_user_loadkey( library, username, username_size, password, password_size, identifier, key, key_size ) != TT_OK ) {
+			library->api.runtime.system.log( TT_LOG__ERROR, "pba", "pba_user_loadkey() failed in %s()", __FUNCTION__ );
+			memset( password, '\0', password_size );
+			return TT_ERR;
+		}
+	}
+	if( username[0] == '\0' ) {
+		library->api.runtime.system.debug( TT_DEBUG__VERBOSITY1, "pba", "no username given, returning password in %s()", __FUNCTION__ );
+		strncpy( key, password, strnlen( password, *key_size ) );
+		*key_size = strnlen( key, *key_size );
+	}
+	memset( password, '\0', password_size );
+	return TT_OK;
+}
+
+
 int pba_user_loadkey(tt_library_t* library, const char* user, size_t user_size, const char* pass, size_t pass_size, const char* identifier, char* key, size_t* key_size) {
-	if( user == NULL || user_size == 0 || pass == NULL || pass_size == 0 || identifier == 0 || identifier[0] == '\0' || key == NULL || key_size == NULL ) {
+	if( user == NULL || user_size == 0 || pass == NULL || pass_size == 0 || identifier == NULL || key == NULL || key_size == NULL ) {
 		library->api.runtime.system.log( TT_LOG__ERROR, "pba", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}

@@ -13,7 +13,7 @@ __attribute__ ((visibility ("hidden")))
 int libtokentube_runtime_conf__include(cfg_t* cfg, cfg_opt_t* opt, int argc, const char** argv) {
 	tt_status_t	status = TT_STATUS__UNDEFINED;
 	tt_file_t	filetype = TT_FILE__UNDEFINED;
-	char		buffer[TT_CONFIG_MAX] = {0};
+	char		buffer[TT_CONFIG_MAX+1] = {0};
 	size_t		buffer_size = sizeof(buffer);
 	gcry_md_hd_t	digest = NULL;
 	void*		digest_result;

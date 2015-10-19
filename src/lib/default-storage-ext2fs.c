@@ -142,7 +142,7 @@ int default__storage_ext2fs_save(tt_file_t type, const char* identifier, const c
 	size_t		username_size = sizeof(username);
 	char		groupname[TT_USERNAME_CHAR_MAX+1] = {0};
 	size_t		groupname_size = sizeof(groupname);
-	char		perm[4] = {0};
+	char		perm[5] = {0};
 	size_t		perm_size = sizeof(perm);
 	const char*	conf_owner = NULL;
 	const char*	conf_group = NULL;

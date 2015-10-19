@@ -76,10 +76,10 @@ static void test_helpdesk(void **state) {
 	assert_true( library->api.auth.otp.challenge( "test", challenge, &challenge_size ) == TT_OK );
 	assert_int_equal( challenge_size, 20 );
 
-	assert_true( library->api.auth.otp.response( "test", "hxstyrzhpq65p89y9uwv", response, &response_size ) == TT_OK );
-	assert_string_equal( response, "fynraw6vcrgg229h86rx" );
+	assert_true( library->api.auth.otp.response( "test", "d68to5uz8fw9uuohdsro", response, &response_size ) == TT_OK );
+	assert_string_equal( response, "ntz88g5dtgmcf0oyccwq" );
 
-	assert_true( library->api.auth.otp.loadkey( "test", "hxstyrzhpq65p89y9uwv", "fynraw6vcrgg229h86rx", key, &key_size ) == TT_OK );
+	assert_true( library->api.auth.otp.loadkey( "test", "d68to5uz8fw9uuohdsro", "ntz88g5dtgmcf0oyccwq", key, &key_size ) == TT_OK );
 	assert_int_equal( key_size, 32 );
 	assert_true( memcmp( key, null, 32 ) == 0 );
 

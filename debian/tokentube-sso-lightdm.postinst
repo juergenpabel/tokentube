@@ -11,7 +11,7 @@ case "$1" in
 		FILES_ETC=`find /etc/lightdm/       -name "*.conf" -type f -printf "%f %p\n" | sort -g | cut -d' ' -f2`
 		GREETERS=`( for FILE in $FILES_USR $FILES_ETC; do cat "$FILE" ; done ) | grep "^greeter-session="`
 		GREETER=`echo "$GREETERS" | grep -v "tokentube-sso-lightdm-greeter" | tail -1 | sed -e 's/^greeter-session=//'`
-		echo 'include( "/boot/tokentube/pba/sso.conf" )' > /etc/tokentube/sso/greeter-lightdm.conf
+		echo 'include( "/boot/tokentube/pba/conf.d/sso.conf" )' > /etc/tokentube/sso/greeter-lightdm.conf
 		echo 'greeter {'				>> /etc/tokentube/sso/greeter-lightdm.conf
 		echo "    original-greeter = \"$GREETER\""	>> /etc/tokentube/sso/greeter-lightdm.conf
 		echo "}"					>> /etc/tokentube/sso/greeter-lightdm.conf

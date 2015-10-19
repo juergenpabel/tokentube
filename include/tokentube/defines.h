@@ -28,10 +28,10 @@
 #define TT_OTP_BITS_MIN         64
 #define TT_OTP_BITS_MAX         256
 
-#define TT_OTP_TEXT_MIN         (5+(TT_OTP_BITS_MIN/4)+(TT_OTP_BITS_MIN/16)-1)
-#define TT_OTP_TEXT_MAX         (5+(TT_OTP_BITS_MAX/4)+(TT_OTP_BITS_MAX/16)-1)
+#define TT_OTP_TEXT_MIN         (4+(TT_OTP_BITS_MIN/4))
+#define TT_OTP_TEXT_MAX         (4+(TT_OTP_BITS_MAX/4))
 
-#define TT_CONFIG_MAX		4096
+#define TT_CONFIG_MAX		4095
 
 #define TT_FILENAME__TOKENTUBE_CONF     "/etc/tokentube/tokentube.conf"
 #define TT_FILENAME__BOOT_CONF          "/etc/tokentube/boot.conf"
