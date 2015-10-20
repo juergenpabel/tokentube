@@ -126,6 +126,7 @@ int main (int argc, char *argv[]) {
 	char		username[TT_USERNAME_CHAR_MAX+1] = {0};
 	char		password[TT_PASSWORD_CHAR_MAX+1] = {0};
 	char		identifier[TT_IDENTIFIER_CHAR_MAX+1] = {0};
+	tt_status_t	status = TT_STATUS__UNDEFINED;
 	char*           filename = NULL;
 	cfg_t*		cfg = NULL;
 	int             pba_mode = 0;
@@ -274,35 +275,39 @@ int main (int argc, char *argv[]) {
 		if( g_library.api.storage.load( TT_FILE__CONFIG_PBA, filename, buffer, &buffer_size ) != TT_OK ) {
 			g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "API:storage.load() failed for '%s'", filename );
 		}
-		pba_mode = pba_plymouth_splash( buffer, pba_mode );
-		switch( pba_mode ) {
-			case PBA_PLAIN:
-				key_size = sizeof(key);
-				if( pba_plain( cfg, &g_library, identifier, key, &key_size ) != TT_OK ) {
-					g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "pba_plain() returned error in %s()", __FUNCTION__ );
+		do {
+			status = TT_STATUS__UNDEFINED;
+			switch( pba_plymouth_splash( buffer, pba_mode ) ) {
+				case PBA_PLAIN:
+					key_size = sizeof(key);
+					if( pba_plain( cfg, &g_library, identifier, key, &key_size, &status ) != TT_OK ) {
+						g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "pba_plain() returned error in %s()", __FUNCTION__ );
+						tt_finalize();
+						exit(-1);
+					}
+					break;
+				case PBA_USER:
+					key_size = sizeof(key);
+					if( pba_user( cfg, &g_library, identifier, key, &key_size, &status ) != TT_OK ) {
+						g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "pba_user() returned error in %s()", __FUNCTION__ );
+						tt_finalize();
+						exit(-1);
+					}
+					break;
+				case PBA_OTP:
+					key_size = sizeof(key);
+					if( pba_otp( cfg, &g_library, identifier, key, &key_size, &status ) != TT_OK ) {
+						g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "pba_otp() returned error in %s()", __FUNCTION__ );
+						tt_finalize();
+						exit(-1);
+					}
+					break;
+				default:
+					g_library.api.runtime.system.log( TT_LOG__WARN, "pba", "pba_plymouth_splash() returned TT_ERR" );
 					tt_finalize();
 					exit(-1);
-				}
-				break;
-			case PBA_USER:
-				key_size = sizeof(key);
-				if( pba_user( cfg, &g_library, identifier, key, &key_size ) != TT_OK ) {
-					g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "pba_user() returned error in %s()", __FUNCTION__ );
-					tt_finalize();
-					exit(-1);
-				}
-				break;
-			case PBA_OTP:
-				key_size = sizeof(key);
-				if( pba_otp( cfg, &g_library, identifier, key, &key_size ) != TT_OK ) {
-					g_library.api.runtime.system.log( TT_LOG__ERROR, "pba", "pba_otp() returned error in %s()", __FUNCTION__ );
-					tt_finalize();
-					exit(-1);
-				}
-				break;
-			default:
-				g_library.api.runtime.system.log( TT_LOG__WARN, "pba", "pba_plymouth_splash() returned TT_ERR" );
-		}
+			}
+		} while( status != TT_YES );
 	}
 
 	g_conf_sso_exec = cfg_getstr( cfg, "sso|executable" );

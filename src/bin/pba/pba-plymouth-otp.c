@@ -8,11 +8,13 @@
 #include <plymouth-1/ply/ply-logger.h>
 #include <plymouth-1/ply/ply-utils.h>
 #include <tokentube.h>
+#include "pba.h"
 
 
 typedef struct {
 	ply_event_loop_t*   loop;
 	ply_boot_client_t*  client;
+	tt_status_t*        status;
 
 	const char*         challenge;
 	char*               response;
@@ -49,7 +51,9 @@ static void on_response(void *user_data, const char *answer, ply_boot_client_t *
 	size_t   i, answer_size = 0;
 	int      result = TT_OK;
 
-	if( answer == NULL || answer[0] == ('\100'^'C') ) {
+	if( answer == NULL || answer[0] == '\0' ) {
+		*(state->status) = TT_NO;
+		ply_event_loop_exit( state->loop, TT_OK );
 		return;
 	}
 	answer_size = strnlen( answer, TT_OTP_TEXT_MAX );
@@ -68,13 +72,14 @@ static void on_response(void *user_data, const char *answer, ply_boot_client_t *
 		ply_boot_client_ask_daemon_question( client, state->challenge, on_response, on_failure, state );
 		return;
 	}
+	*(state->status) = TT_YES;
 	strncpy( state->response, answer, state->response_size-1 );
 	state->response_size = strnlen( state->response, state->response_size );
 	ply_event_loop_exit( state->loop, TT_OK );
 }
 
 
-int pba_plymouth_otp(const char* message, const char* challenge, char* response, size_t response_size) {
+int pba_plymouth_otp(const char* message, const char* challenge, char* response, size_t response_size, tt_status_t* status) {
 	char     buffer[TT_OTP_TEXT_MAX/4*5] = { 0 };
 	size_t   i, challenge_size;
 	state_t  state;
@@ -90,6 +95,7 @@ int pba_plymouth_otp(const char* message, const char* challenge, char* response,
 	}
 	buffer[challenge_size/4*5-1] = '\0';
 
+	state.status = status;
 	state.challenge = buffer;
 	state.response = buffer;
 	state.response_size = sizeof(buffer);
@@ -111,13 +117,15 @@ int pba_plymouth_otp(const char* message, const char* challenge, char* response,
 		ply_boot_client_tell_daemon_to_display_message( state.client, "", on_done, on_done, &state );
 		ply_event_loop_run( state.loop );
 	}
-	if( (state.response_size+1)/5*4 >= response_size ) {
-	}
-	for( i=0; i<(state.response_size+1)/5; i++) {
-		response[i*4+0] = state.response[i*5+0];
-		response[i*4+1] = state.response[i*5+1];
-		response[i*4+2] = state.response[i*5+2];
-		response[i*4+3] = state.response[i*5+3];
+	if( result == TT_OK && *status == TT_YES ) {
+		if( (state.response_size+1)/5*4 >= response_size ) {
+		}
+		for( i=0; i<(state.response_size+1)/5; i++) {
+			response[i*4+0] = state.response[i*5+0];
+			response[i*4+1] = state.response[i*5+1];
+			response[i*4+2] = state.response[i*5+2];
+			response[i*4+3] = state.response[i*5+3];
+		}
 	}
 	response[(state.response_size+1)/5*4-1] = '\0';
 	ply_boot_client_free( state.client );

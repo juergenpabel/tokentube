@@ -12,7 +12,7 @@
 int pba_user_loadkey(tt_library_t* library, const char* user, size_t user_size, const char* pass, size_t pass_size, const char* identifier, char* key, size_t* key_size);
 
 
-int pba_user(cfg_t* cfg, tt_library_t* library, const char* identifier, char* key, size_t* key_size) {
+int pba_user(cfg_t* cfg, tt_library_t* library, const char* identifier, char* key, size_t* key_size, tt_status_t* status) {
 	char            username[TT_USERNAME_CHAR_MAX+1] = {0};
 	size_t          username_size = sizeof(username);
 	char            password[TT_PASSWORD_CHAR_MAX+1] = {0};
@@ -24,27 +24,21 @@ int pba_user(cfg_t* cfg, tt_library_t* library, const char* identifier, char* ke
 	prompt_username = cfg_getstr( cfg, "user|prompt-username" );
 	prompt_password = cfg_getstr( cfg, "user|prompt-password" );
 	default_username = cfg_getstr( cfg, "user|default-username" );
-	if( default_username != NULL ) {
-		if( getenv( "CRYPTTAB_TRIED" ) != NULL && atoi( getenv( "CRYPTTAB_TRIED" ) ) == 0 ) {
-			strncpy( username, default_username, sizeof(username)-1 );
-		}
+	if( default_username != NULL && default_username[0] != '\0' ) {
+		strncpy( username, default_username, sizeof(username)-1 );
+		cfg_setstr( cfg, "user|default-username", NULL );
 	}
-	if( pba_plymouth_user( "message-user", "message-pass", prompt_username, prompt_password, username, &username_size, password, &password_size ) != TT_OK ) {
+	if( pba_plymouth_user( "message-user", "message-pass", prompt_username, prompt_password, username, &username_size, password, &password_size, status ) != TT_OK ) {
 		library->api.runtime.system.log( TT_LOG__ERROR, "pba", "pba_plymouth_user() returned TT_ERR" );
 		memset( password, '\0', password_size );
 		return TT_ERR;
 	}
-	if( username[0] != '\0' ) {
+	if( *status == TT_YES ) {
 		if( pba_user_loadkey( library, username, username_size, password, password_size, identifier, key, key_size ) != TT_OK ) {
 			library->api.runtime.system.log( TT_LOG__ERROR, "pba", "pba_user_loadkey() failed in %s()", __FUNCTION__ );
 			memset( password, '\0', password_size );
 			return TT_ERR;
 		}
-	}
-	if( username[0] == '\0' ) {
-		library->api.runtime.system.debug( TT_DEBUG__VERBOSITY1, "pba", "no username given, returning password in %s()", __FUNCTION__ );
-		strncpy( key, password, strnlen( password, *key_size ) );
-		*key_size = strnlen( key, *key_size );
 	}
 	memset( password, '\0', password_size );
 	return TT_OK;

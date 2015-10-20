@@ -41,31 +41,41 @@ static void on_key(void *user_data, const char* input, ply_boot_client_t *client
 	state_t*  state = (state_t*)user_data;
 	int       result = 0;
 
+	(void)client;
 	if( input == NULL ) {
 		ply_event_loop_exit( state->loop, TT_ERR );
+		return;
 	}
-	ply_boot_client_ask_daemon_to_watch_for_keystroke( client, NULL, on_key, on_fail, state );
-	if( state->pba_mode/PBA_PLAIN + state->pba_mode/PBA_USER + state->pba_mode/PBA_OTP > 1 ) {
-		if( input[0] == ' ' || input[0] == '\0' ) {
-			if( (state->pba_mode & PBA_USER) == 0 && (state->pba_mode & PBA_PLAIN) == PBA_PLAIN ) {
-				result = PBA_PLAIN;
-			}
-			if( (state->pba_mode & PBA_USER) == PBA_USER ) {
-				result = PBA_USER;
-			}
-		}
-		if( input[0] == '#' ) {
-			if( (state->pba_mode & PBA_OTP) == PBA_OTP ) {
-				result = PBA_OTP;
-			}
-		}
+//	ply_boot_client_ask_daemon_to_watch_for_keystroke( client, NULL, on_key, on_fail, state );
+	if( state->pba_mode/PBA_PLAIN + state->pba_mode/PBA_USER + state->pba_mode/PBA_OTP == 0 ) {
+		ply_event_loop_exit( state->loop, TT_ERR );
+		return;
 	}
-	if( state->pba_mode == PBA_PLAIN ) {
-		result = PBA_PLAIN;
-	}
-	if( result != 0 ) {
+	if( state->pba_mode/PBA_PLAIN + state->pba_mode/PBA_USER + state->pba_mode/PBA_OTP == 1 ) {
+		result = state->pba_mode;
 		ply_event_loop_exit( state->loop, result );
+		return;
 	}
+	if( state->pba_mode/PBA_PLAIN + state->pba_mode/PBA_USER + state->pba_mode/PBA_OTP > 1 ) {
+		switch( input[0] ) {
+			case '#':
+				if( (state->pba_mode & PBA_OTP) == PBA_OTP ) {
+					result = PBA_OTP;
+				}
+				break;
+			case '*':
+				if( (state->pba_mode & PBA_PLAIN) == PBA_PLAIN ) {
+					result = PBA_PLAIN;
+				}
+				break;
+			default:
+				result = PBA_USER;
+				if( (state->pba_mode & PBA_USER) == 0 && (state->pba_mode & PBA_PLAIN) == PBA_PLAIN ) {
+					result = PBA_PLAIN;
+				}
+		}
+	}
+	ply_event_loop_exit( state->loop, result );
 }
 
 

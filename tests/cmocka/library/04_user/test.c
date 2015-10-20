@@ -154,13 +154,13 @@ static void test_user_keys_success(void **state) {
 	/* positive tests */
 	assert_true( library->api.database.user.create( "user", "pass", &status ) == TT_OK );
 	assert_true( library->api.database.user.modify( "user", "pass", TT_MODIFY__USER_KEY_ADD, "test", &status ) == TT_OK );
+	assert_true( status == TT_NO );
+	assert_true( library->api.database.user.modify( "user", "pass", TT_MODIFY__USER_KEY_DEL, "test", &status ) == TT_OK );
 	assert_true( status == TT_YES );
+	assert_true( library->api.database.user.modify( "user", "pass", TT_MODIFY__USER_KEY_DEL, "test", &status ) == TT_OK );
+	assert_true( status == TT_NO );
 	assert_true( library->api.database.user.modify( "user", "pass", TT_MODIFY__USER_KEY_ADD, "test", &status ) == TT_OK );
-	assert_true( status == TT_NO );
-	assert_true( library->api.database.user.modify( "user", "pass", TT_MODIFY__USER_KEY_DEL, "test", &status ) == TT_OK );
 	assert_true( status == TT_YES );
-	assert_true( library->api.database.user.modify( "user", "pass", TT_MODIFY__USER_KEY_DEL, "test", &status ) == TT_OK );
-	assert_true( status == TT_NO );
 
 	assert_true( library->api.database.user.delete( "user", &status ) == TT_OK );
 	assert_true( status == TT_YES );
@@ -175,7 +175,7 @@ static void test_user_keys_failure(void **state) {
 
 	/* negative tests */
 	assert_true( library->api.database.user.create( "user", "pass", &status ) == TT_OK );
-	assert_true( library->api.database.user.modify( "user", "pass", TT_MODIFY__USER_KEY_DEL, "test", &status ) == TT_OK );
+	assert_true( library->api.database.user.modify( "user", "pass", TT_MODIFY__USER_KEY_ADD, "test", &status ) == TT_OK );
 	assert_true( status == TT_NO );
 	assert_true( library->api.database.user.modify( "user", "fail", TT_MODIFY__USER_KEY_ADD, "test", &status ) == TT_ERR );
 	assert_true( library->api.database.user.modify( "user", "pass", TT_MODIFY__USER_KEY_ADD, "fail", &status ) == TT_ERR );
