@@ -57,7 +57,7 @@ Description: Helpdesk plugin for TokenTube
 
 Package: tokentube-helpdesk
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${misc:Depends}
 Description: Helpdesk server for TokenTube
  TokenTube Helpdesk server for handling challenge-response (OTP) based authentication.
 
