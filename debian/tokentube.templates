@@ -1,0 +1,31 @@
+Template: tokentube/luks_password
+Type: password
+Description: Please enter a valid LUKS passphrase
+Description-de.UTF-8: Bitte geben Sie ein gültiges LUKS Passwort ein
+
+Template: tokentube/luks_recoverykey
+Type: boolean
+Default: true
+Description: Would you like to enable the recovery key?
+ If this is configured, then tokentube's LUKS key is stored in
+ the file /etc/tokentube/keys/luks.key (owned by root, mode 600).
+ .
+ Please enable this only, if your root filesystem is in fact
+ encrypted!
+Description-de.UTF-8: Möchten Sie einen Wiederherstellungsschlüssel erstellen?
+ Wenn diese Option aktiviert ist, wird der von TokenTube verwendete
+ LUKS Schlüssel in der Datei /etc/tokentube/keys/luks.key abgelegt.
+ .
+ Bitte aktivieren Sie diese Option nur, wenn das root-Dateisystem
+ tatsächlich verschlüsselt ist!
+
+Template: tokentube/initial_username
+Type: string
+Description: Please enter the username of the user you would like to enroll now.
+Description-de.UTF-8: Geben Sie bitte den Benutzernamen an, der jetzt freigeschaltet werden soll.
+
+Template: tokentube/initial_password
+Type: password
+Description: Please enter the current password of the previously given user.
+Description-de.UTF-8: Bitte geben Sie nun das aktuelle Passwort des angegebenen Benutzers an.
+
