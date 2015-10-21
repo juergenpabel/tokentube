@@ -37,7 +37,10 @@ static int default__impl__user_kv_serialize(const char* name, const dflt_user_ke
 
 
 static int default__impl__user_hmac_calc(const char* username, const char* password, dflt_user_t* user, char* hmac, size_t* hmac_size) {
-        char       buffer[DEFAULT__FILESIZE_MAX+1] =  {0};
+	size_t     username_size, password_size;
+	char       key[TT_KEY_BITS_MAX/8] =  {0};
+	size_t     key_size = sizeof(key);
+	char       buffer[DEFAULT__FILESIZE_MAX+1] =  {0};
 	size_t     buffer_size = 0;
 	size_t     buffer_pos = 0;
 	size_t     offset = 0;
@@ -80,7 +83,13 @@ static int default__impl__user_hmac_calc(const char* username, const char* passw
 			buffer_size = sizeof(buffer) - buffer_pos - 1;
 		}
 	}
-	if( libtokentube_crypto_hmac_impl( user->crypto.hash, buffer, buffer_pos, password, strlen(password), hmac, hmac_size ) != TT_OK ) {
+	username_size = strnlen(username,TT_USERNAME_CHAR_MAX);
+	password_size = strnlen(password,TT_PASSWORD_CHAR_MAX);
+	if( libtokentube_crypto_kdf_impl( user->crypto.kdf, user->crypto.kdf_iter, user->crypto.hash, username, username_size, password, password_size, key, &key_size ) != TT_OK ) {
+		TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_kdf_impl() failed in %s()", __FUNCTION__ );
+		return TT_ERR;
+	}
+	if( libtokentube_crypto_hmac_impl( user->crypto.hash, buffer, buffer_pos, key, key_size, hmac, hmac_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "libtokentube_crypto_hmac_impl() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}

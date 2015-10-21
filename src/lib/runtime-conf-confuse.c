@@ -119,7 +119,7 @@ int libtokentube_runtime_conf__serialize(cfg_t* cfg, char* buffer, size_t* buffe
 	setbuffer( fp, buffer, *buffer_size );
 	cfg_print( cfg, fp );
 	fclose( fp );
-	*buffer_size = strlen( buffer );
+	*buffer_size = strnlen( buffer, *buffer_size );
 	return TT_OK;
 }
 

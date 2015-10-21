@@ -12,6 +12,7 @@ int  default__impl__user_key_crypt_impl(tt_cryptmode_t mode, const char* usernam
 	size_t  key_size = sizeof(key);
 	char    iv[TT_CIPHER_BITS_MAX/8] = {0};
 	size_t  iv_size = sizeof(iv);
+	size_t  username_size, password_size;
 
 	TT_TRACE( "plugin/default", "%s(username='%s',password='%s',user=%p,key_offset=%d)", __FUNCTION__, username, password, user, key_offset );
 	if( username == NULL || username[0] == '\0' || password == NULL || password[0] == '\0' || user == NULL ) {
@@ -35,13 +36,15 @@ int  default__impl__user_key_crypt_impl(tt_cryptmode_t mode, const char* usernam
 		TT_LOG_ERROR( "library/crypto", "gcry_cipher_algo_info() return iv size too big for '%s' in %s()", user->crypto.cipher, __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( libtokentube_crypto_kdf_impl( user->crypto.kdf, user->crypto.kdf_iter, user->crypto.hash, username, strlen(username), password, strlen(password), key, &key_size ) != TT_OK ) {
+	username_size = strnlen(username,TT_USERNAME_CHAR_MAX);
+	password_size = strnlen(password,TT_PASSWORD_CHAR_MAX);
+	if( libtokentube_crypto_kdf_impl( user->crypto.kdf, user->crypto.kdf_iter, user->crypto.hash, username, username_size, password, password_size, key, &key_size ) != TT_OK ) {
 		TT_LOG_ERROR( "library/crypto", "libtokentube_crypto_kdf_impl() failed in %s()", __FUNCTION__ );
 		memset( key, '\0', sizeof(key) );
 		memset( iv, '\0', sizeof(iv) );
 		return TT_ERR;
 	}
-	if( libtokentube_crypto_kdf_impl( user->crypto.kdf, user->crypto.kdf_iter, user->crypto.hash, password, strlen(password), username, strlen(username), iv, &iv_size ) != TT_OK ) {
+	if( libtokentube_crypto_kdf_impl( user->crypto.kdf, user->crypto.kdf_iter, user->crypto.hash, password, password_size, username, username_size, iv, &iv_size ) != TT_OK ) {
 		TT_LOG_ERROR( "library/crypto", "libtokentube_crypto_kdf_impl() failed in %s()", __FUNCTION__ );
 		memset( key, '\0', sizeof(key) );
 		memset( iv, '\0', sizeof(iv) );

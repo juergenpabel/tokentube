@@ -195,7 +195,7 @@ int main (int argc, char *argv[]) {
 	}
 	if( fallback[0] == '\0' ) {
 		if( readlink( "/proc/self/exe", fallback, sizeof(fallback)-1 ) > 0 ) {
-			strncat( fallback, ".fallback", sizeof(fallback)-strlen( fallback )-1 );
+			strncat( fallback, ".fallback", sizeof(fallback)-strnlen( fallback, sizeof(fallback) )-1 );
 			if( access( fallback, X_OK ) < 0 ) {
 				fallback[0] = '\0';
 			}
