@@ -30,6 +30,7 @@ static cfg_opt_t opt_uhd[] = {
 };
 
 
+__attribute__ ((visibility ("hidden")))
 int  default__impl__uhd_storage_load(const char* identifier, dflt_uhd_t* uhd) {
 	char    buffer[DEFAULT__FILESIZE_MAX+1] = {0};
 	size_t  buffer_size = sizeof(buffer);
@@ -84,6 +85,7 @@ int  default__impl__uhd_storage_load(const char* identifier, dflt_uhd_t* uhd) {
 }
 
 
+__attribute__ ((visibility ("hidden")))
 int  default__impl__uhd_storage_save(const char* identifier, const dflt_uhd_t* uhd) {
 	char    buffer[DEFAULT__FILESIZE_MAX+1] = {0};
 	size_t  buffer_size = sizeof(buffer);
@@ -130,6 +132,7 @@ int  default__impl__uhd_storage_save(const char* identifier, const dflt_uhd_t* u
 }
 
 
+__attribute__ ((visibility ("hidden")))
 int  default__impl__uhd_storage_exists(const char* identifier, tt_status_t* status) {
 	TT_TRACE( "plugin/default", "%s(identifier='%s',status=%p)", __FUNCTION__, identifier, status );
 	if( identifier == NULL || identifier[0] == '\0' || status == NULL ) {
@@ -140,6 +143,7 @@ int  default__impl__uhd_storage_exists(const char* identifier, tt_status_t* stat
 }
 
 
+__attribute__ ((visibility ("hidden")))
 int  default__impl__uhd_storage_delete(const char* identifier, tt_status_t* status) {
 	TT_TRACE( "plugin/default", "%s(identifier='%s',status=%p)", __FUNCTION__, identifier, status );
 	if( identifier == NULL || identifier[0] == '\0' || status == NULL ) {

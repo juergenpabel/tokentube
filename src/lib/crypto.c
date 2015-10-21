@@ -24,7 +24,7 @@ int  g_crypto_otp_bits = TT_UNINITIALIZED;
 __attribute__ ((visibility ("hidden")))
 int libtokentube_crypto_initialize() {
 	if( gcry_check_version( GCRYPT_VERSION ) == 0 ) {
-		TT_LOG_FATAL( "library/crypto", "initialization of libgcrypt failed" );
+		TT_LOG_FATAL( "library/crypto", "gcry_check_version() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	gcry_control( GCRYCTL_DISABLE_SECMEM, 0 );
@@ -38,17 +38,17 @@ int libtokentube_crypto_configure() {
 	size_t	size;
 
 	size = sizeof(g_crypto_cipher);
-	if( libtokentube_conf_read_str( "crypto|cipher", g_crypto_cipher, &size) != TT_OK ) {
+	if( libtokentube_conf_read_str( "crypto|cipher", g_crypto_cipher, &size ) != TT_OK ) {
 		TT_LOG_FATAL( "library/crypto", "error processing configuration value '%s'", "crypto|cipher" );
 		return TT_ERR;
 	}
 	size = sizeof(g_crypto_hash);
-	if( libtokentube_conf_read_str( "crypto|hash", g_crypto_hash, &size) != TT_OK ) {
+	if( libtokentube_conf_read_str( "crypto|hash", g_crypto_hash, &size ) != TT_OK ) {
 		TT_LOG_FATAL( "library/crypto", "error processing configuration value '%s'", "crypto|hash" );
 		return TT_ERR;
 	}
 	size = sizeof(g_crypto_kdf);
-	if( libtokentube_conf_read_str( "crypto|kdf", g_crypto_kdf, &size) != TT_OK ) {
+	if( libtokentube_conf_read_str( "crypto|kdf", g_crypto_kdf, &size ) != TT_OK ) {
 		TT_LOG_FATAL( "library/crypto", "error processing configuration value '%s'", "crypto|kdf" );
 		return TT_ERR;
 	}
@@ -68,16 +68,20 @@ int libtokentube_crypto_configure() {
 	TT_DEBUG1( "library/crypto", "otp|bits='%d'", g_crypto_otp_bits );
 
 	if( gcry_cipher_map_name( libtokentube_crypto_get_cipher() ) <= 0 ) {
-		TT_LOG_WARN( "library/crypto", "unsupported algorithm '%s' configured in crypto|cipher", g_crypto_cipher );
+		TT_LOG_FATAL( "library/crypto", "unsupported algorithm '%s' configured in crypto|cipher", g_crypto_cipher );
+		return TT_ERR;
 	}
 	if( gcry_md_map_name( libtokentube_crypto_get_hash() ) <= 0 ) {
-		TT_LOG_WARN( "library/crypto", "unsupported algorithm '%s' configured in crypto|hash", g_crypto_hash );
+		TT_LOG_FATAL( "library/crypto", "unsupported algorithm '%s' configured in crypto|hash", g_crypto_hash );
+		return TT_ERR;
 	}
 	if( strncasecmp( g_crypto_kdf, "pbkdf2", 7 ) != 0 && strncasecmp( g_crypto_kdf, "scrypt", 7 ) != 0 ) {
-		TT_LOG_WARN( "library/crypto", "unsupported algorithm '%s' configured in crypto|kdf", g_crypto_kdf );
+		TT_LOG_FATAL( "library/crypto", "unsupported algorithm '%s' configured in crypto|kdf", g_crypto_kdf );
+		return TT_ERR;
 	}
 	if( g_crypto_kdf_iter == TT_UNINITIALIZED ) {
-		TT_LOG_WARN( "library/crypto", "unconfigured setting 'crypto|kdf-iterations'" );
+		TT_LOG_FATAL( "library/crypto", "unconfigured setting 'crypto|kdf-iterations'" );
+		return TT_ERR;
 	}
 	if( g_crypto_otp_bits == TT_UNINITIALIZED ) {
 		TT_LOG_WARN( "library/crypto", "unconfigured setting 'otp|bits'" );
