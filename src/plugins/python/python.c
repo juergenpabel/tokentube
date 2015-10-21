@@ -38,11 +38,11 @@ int python__exec_script(cfg_t* cfg, const char* action, const char* type, const 
 	g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY3, "plugin/python", "successfully opened script file '%s' in %s()", script, __FUNCTION__ );
 	
 	state = PyThreadState_Swap( g_python );
-	size = strlen( script );
+	size = strnlen( script, FILENAME_MAX );
 	argv[0] = _Py_char2wchar( script, &size );
-	size = strlen( type );
+	size = strnlen( type, TT_IDENTIFIER_CHAR_MAX );
 	argv[1] = _Py_char2wchar( type, &size );
-	size = strlen( identifier );
+	size = strnlen( identifier, TT_IDENTIFIER_CHAR_MAX );
 	argv[2] = _Py_char2wchar( identifier, &size );
 	PySys_SetArgv( 3, argv );
 	dict = PyModule_GetDict( PyImport_ImportModule("__main__") );

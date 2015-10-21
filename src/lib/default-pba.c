@@ -26,7 +26,7 @@ int default__api__pba_install_pre(const char* type, const char* path) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( strncasecmp( TT_PBA__INITRD, type, strlen(TT_PBA__INITRD) ) != 0 && strncasecmp( TT_PBA__INITRAMFS, type, strlen(TT_PBA__INITRAMFS) ) != 0 ) {
+	if( strncasecmp( TT_PBA__INITRD, type, sizeof(TT_PBA__INITRD) ) != 0 && strncasecmp( TT_PBA__INITRAMFS, type, sizeof(TT_PBA__INITRAMFS) ) != 0 ) {
 		TT_LOG_ERROR( "plugin/default", "unsupported PBA-type in %s()", __FUNCTION__ );
 		return TT_OK;
 	}
@@ -91,7 +91,7 @@ int default__api__pba_install_run(const char* type, const char* path) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( strncasecmp( TT_PBA__INITRD, type, strlen(TT_PBA__INITRD) ) != 0 && strncasecmp( TT_PBA__INITRAMFS, type, strlen(TT_PBA__INITRAMFS) ) != 0 ) {
+	if( strncasecmp( TT_PBA__INITRD, type, sizeof(TT_PBA__INITRD) ) != 0 && strncasecmp( TT_PBA__INITRAMFS, type, sizeof(TT_PBA__INITRAMFS) ) != 0 ) {
 		TT_LOG_INFO( "plugin/default", "unsupported PBA-type in %s()", __FUNCTION__ );
 		return TT_IGN;
 	}
@@ -170,7 +170,7 @@ int default__api__pba_install_post(const char* type, const char* path) {
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	if( strncasecmp( TT_PBA__INITRD, type, strlen(TT_PBA__INITRD) ) != 0 && strncasecmp( TT_PBA__INITRAMFS, type, strlen(TT_PBA__INITRAMFS) ) != 0 ) {
+	if( strncasecmp( TT_PBA__INITRD, type, sizeof(TT_PBA__INITRD) ) != 0 && strncasecmp( TT_PBA__INITRAMFS, type, sizeof(TT_PBA__INITRAMFS) ) != 0 ) {
 		TT_LOG_INFO( "plugin/default", "unsupported PBA-type in %s()", __FUNCTION__ );
 		return TT_IGN;
 	}
