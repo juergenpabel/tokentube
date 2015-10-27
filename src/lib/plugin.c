@@ -96,7 +96,6 @@ int libtokentube_plugin__configure() {
 			return TT_ERR;
 		}
 		if( tt_discover( &g_modules[i]->plugin->library ) != TT_OK ) {
-//TODO: config option to ignore failures
 			TT_LOG_FATAL( "library/plugin", "plugin '%s' is not compatible, unloading", plugin );
 			TT_DEBUG_SRC( "library/plugin", "tt_client_register() failed during tt_discover()" );
 			if( g_modules[i]->plugin->meta.finalize != NULL ) {

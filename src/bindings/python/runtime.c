@@ -14,7 +14,7 @@ PyObject* py_tt_runtime_log(PyObject* self __attribute__((unused)), PyObject *ar
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "dss", &py_level, &py_source, &py_message ) ) { //TODO:dss
+	if( !PyArg_ParseTuple( args, "iss", &py_level, &py_source, &py_message ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
@@ -36,7 +36,7 @@ PyObject* py_tt_runtime_debug(PyObject* self __attribute__((unused)), PyObject *
 		PyErr_SetString(PyExc_TypeError, "libtokentube uninitialized, call tokentube.initialize() first" );
 		return NULL;
 	}
-	if( !PyArg_ParseTuple( args, "dss", &py_level, &py_source, &py_message ) ) { //TODO:dss
+	if( !PyArg_ParseTuple( args, "iss", &py_level, &py_source, &py_message ) ) {
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
