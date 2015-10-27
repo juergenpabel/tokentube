@@ -166,7 +166,7 @@ int default__api__auth_user_autoenrollment(const char* username, const char* pas
 	}
 	if( *status == TT_STATUS__YES ) {
 		if( libtokentube_plugin__user_create( username, password, status ) != TT_OK ) {
-			TT_LOG_ERROR( "plugin/default", "API:user.create failed in %s()", __FUNCTION__ );
+			TT_LOG_ERROR( "plugin/default", "user.create failed in %s()", __FUNCTION__ );
 			return TT_ERR;
 		}
 	}
@@ -205,7 +205,7 @@ int default__api__auth_otp_challenge( const char* identifier, char* challenge, s
 		data[2+i] = random() & 0xff;
 	}
 	if( libtokentube_util_base32_encode( data, 2+otp.bits/8, challenge, challenge_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "API:base32_encode() failed for identifier '%s' in %s()", identifier,  __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "base32_encode() failed for identifier '%s' in %s()", identifier,  __FUNCTION__ );
 		return TT_ERR;
 	}
 	return TT_OK;
@@ -230,7 +230,7 @@ int default__api__auth_otp_response(const char* identifier, const char* challeng
 		return TT_ERR;
 	}
 	if( default__impl__uhd_storage_load( identifier, &uhd ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "API:storage_load() failed for identifier='%s' in %s()", identifier, __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "storage_load() failed for identifier='%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
 	memcpy( data, uhd.key_data, uhd.key_data_size );
@@ -275,18 +275,18 @@ int default__api__auth_otp_response(const char* identifier, const char* challeng
 		data[i-1] = uhd.key_data[i-1] ^ data[(i-1)%(uhd.otp_bits/8)];
 	}
 	if( libtokentube_util_crc16( data, uhd.otp_bits/8, &crc ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "API:crc16() failed in %s()", __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "crc16() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	response_raw[0] = (crc>>8) & 0xff;
 	response_raw[1] = (crc>>0) & 0xff;
 	if( libtokentube_util_base32_encode(response_raw, 2+uhd.otp_bits/8, response, response_size) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "API:base32_encode() failed in %s()", __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "base32_encode() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	uhd.otp_iter++;
 	if( default__impl__uhd_storage_save( identifier, &uhd ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "API:storage_save() failed for identifier='%s' in %s()", identifier, __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "storage_save() failed for identifier='%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
 	return TT_OK;
@@ -351,7 +351,7 @@ int default__api__auth_otp_loadkey(const char* identifier, const char* challenge
 	}
 
 	if( libtokentube_util_crc16( otp.data, otp.bits/8, &crc ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "API:crc16() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "crc16() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( (response_raw[0] & 0xff) != ((crc >> 8) & 0xff) || (response_raw[1] & 0xff) != ((crc >> 0) & 0xff) ) {

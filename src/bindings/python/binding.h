@@ -20,4 +20,6 @@ extern PyObject* py_tt_auth_otp_loadkey(PyObject* self, PyObject *args);
 
 
 extern PyObject* py_tt_runtime_install_pba(PyObject* self, PyObject *args);
+extern PyObject* py_tt_runtime_log(PyObject* self, PyObject *args);
+extern PyObject* py_tt_runtime_debug(PyObject* self, PyObject *args);
 

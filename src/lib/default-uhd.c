@@ -39,7 +39,7 @@ int default__api__uhd_create(const char* identifier, tt_status_t* status) {
 	}
 	sys_id_size = sizeof(uhd.sys_id);
 	if( libtokentube_runtime_get_sysid( uhd.sys_id, &sys_id_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "API:get_sysid() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "get_sysid() failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
 	uhd.key_data_size = sizeof(uhd.key_data);

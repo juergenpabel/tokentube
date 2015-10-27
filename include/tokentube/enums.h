@@ -13,6 +13,7 @@ typedef enum {
 
 typedef enum {
 	TT_DEBUG__UNDEFINED = 0,
+	TT_DEBUG__VERBOSITY0 = 0,
 	TT_DEBUG__VERBOSITY1 = 1,
 	TT_DEBUG__VERBOSITY2 = 2,
 	TT_DEBUG__VERBOSITY3 = 3,
@@ -41,7 +42,8 @@ typedef enum {
 typedef enum {
 	TT_RUNTIME__UNDEFINED = 0,
 	TT_RUNTIME__PBA = 1,
-	TT_RUNTIME__STANDARD = 2
+	TT_RUNTIME__STANDARD = 2,
+	TT_RUNTIME__INVALID = 3
 } tt_runtime_t;
 
 
@@ -52,7 +54,8 @@ typedef enum {
 	TT_FILE__KEY = 3,
 	TT_FILE__USER = 4,
 	TT_FILE__OTP = 5,
-	TT_FILE__UHD = 6
+	TT_FILE__UHD = 6,
+	TT_FILE__INVALID = 7
 } tt_file_t;
 
 
@@ -68,7 +71,8 @@ typedef enum {
 	TT_EVENT__UHD_MODIFIED = 8,
 	TT_EVENT__UHD_DELETED = 9,
 	TT_EVENT__AUTH_USER = 10,
-	TT_EVENT__AUTH_OTP = 11
+	TT_EVENT__AUTH_OTP = 11,
+	TT_EVENT__INVALID = 12
 } tt_event_t;
 
 

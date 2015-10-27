@@ -52,6 +52,7 @@ static tt_state	g_state = TT_STATE_UNINITIALIZED;
 int tt_initialize(tt_version_t version) {
 	int result = TT_OK;
 
+	TT_TRACE( "library/core", "%s(%d.%d.%d)", __FUNCTION__, version.major, version.minor, version.patch );
 	if( g_state == TT_STATE_INITIALIZED ) {
 		return TT_OK;
 	}
@@ -75,40 +76,40 @@ int tt_initialize(tt_version_t version) {
 		result = TT_ERR;
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "initializing module 'log'..." );
+		TT_DEBUG4( "library/core", "initializing module 'log'..." );
 		result = libtokentube_log_initialize();
-		TT_DEBUG2( "library/core", "...initialized module 'log'" );
+		TT_DEBUG4( "library/core", "...initialized module 'log'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "initializing module 'runtime'..." );
+		TT_DEBUG4( "library/core", "initializing module 'runtime'..." );
 		result = libtokentube_runtime_initialize();
-		TT_DEBUG2( "library/core", "...initialized module 'runtime'" );
+		TT_DEBUG4( "library/core", "...initialized module 'runtime'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "initializing module 'crypto'..." );
+		TT_DEBUG4( "library/core", "initializing module 'crypto'..." );
 		result = libtokentube_crypto_initialize();
-		TT_DEBUG2( "library/core", "...initialized module 'crypto'" );
+		TT_DEBUG4( "library/core", "...initialized module 'crypto'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "initializing module 'event'..." );
+		TT_DEBUG4( "library/core", "initializing module 'event'..." );
 		result = libtokentube_event_initialize();
-		TT_DEBUG2( "library/core", "...initialized module 'event'" );
+		TT_DEBUG4( "library/core", "...initialized module 'event'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "initializing module 'library'..." );
+		TT_DEBUG4( "library/core", "initializing module 'library'..." );
 		result = libtokentube_library_initialize();
-		TT_DEBUG2( "library/core", "...initialized module 'library'" );
+		TT_DEBUG4( "library/core", "...initialized module 'library'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "initializing module 'plugin'..." );
+		TT_DEBUG4( "library/core", "initializing module 'plugin'..." );
 		result = libtokentube_plugin__initialize();
-		TT_DEBUG2( "library/core", "...initialized module 'plugin'" );
+		TT_DEBUG4( "library/core", "...initialized module 'plugin'" );
 	}
 	if( result != TT_OK ) {
 		TT_LOG_FATAL( "library/core", "initialization failed, ABORTING" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "initialization completed" );
+		TT_DEBUG1( "library/core", "initialization completed" );
 		g_state = TT_STATE_INITIALIZED;
 	}
 	if( g_state == TT_STATE_UNDEFINED ) {
@@ -122,6 +123,7 @@ int tt_initialize(tt_version_t version) {
 int tt_configure(const char* filename) {
 	int	result = TT_ERR;
 
+	TT_TRACE( "library/core", "%s(%s)", __FUNCTION__, filename );
 	if( g_state == TT_STATE_CONFIGURED ) {
 		return TT_OK;
 	}
@@ -138,46 +140,46 @@ int tt_configure(const char* filename) {
 		return TT_IGN;
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "configuring module 'debug'..." );
+		TT_DEBUG4( "library/core", "configuring module 'debug'..." );
 		result = libtokentube_debug_configure();
-		TT_DEBUG2( "library/core", "...configured module 'debug'" );
+		TT_DEBUG4( "library/core", "...configured module 'debug'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "configuring module 'log'..." );
+		TT_DEBUG4( "library/core", "configuring module 'log'..." );
 		result = libtokentube_log_configure();
-		TT_DEBUG2( "library/core", "...configured module 'log'" );
+		TT_DEBUG4( "library/core", "...configured module 'log'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "configuring module 'runtime'..." );
+		TT_DEBUG4( "library/core", "configuring module 'runtime'..." );
 		result = libtokentube_runtime_configure();
-		TT_DEBUG2( "library/core", "...configured module 'runtime'" );
+		TT_DEBUG4( "library/core", "...configured module 'runtime'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "configuring module 'crypto'..." );
+		TT_DEBUG4( "library/core", "configuring module 'crypto'..." );
 		result = libtokentube_crypto_configure();
-		TT_DEBUG2( "library/core", "...configured module 'crypto'" );
+		TT_DEBUG4( "library/core", "...configured module 'crypto'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "configuring module 'event'..." );
+		TT_DEBUG4( "library/core", "configuring module 'event'..." );
 		result = libtokentube_event_configure();
-		TT_DEBUG2( "library/core", "...configured module 'event'" );
+		TT_DEBUG4( "library/core", "...configured module 'event'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "configuring module 'library'..." );
+		TT_DEBUG4( "library/core", "configuring module 'library'..." );
 		result = libtokentube_library_configure();
-		TT_DEBUG2( "library/core", "...configured module 'library'" );
+		TT_DEBUG4( "library/core", "...configured module 'library'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "configuring module 'plugin'..." );
+		TT_DEBUG4( "library/core", "configuring module 'plugin'..." );
 		result = libtokentube_plugin__configure();
-		TT_DEBUG2( "library/core", "...configured module 'plugin'" );
+		TT_DEBUG4( "library/core", "...configured module 'plugin'" );
 	}
 	if( result != TT_OK ) {
 		TT_LOG_FATAL( "library/core", "configuration failed, ABORTING" );
 		g_state = TT_STATE_UNDEFINED;
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "configuration completed" );
+		TT_DEBUG1( "library/core", "configuration completed" );
 		g_state = TT_STATE_CONFIGURED;
 	}
 	return result;
@@ -187,6 +189,7 @@ int tt_configure(const char* filename) {
 int tt_finalize() {
 	int result = TT_OK;
 
+	TT_TRACE( "library/core", "%s()", __FUNCTION__ );
 	if( g_state == TT_STATE_UNINITIALIZED ) {
 		return TT_IGN;
 	}
@@ -197,36 +200,37 @@ int tt_finalize() {
 	}
 	g_state = TT_STATE_UNDEFINED;
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "finalizing module 'plugin'..." );
+		TT_DEBUG4( "library/core", "finalizing module 'plugin'..." );
 		result = libtokentube_plugin__finalize();
-		TT_DEBUG2( "library/core", "...finalized module 'plugin'" );
+		TT_DEBUG4( "library/core", "...finalized module 'plugin'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "finalizing module 'library'..." );
+		TT_DEBUG4( "library/core", "finalizing module 'library'..." );
 		result = libtokentube_library_finalize();
-		TT_DEBUG2( "library/core", "...finalized module 'library'" );
+		TT_DEBUG4( "library/core", "...finalized module 'library'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "finalizing module 'event'..." );
+		TT_DEBUG4( "library/core", "finalizing module 'event'..." );
 		result = libtokentube_event_finalize();
-		TT_DEBUG2( "library/core", "...finalized module 'event'" );
+		TT_DEBUG4( "library/core", "...finalized module 'event'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "finalizing module 'crypto'..." );
+		TT_DEBUG4( "library/core", "finalizing module 'crypto'..." );
 		result = libtokentube_crypto_finalize();
-		TT_DEBUG2( "library/core", "...finalized module 'crypto'" );
+		TT_DEBUG4( "library/core", "...finalized module 'crypto'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "finalizing module 'conf'..." );
+		TT_DEBUG4( "library/core", "finalizing module 'conf'..." );
 		result = libtokentube_conf_finalize();
-		TT_DEBUG2( "library/core", "...finalized module 'conf'" );
+		TT_DEBUG4( "library/core", "...finalized module 'conf'" );
 	}
 	if( result == TT_OK ) {
-		TT_DEBUG2( "library/core", "finalizing module 'log'..." );
+		TT_DEBUG4( "library/core", "finalizing module 'log'..." );
 		result = libtokentube_log_finalize();
-		TT_DEBUG2( "library/core", "...finalized module 'log'" );
+		TT_DEBUG4( "library/core", "...finalized module 'log'" );
 	}
 	if( result == TT_OK ) {
+		TT_DEBUG1( "library/core", "finalization completed" );
 		result = libtokentube_debug_finalize();
 		g_state = TT_STATE_UNINITIALIZED;
 	}
@@ -235,7 +239,8 @@ int tt_finalize() {
 
 
 __attribute__ ((visibility ("hidden")))
-int tt_reset() {
+int  libtokentube_reset() {
+	TT_TRACE( "library/core", "%s()", __FUNCTION__ );
 	g_state = TT_STATE_UNINITIALIZED;
 	return TT_OK;
 }

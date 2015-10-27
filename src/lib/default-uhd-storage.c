@@ -42,7 +42,7 @@ int  default__impl__uhd_storage_load(const char* identifier, dflt_uhd_t* uhd) {
 		return TT_ERR;
 	}
 	if( libtokentube_plugin__storage_load( TT_FILE__UHD, identifier, buffer, &buffer_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "API:storage_load failed in %s()", __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "storage.load() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
 	cfg = cfg_init( opt_uhd, CFGF_NONE );
@@ -63,7 +63,7 @@ int  default__impl__uhd_storage_load(const char* identifier, dflt_uhd_t* uhd) {
 	uhd->otp_iter = cfg_getint( cfg, "uhd|otp-iter" );
 	cfg_free( cfg );
 	if( strncmp( uhd->key_id, identifier, TT_IDENTIFIER_CHAR_MAX ) != 0 ) {
-		TT_LOG_ERROR( "plugin/default", "API:storage_load() for identifier '%s' returned non-matching record in %s()", identifier, __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "storage.load() for identifier '%s' returned non-matching record in %s()", identifier, __FUNCTION__ );
 		return TT_ERR;
 	}
 	if( uhd->otp_hash[0] == '\0' || uhd->otp_iter == 0 || uhd->otp_bits == 0 || uhd->key_data[0] == '\0' ) {
@@ -110,7 +110,7 @@ int  default__impl__uhd_storage_save(const char* identifier, const dflt_uhd_t* u
 	cfg_setint( cfg, "uhd|otp-bits", (int)uhd->otp_bits );
 	memset( buffer,'\0', sizeof(buffer) );
 	if( libtokentube_util_base64_encode( uhd->key_data, uhd->key_data_size, buffer, &buffer_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "API:base64_encode failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "base64_encode failed for identifier '%s' in %s()", identifier, __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;
 	}
@@ -123,7 +123,7 @@ int  default__impl__uhd_storage_save(const char* identifier, const dflt_uhd_t* u
 		return TT_ERR;
 	}
 	if( libtokentube_plugin__storage_save( TT_FILE__UHD, identifier, buffer, buffer_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "API:storage_save failed in %s()", __FUNCTION__ );
+		TT_LOG_ERROR( "plugin/default", "storage.save() failed in %s()", __FUNCTION__ );
 		cfg_free( cfg );
 		return TT_ERR;
 	}

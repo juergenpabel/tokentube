@@ -17,7 +17,7 @@ int libtokentube_runtime_initialize() {
 	g_bootdevice = getenv( "TT_RUNTIME_BOOTDEVICE" );
 	if( g_bootdevice != NULL ) {
 		g_bootdevice = strndup( g_bootdevice, FILENAME_MAX+1 );
-		TT_DEBUG1( "library/runtime", "setting bootdevice='%s' (as specified by TT_RUNTIME_BOOTDEVICE)", g_bootdevice );
+		TT_DEBUG2( "library/runtime", "setting bootdevice='%s' (as specified by TT_RUNTIME_BOOTDEVICE)", g_bootdevice );
 	}
 	return TT_OK;
 }
@@ -48,7 +48,7 @@ int libtokentube_runtime_get_sysid(char* sysid, size_t* sysid_size) {
 __attribute__ ((visibility ("hidden")))
 int libtokentube_runtime_get_bootdevice(char* result, size_t result_len) {
 	if( g_bootdevice != NULL ) {
-		TT_DEBUG2( "library/runtime", "returning bootdevice='%s' in %s()", g_bootdevice, __FUNCTION__ );
+		TT_DEBUG5( "library/runtime", "returning bootdevice='%s' in %s()", g_bootdevice, __FUNCTION__ );
 		strncpy( result, g_bootdevice, result_len-1 );
 		return TT_OK;
 	}
@@ -59,7 +59,7 @@ int libtokentube_runtime_get_bootdevice(char* result, size_t result_len) {
 __attribute__ ((visibility ("hidden")))
 int libtokentube_runtime_get_type(tt_runtime_t* runtime) {
 	if( g_bootdevice != NULL ) {
-		TT_DEBUG2( "library/runtime", "returning TT_RUNTIME__PBA because of configured bootdevice in %s()", __FUNCTION__ );
+		TT_DEBUG5( "library/runtime", "returning TT_RUNTIME__PBA because of configured bootdevice in %s()", __FUNCTION__ );
 		*runtime = TT_RUNTIME__PBA;
 		return TT_OK;
 	}
@@ -72,7 +72,7 @@ int libtokentube_runtime_is_pba(tt_status_t* status) {
 	tt_runtime_t runtime = TT_RUNTIME__UNDEFINED;
 
 	if( g_bootdevice != NULL ) {
-		TT_DEBUG2( "library/runtime", "returning TT_YES because of configured bootdevice in %s()", __FUNCTION__ );
+		TT_DEBUG5( "library/runtime", "returning TT_YES because of configured bootdevice in %s()", __FUNCTION__ );
 		*status = TT_YES;
 		return TT_OK;
 	}
@@ -83,11 +83,11 @@ int libtokentube_runtime_is_pba(tt_status_t* status) {
 	}
 	switch( runtime ) {
 		case TT_RUNTIME__PBA:
-			TT_DEBUG2( "library/runtime", "returning TT_YES in %s()", __FUNCTION__ );
+			TT_DEBUG5( "library/runtime", "returning TT_YES in %s()", __FUNCTION__ );
 			*status = TT_YES;
 			break;
 		default:
-			TT_DEBUG2( "library/runtime", "returning TT_NO in %s()", __FUNCTION__ );
+			TT_DEBUG5( "library/runtime", "returning TT_NO in %s()", __FUNCTION__ );
 			*status = TT_NO;
 	}
 	return TT_OK;
@@ -99,7 +99,7 @@ int libtokentube_runtime_is_standard(tt_status_t* status) {
 	tt_runtime_t runtime = TT_RUNTIME__UNDEFINED;
 
 	if( g_bootdevice != NULL ) {
-		TT_DEBUG2( "library/runtime", "returning TT_NO because of configured bootdevice in %s()", __FUNCTION__ );
+		TT_DEBUG5( "library/runtime", "returning TT_NO because of configured bootdevice in %s()", __FUNCTION__ );
 		*status = TT_NO;
 		return TT_OK;
 	}
@@ -110,11 +110,11 @@ int libtokentube_runtime_is_standard(tt_status_t* status) {
 	}
 	switch( runtime ) {
 		case TT_RUNTIME__STANDARD:
-			TT_DEBUG2( "library/runtime", "returning TT_YES in %s()", __FUNCTION__ );
+			TT_DEBUG5( "library/runtime", "returning TT_YES in %s()", __FUNCTION__ );
 			*status = TT_YES;
 			break;
 		default:
-			TT_DEBUG2( "library/runtime", "returning TT_NO in %s()", __FUNCTION__ );
+			TT_DEBUG5( "library/runtime", "returning TT_NO in %s()", __FUNCTION__ );
 			*status = TT_NO;
 	}
 	return TT_OK;

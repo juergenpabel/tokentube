@@ -15,6 +15,7 @@ static char*	g_configuration_filename = NULL;
 
 static cfg_opt_t opt_tokentube_runtime_debug[] = {
 	CFG_INT("level", 0, CFGF_NONE),
+	CFG_STR("source", "", CFGF_NONE),
 	CFG_END()
 };
 
@@ -116,7 +117,8 @@ int libtokentube_conf_configure(const char* filename) {
 	}
 	g_configuration_filename = strndup( filename, FILENAME_MAX+1 );
 	if( libtokentube_plugin__storage_load( TT_FILE__CONFIG_STANDARD, g_configuration_filename, buffer, &buffer_size ) != TT_OK ) {
-		TT_LOG_FATAL( "library/runtime", "could not load configuration file '%s'", g_configuration_filename );
+		TT_LOG_FATAL( "library/runtime", "failed to load configuration file '%s'", g_configuration_filename );
+		TT_DEBUG_SRC( "library/runtime", "libtokentube_plugin__storage_load() failed" );
 		free( g_configuration_filename );
 		g_configuration_filename = NULL;
 		return TT_IGN;
@@ -126,6 +128,7 @@ int libtokentube_conf_configure(const char* filename) {
 	err = cfg_parse_buf( g_configuration, buffer );
 	if( err != 0 ) {
 		TT_LOG_FATAL( "library/runtime", "syntax error in configuration file '%s'", g_configuration_filename );
+		TT_DEBUG_SRC( "library/runtime", "cfg_parse_buf() failed" );
 		return TT_ERR;
 	}
 	return TT_OK;
@@ -353,7 +356,7 @@ int libtokentube_conf_read_plugin_filter_api(const char* plugin, size_t index, c
 	}
 	section = cfg_getsec( section, "disable" );
 	if(section == NULL) {
-		TT_DEBUG2( "library/runtime", "section 'plugins|plugin|disable' not configured in '%s'", g_configuration_filename );
+		TT_DEBUG5( "library/runtime", "section 'plugins|plugin|disable' not configured in '%s'", g_configuration_filename );
 		*value_size = 0;
 		return TT_OK;
 	}
@@ -367,7 +370,7 @@ int libtokentube_conf_read_plugin_filter_api(const char* plugin, size_t index, c
 	}
 	data = cfg_getnstr( section, "api", index );
 	if( data == NULL ) {
-		TT_DEBUG2( "library/runtime", "section 'plugins|plugin|disable|api' not configured in '%s'", g_configuration_filename );
+		TT_DEBUG5( "library/runtime", "section 'plugins|plugin|disable|api' not configured in '%s'", g_configuration_filename );
 		*value_size = 0;
 		return TT_OK;
 	}
@@ -403,7 +406,7 @@ int libtokentube_conf_read_plugin_filter_event(const char* plugin, size_t index,
 	}
 	section = cfg_getsec( section, "disable" );
 	if(section == NULL) {
-		TT_DEBUG2( "library/runtime", "section 'plugins|plugin|disable' not configured in '%s'", g_configuration_filename );
+		TT_DEBUG5( "library/runtime", "section 'plugins|plugin|disable' not configured in '%s'", g_configuration_filename );
 		*value_size = 0;
 		return TT_OK;
 	}
@@ -417,7 +420,7 @@ int libtokentube_conf_read_plugin_filter_event(const char* plugin, size_t index,
 	}
 	data = cfg_getnstr( section, "event", index );
 	if( data == NULL ) {
-		TT_DEBUG2( "library/runtime", "section 'plugins|plugin|disable|event' not configured in '%s'", g_configuration_filename );
+		TT_DEBUG5( "library/runtime", "section 'plugins|plugin|disable|event' not configured in '%s'", g_configuration_filename );
 		*value_size = 0;
 		return TT_OK;
 	}

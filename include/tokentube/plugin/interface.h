@@ -3,13 +3,6 @@
 
 
 typedef struct {
-	/*[TT_OK|TT_ERR]*/ int (*get_sysid)(char* sysid, size_t* sysid_size);
-	/*[TT_OK|TT_ERR]*/ int (*get_type)(tt_runtime_t* type);
-	/*[TT_OK|TT_ERR]*/ int (*get_bootdevice)(char* bootdevice, size_t bootdevice_size);
-} tt_plugin_api_runtime_t;
-
-
-typedef struct {
 	/*[TT_OK|TT_ERR]*/ int (*install_pre)(const char* type, const char* data);
 	/*[TT_OK|TT_ERR]*/ int (*install_run)(const char* type, const char* data);
 	/*[TT_OK|TT_ERR]*/ int (*install_post)(const char* type, const char* data);
@@ -17,8 +10,20 @@ typedef struct {
 
 
 typedef struct {
-	tt_plugin_api_runtime_t    runtime;
+	/*[TT_OK|TT_ERR]*/ int (*get_sysid)(char* sysid, size_t* sysid_size);
+	/*[TT_OK|TT_ERR]*/ int (*get_type)(tt_runtime_t* type);
+	/*[TT_OK|TT_ERR]*/ int (*get_bootdevice)(char* bootdevice, size_t bootdevice_size);
+} tt_plugin_api_system_t;
+
+
+typedef struct {
 	tt_plugin_api_pba_t        pba;
+	tt_plugin_api_system_t     system;
+} tt_plugin_api_runtime_t;
+
+
+typedef struct {
+	tt_plugin_api_runtime_t    runtime;
 	tt_library_api_storage_t   storage;
 	tt_library_api_database_t  database;
 	tt_library_api_auth_t      auth;

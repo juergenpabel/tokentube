@@ -55,6 +55,7 @@ def message(args, msg):
 def create(args):
 	if args.username is None:
 		args.username = get_username()
+	tokentube.debug( tokentube.TT_DEBUG__VERBOSITY1, "cli/user", "creating user '%s'" % args.username );
 	if tokentube.user_exists( args.username ) is True:
 		message( args, "FAILURE: user '%s' already exists" % args.username )
 		return -1
@@ -70,6 +71,7 @@ def create(args):
 def chpass(args):
 	if args.username is None:
 		args.username = get_username()
+	tokentube.debug( tokentube.TT_DEBUG__VERBOSITY1, "cli", "changing password for user '%s'" % args.username );
 	if tokentube.user_exists( args.username ) is False:
 		message( args, "FAILURE: user '%s' does not exist" % args.username )
 		return -1
@@ -87,6 +89,7 @@ def chpass(args):
 def exists(args):
 	if args.username is None:
 		args.username = get_username()
+	tokentube.debug( tokentube.TT_DEBUG__VERBOSITY1, "cli", "checking for existance of user '%s'" % args.username );
 	if tokentube.user_exists( args.username ) is False:
 		message( args, "WARNING: user '%s' does not exist" % args.username )
 		return -1
@@ -97,6 +100,7 @@ def exists(args):
 def delete(args):
 	if args.username is None:
 		args.username = get_username()
+	tokentube.debug( tokentube.TT_DEBUG__VERBOSITY1, "cli", "deleting user '%s'" % args.username );
 	if tokentube.user_exists( args.username ) is False:
 		message( args, "WARNING: user '%s' does not exist" % args.username )
 		return 0
@@ -117,6 +121,7 @@ def addkey(args):
 		args.password = get_password()
 	if args.identifier is None:
 		args.identifier = get_identifier()
+	tokentube.debug( tokentube.TT_DEBUG__VERBOSITY1, "cli", "adding key '%s' to user '%s'" % ( args.identifier, args.username ) );
 	if tokentube.user_key_add( args.username, args.password, args.identifier ) is False:
 		message( args, "WARNING: key '%s' not added to user '%s' (key was already present)" % ( args.identifier, args.username ) )
 		return 0
@@ -134,6 +139,7 @@ def delkey(args):
 		args.password = get_password()
 	if args.identifier is None:
 		args.identifier = get_identifier()
+	tokentube.debug( tokentube.TT_DEBUG__VERBOSITY1, "cli", "removing key '%s' from user '%s'" % ( args.identifier, args.username ) );
 	if tokentube.user_key_del( args.username, args.password, args.identifier ) is False:
 		message( args, "WARNING: key '%s' not deleted from user '%s' (key was not present)" % ( args.identifier, args.username ) )
 		return 0

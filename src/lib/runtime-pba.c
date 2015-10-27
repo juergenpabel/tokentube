@@ -17,7 +17,7 @@ int libtokentube_runtime_install_pba(const char* type, const char* data) {
 		return TT_ERR;
 	}
 
-	TT_DEBUG1( "library/pba", "installing pba... (type='%s', data='%s')", type, data );
+	TT_DEBUG5( "library/pba", "installing pba... (type='%s', data='%s')", type, data );
 	if( libtokentube_plugin__pba_install_pre( type, data ) != TT_OK ) {
 		TT_LOG_ERROR( "library/pba", "libtokentube_plugin__pba_install_pre() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
@@ -30,7 +30,7 @@ int libtokentube_runtime_install_pba(const char* type, const char* data) {
 		TT_LOG_ERROR( "library/pba", "libtokentube_plugin__pba_install_post() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	TT_DEBUG1( "library/pba", "...installing pba complete" );
+	TT_DEBUG5( "library/pba", "...installing pba complete" );
 	return TT_OK;
 }
 

@@ -19,12 +19,12 @@ int default__initialize(tt_plugin_t* plugin) {
 		TT_LOG_ERROR( "library/default", "internal error in %s at %d", __FUNCTION__, __LINE__ );
 		return TT_ERR;
 	}
-	plugin->interface.api.pba.install_pre	= default__api__pba_install_pre;
-	plugin->interface.api.pba.install_run = default__api__pba_install_run;
-	plugin->interface.api.pba.install_post 	= default__api__pba_install_post;
-	plugin->interface.api.runtime.get_sysid = default__api__runtime_get_sysid;
-	plugin->interface.api.runtime.get_type = default__api__runtime_get_type;
-	plugin->interface.api.runtime.get_bootdevice = default__api__runtime_get_bootdevice;
+	plugin->interface.api.runtime.pba.install_pre	= default__api__pba_install_pre;
+	plugin->interface.api.runtime.pba.install_run = default__api__pba_install_run;
+	plugin->interface.api.runtime.pba.install_post 	= default__api__pba_install_post;
+	plugin->interface.api.runtime.system.get_sysid = default__api__runtime_get_sysid;
+	plugin->interface.api.runtime.system.get_type = default__api__runtime_get_type;
+	plugin->interface.api.runtime.system.get_bootdevice = default__api__runtime_get_bootdevice;
 	plugin->interface.api.storage.load = default__api__storage_load;
 	plugin->interface.api.storage.save = default__api__storage_save;
 	plugin->interface.api.storage.exists = default__api__storage_exists;

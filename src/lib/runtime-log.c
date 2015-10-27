@@ -88,7 +88,7 @@ int libtokentube_log_initialize() {
 				g_env_log_level = TT_LOG__UNDEFINED;
 			}
 		} else {
-			g_env_log_fd = STDERR_FILENO;
+			g_env_log_fd = dup( STDERR_FILENO );
 		}
 	}
 	return TT_OK;
@@ -110,7 +110,7 @@ int libtokentube_log_configure() {
 	if( level_size > 0 && level[0] != '\0' ) {
 		for( i=0; i<sizeof(g_levels)/sizeof(g_levels[0]); i++ ) {
 			if( strncasecmp( level, g_levels[i], level_size ) == 0) {
-				TT_DEBUG1( "library/runtime", "setting syslog filter to '%s' for libtokentube_log()", level );
+				TT_DEBUG2( "library/runtime", "setting syslog filter to '%s' for libtokentube_log()", level );
 				g_conf_log_level = i;
 			}
 		}
@@ -211,7 +211,7 @@ int libtokentube_runtime_log( tt_loglevel_t level, const char* source, const cha
 	va_start( args, message );
 	if( g_debug_level != TT_DEBUG__UNDEFINED ) {
 		va_copy( args2, args );
-		libtokentube_runtime_vdebug( TT_DEBUG__VERBOSITY1, source, message, args2 );
+		libtokentube_runtime_vdebug( TT_DEBUG__VERBOSITY0, source, message, args2 );
 		va_end( args2 );
 	}
 	result = libtokentube_runtime_vlog( level, source, message, args );

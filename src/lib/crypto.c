@@ -61,11 +61,11 @@ int libtokentube_crypto_configure() {
 		return TT_ERR;
 	}
 
-	TT_DEBUG1( "library/crypto", "crypto|cipher='%s' (%s)", g_crypto_cipher, libtokentube_crypto_get_cipher() );
-	TT_DEBUG1( "library/crypto", "crypto|hash='%s' (%s)", g_crypto_hash, libtokentube_crypto_get_hash() );
-	TT_DEBUG1( "library/crypto", "crypto|kdf='%s'", g_crypto_kdf );
-	TT_DEBUG1( "library/crypto", "crypto|kdf-iterations='%d'", g_crypto_kdf_iter );
-	TT_DEBUG1( "library/crypto", "otp|bits='%d'", g_crypto_otp_bits );
+	TT_DEBUG2( "library/crypto", "crypto|cipher='%s' (%s)", g_crypto_cipher, libtokentube_crypto_get_cipher() );
+	TT_DEBUG2( "library/crypto", "crypto|hash='%s' (%s)", g_crypto_hash, libtokentube_crypto_get_hash() );
+	TT_DEBUG2( "library/crypto", "crypto|kdf='%s'", g_crypto_kdf );
+	TT_DEBUG2( "library/crypto", "crypto|kdf-iterations='%d'", g_crypto_kdf_iter );
+	TT_DEBUG2( "library/crypto", "otp|bits='%d'", g_crypto_otp_bits );
 
 	if( gcry_cipher_map_name( libtokentube_crypto_get_cipher() ) <= 0 ) {
 		TT_LOG_FATAL( "library/crypto", "unsupported algorithm '%s' configured in crypto|cipher", g_crypto_cipher );
