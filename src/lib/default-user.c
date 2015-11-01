@@ -61,7 +61,7 @@ int default__api__user_create(const char* username, const char* password, tt_sta
 		filename_end[0] = '\0';
 		if( filename_start != filename_end ) {
 			TT_DEBUG4( "plugin/default", "loading key from '%s' for newly created user", filename_start );
-			strncpy( user.key[key_offset].data.key, basename( filename_start ), sizeof(user.key[key_offset].data.key) );
+			strncpy( user.key[key_offset].data.key, basename( filename_start ), sizeof(user.key[key_offset].data.key)-1 );
 			user.key[key_offset].data.key_size = strnlen( user.key[key_offset].data.key, TT_IDENTIFIER_CHAR_MAX );
 			user.key[key_offset].data.value_size = sizeof(user.key[key_offset].data.value);
 			if( default__storage_posix_load( TT_FILE__KEY, username, filename_start, user.key[key_offset].data.value, &user.key[key_offset].data.value_size ) != TT_OK ) {
@@ -74,7 +74,6 @@ int default__api__user_create(const char* username, const char* password, tt_sta
 				memset( &user, '\0', sizeof(user) );
 				return TT_ERR;
 			}
-			filename_start = strrchr( filename_start, '/' ) + 1;
 			key_offset++;
 		}
 		filename_start = filename_end + 1;
@@ -235,7 +234,7 @@ int default__impl__user_key_add(const char* username, const char* password, cons
 		}
 		if( user.key[key_offset].data.key_size == 0 ) {
 			TT_DEBUG4( "plugin/default", "loading key with identifier '%s' into key offset %zd", identifier, key_offset );
-			strncpy( user.key[key_offset].data.key, identifier, sizeof(user.key[key_offset].data.key) );
+			strncpy( user.key[key_offset].data.key, identifier, sizeof(user.key[key_offset].data.key)-1 );
 			user.key[key_offset].data.key_size = strnlen( user.key[key_offset].data.key, TT_IDENTIFIER_CHAR_MAX );
 			user.key[key_offset].data.value_size = sizeof(user.key[key_offset].data.value);
 			if( libtokentube_plugin__storage_load( TT_FILE__KEY, identifier, user.key[key_offset].data.value, &user.key[key_offset].data.value_size ) != TT_OK ) {

@@ -104,6 +104,7 @@ int default__storage_posix_save(tt_file_t type, const char* identifier, const ch
 			conf_owner = "storage|key-files|owner";
 			conf_group = "storage|key-files|group";
 			conf_perm  = "storage|key-files|perm";
+			break;
 		case TT_FILE__USER:
 			conf_owner = "storage|user-files|owner";
 			conf_group = "storage|user-files|group";
@@ -113,6 +114,7 @@ int default__storage_posix_save(tt_file_t type, const char* identifier, const ch
 			conf_owner = "storage|otp-files|owner";
 			conf_group = "storage|otp-files|group";
 			conf_perm  = "storage|otp-files|perm";
+			break;
 		case TT_FILE__UHD:
 			conf_owner = "storage|uhd-files|owner";
 			conf_group = "storage|uhd-files|group";

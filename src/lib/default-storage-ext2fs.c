@@ -185,7 +185,7 @@ int default__storage_ext2fs_save(tt_file_t type, const char* identifier, const c
 		return TT_ERR;
 	}
 	if( strncasecmp( username, "$USER", sizeof(username) ) == 0 ) {
-		strncpy( username, identifier, sizeof(username) );
+		strncpy( username, identifier, sizeof(username)-1 );
 		username_size = strnlen( username, sizeof(username) );
 	}
 	if( libtokentube_conf_read_str( conf_group, groupname, &groupname_size ) != TT_OK ) {
