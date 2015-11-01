@@ -17,14 +17,15 @@ int libtokentube_plugin__event_broadcast(tt_event_t event, const char* identifie
 
 	TT_TRACE( "library/plugin", "%s(event=%d,identifier='%s')", __FUNCTION__, (int)event, identifier );
 	if( event == TT_EVENT__UNDEFINED || identifier == NULL || identifier[0] == '\0' ) {
-		TT_LOG_ERROR( "library/plugin", "invalid parameters in %s()", __FUNCTION__ );
+		TT_LOG_ERROR( "library/plugin", "BUG: invalid invocation of API:event.broadcast()" );
+		TT_DEBUG_SRC( "library/plugin", "invalid parameters" );
 		return TT_ERR;
 	}
  	TT_DEBUG3( "library/plugin", "broadcasting event=%d with identifier '%s'", (int)event, identifier );
 	for( i=0; i<MAX_PLUGINS+1; i++ ) {
 		if( g_modules[i] != NULL ) {
 			module = g_modules[i];
-			TT_DEBUG5( "library/plugin", "checking event=%d with identifier '%s' for plugin '%s'", (int)event, identifier, module->name );
+			TT_DEBUG5( "library/plugin", "evaluating broadcast of event=%d with identifier '%s' for plugin '%s'", (int)event, identifier, module->name );
 			switch( event ) {
 				case TT_EVENT__USER_CREATED:
 					event_func = module->plugin->interface.events.user.created;
@@ -60,14 +61,13 @@ int libtokentube_plugin__event_broadcast(tt_event_t event, const char* identifie
 					event_func = module->plugin->interface.events.auth.otp;
 					break;
 				default:
-					TT_LOG_ERROR( "library/plugin", "unsupported event=%d in %s()", (int)event, __FUNCTION__ );
+					TT_LOG_ERROR( "library/plugin", "BUG: invalid event submitted to API:event.broadcast()" );
+					TT_DEBUG_SRC( "library/plugin", "unknown event" );
 					return TT_ERR;
 			}
 			if( event_func != NULL ) {
-				TT_DEBUG4( "library/plugin", "sending event=%d with identifier '%s' to plugin '%s'", (int)event, identifier, module->name );
+				TT_DEBUG3( "library/plugin", "sending event=%d with identifier '%s' to plugin '%s'", (int)event, identifier, module->name );
 				event_func( identifier );
-			} else {
-				TT_DEBUG5( "library/plugin", "skipping event=%d with identifier '%s' for plugin '%s'", (int)event, identifier, module->name );
 			}
 		}
 	}

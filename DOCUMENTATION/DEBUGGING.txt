@@ -1,0 +1,25 @@
+Concept
+=======
+
+The environment variable TT_DEBUG_LEVEL is evaluated and checked which debug-level
+should be used. If unset then no debug output is generated, otherwise the environment
+variable will be interpreted as an integer and any debug statments with a debug level
+equal to or lower than the set debug level will be written to stderr (unless the
+environment variable TT_DEBUG_SOURCE is set and does not match the source component
+of the debug message). 
+
+Debug data might contain user/system related information but will not include
+sensitive data like passwords or keys.
+
+
+Levels
+======
+
+Level 0: Reserved (used only for duplicating LOG entries to debug output)
+Level 1: Information about the lifecycle state (initialization, configuration,
+         loading of plugins, finalization) and error-related debugging information.
+Level 2: High level debug information and configuration details 
+Level 3: Low level debug information and control flow API/plugins
+Level 4: Low level debug information and control flow debugging information within functions
+Level 5: Data debugging
+

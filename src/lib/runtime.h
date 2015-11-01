@@ -23,18 +23,17 @@
 #define TT_LOG_ERROR( name, message, args... ) libtokentube_runtime_log( TT_LOG__ERROR, name, message, ##args )
 #define TT_LOG_WARN( name, message, args... ) libtokentube_runtime_log( TT_LOG__WARN, name, message, ##args )
 #define TT_LOG_INFO( name, message, args... ) libtokentube_runtime_log( TT_LOG__INFO, name, message, ##args )
-
 int libtokentube_runtime_log( tt_loglevel_t level, const char* source, const char* message, ... );
 int libtokentube_runtime_vlog( tt_loglevel_t level, const char* source, const char* message, va_list args );
 
-int libtokentube_runtime_debug( tt_debuglevel_t level, const char* source, const char* message, ... );
-int libtokentube_runtime_vdebug( tt_debuglevel_t level, const char* source, const char* message, va_list args );
+#define TT_DEBUG_SRC( source, message )		libtokentube_runtime_debug( TT_DEBUG__VERBOSITY1, source, "%s (%s:%d)", message, __FILE__, __LINE__ )
 #define TT_DEBUG1( source, message, args... )	libtokentube_runtime_debug( TT_DEBUG__VERBOSITY1, source, message, ##args )
 #define TT_DEBUG2( source, message, args... )	libtokentube_runtime_debug( TT_DEBUG__VERBOSITY2, source, message, ##args )
 #define TT_DEBUG3( source, message, args... )	libtokentube_runtime_debug( TT_DEBUG__VERBOSITY3, source, message, ##args )
 #define TT_DEBUG4( source, message, args... )	libtokentube_runtime_debug( TT_DEBUG__VERBOSITY4, source, message, ##args )
 #define TT_DEBUG5( source, message, args... )	libtokentube_runtime_debug( TT_DEBUG__VERBOSITY5, source, message, ##args )
-#define TT_TRACE( ... )				do {} while(0)
+int libtokentube_runtime_debug( tt_debuglevel_t level, const char* source, const char* message, ... );
+int libtokentube_runtime_vdebug( tt_debuglevel_t level, const char* source, const char* message, va_list args );
 
 
 #ifdef TRACE
@@ -50,6 +49,8 @@ static inline void libtokentube_runtime_trace( const char* source, const char* m
 	fflush( stderr );
 	va_end( args );
 }
+#else
+#define TT_TRACE( ... )		do {} while(0)
 #endif
 
 

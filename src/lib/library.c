@@ -71,14 +71,15 @@ int libtokentube_library_finalize() {
 
 
 int tt_discover(tt_library_t* library) {
+	TT_TRACE( "library/core", "%s(library=%p)", __FUNCTION__, library );
 	if( library == NULL ) {
-		TT_LOG_ERROR( "library/core", "invalid parameter in %s()", __FUNCTION__ );
+		TT_LOG_ERROR( "library/core", "Application BUG: invalid invocation of tt_discover()" );
+		TT_DEBUG_SRC( "library/core", "invalid parameter" );
 		return TT_ERR;
 	}
 	if( library->version.major == 0 && library->version.minor == 0 && library->version.patch == 0 ) {
 		library->version = TT_VERSION;
 	}
-	library->version = TT_VERSION;
 	memcpy( &library->api, &g_library_api, sizeof(g_library_api) );
 	return TT_OK;
 }

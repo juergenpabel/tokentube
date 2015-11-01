@@ -34,7 +34,7 @@ int default__impl__storage_get_filename(tt_file_t file, const char* identifier, 
 		TT_LOG_ERROR( "plugin/default", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	TT_DEBUG1( "plugin/default", "processing '%s' in %s()", identifier, __FUNCTION__ );
+	TT_DEBUG5( "plugin/default", "processing '%s' in %s()", identifier, __FUNCTION__ );
 	memset( buffer, '\0', buffer_size );
 	if( file == TT_FILE__CONFIG_STANDARD || file == TT_FILE__CONFIG_PBA ) {
 		strncpy( buffer, identifier, buffer_size-1 );
@@ -43,7 +43,7 @@ int default__impl__storage_get_filename(tt_file_t file, const char* identifier, 
 	switch( file ) {
 		case TT_FILE__KEY:
 			conf_directory = "storage|key-files|directory";
-			conf_filehash  = "storage|key-files|filename-hash";
+			conf_filehash  = NULL;
 			break;
 		case TT_FILE__USER:
 			conf_directory = "storage|user-files|directory";
@@ -61,18 +61,22 @@ int default__impl__storage_get_filename(tt_file_t file, const char* identifier, 
 			TT_LOG_ERROR( "plugin/default", "invalid file=%d in %s()", file, __FUNCTION__ );
 			return TT_ERR;
 	}
-	if( libtokentube_conf_read_str( conf_directory, directory, &directory_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "reading %s failed in %s()", conf_directory, __FUNCTION__ );
-		return TT_ERR;
+	if( conf_directory != NULL ) {
+		if( libtokentube_conf_read_str( conf_directory, directory, &directory_size ) != TT_OK ) {
+			TT_LOG_ERROR( "plugin/default", "reading %s failed in %s()", conf_directory, __FUNCTION__ );
+			return TT_ERR;
+		}
 	}
-	if( libtokentube_conf_read_str( conf_filehash, filehash, &filehash_size ) != TT_OK ) {
-		TT_LOG_ERROR( "plugin/default", "reading %s failed in %s()", conf_filehash, __FUNCTION__ );
-		return TT_ERR;
+	if( conf_filehash != NULL ) {
+		if( libtokentube_conf_read_str( conf_filehash, filehash, &filehash_size ) != TT_OK ) {
+			TT_LOG_ERROR( "plugin/default", "reading %s failed in %s()", conf_filehash, __FUNCTION__ );
+			return TT_ERR;
+		}
 	}
 	strncpy( buffer, directory, buffer_size-1 );
 	if( identifier[0] != '\0' ) {
 		filename = identifier;
-		if( strncasecmp( filehash, "null", 5 ) != 0 ) {
+		if( filehash[0] != '\0' && strncasecmp( filehash, "null", 5 ) != 0 ) {
 			if( libtokentube_crypto_hash_impl( libtokentube_name2oid( filehash ), identifier, strnlen( identifier, TT_IDENTIFIER_CHAR_MAX ), uuid, &uuid_size ) != TT_OK ) {
 				TT_LOG_ERROR( "plugin/default", "internal error in %s at %d", __FILE__, __LINE__ );
 				return TT_ERR;
@@ -91,7 +95,7 @@ int default__impl__storage_get_filename(tt_file_t file, const char* identifier, 
 		strncat( buffer, "/", buffer_size - strnlen( buffer, buffer_size ) - 1 );
 		strncat( buffer, filename, buffer_size - strnlen( buffer, buffer_size ) - 1 );
 	}
-       	TT_DEBUG2( "plugin/default", "returning '%s' in %s()", buffer, __FUNCTION__ );
+       	TT_DEBUG5( "plugin/default", "returning '%s' in %s()", buffer, __FUNCTION__ );
 	return TT_OK;
 }
 

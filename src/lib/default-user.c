@@ -49,7 +49,7 @@ int default__api__user_create(const char* username, const char* password, tt_sta
 		TT_LOG_ERROR( "plugin/default", "libtokentube_conf_read_str() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
 	}
-	TT_DEBUG3( "plugin/default", "loading all keys from '%s' in %s()", path, __FUNCTION__ );
+	TT_DEBUG3( "plugin/default", "loading all keys from '%s' for newly created user", path );
 	if( default__storage_posix_load( TT_FILE__KEY, username, path, buffer, &buffer_size ) != TT_OK ) {
 		TT_LOG_ERROR( "plugin/default", "default__storage_posix_load() failed in %s()", __FUNCTION__ );
 		return TT_ERR;
@@ -60,8 +60,8 @@ int default__api__user_create(const char* username, const char* password, tt_sta
 		filename_end = strchrnul( filename_start, '\n' );
 		filename_end[0] = '\0';
 		if( filename_start != filename_end ) {
-			TT_DEBUG3( "plugin/default", "loading key from '%s' in %s()", filename_start, __FUNCTION__ );
-			strncpy( user.key[key_offset].data.key, basename( filename_start ), sizeof(user.key[key_offset].data.key) );
+			TT_DEBUG4( "plugin/default", "loading key from '%s' for newly created user", filename_start );
+			strncpy( user.key[key_offset].data.key, basename( filename_start ), sizeof(user.key[key_offset].data.key)-1 );
 			user.key[key_offset].data.key_size = strnlen( user.key[key_offset].data.key, TT_IDENTIFIER_CHAR_MAX );
 			user.key[key_offset].data.value_size = sizeof(user.key[key_offset].data.value);
 			if( default__storage_posix_load( TT_FILE__KEY, username, filename_start, user.key[key_offset].data.value, &user.key[key_offset].data.value_size ) != TT_OK ) {
@@ -74,7 +74,6 @@ int default__api__user_create(const char* username, const char* password, tt_sta
 				memset( &user, '\0', sizeof(user) );
 				return TT_ERR;
 			}
-			filename_start = strrchr( filename_start, '/' ) + 1;
 			key_offset++;
 		}
 		filename_start = filename_end + 1;
@@ -230,12 +229,12 @@ int default__impl__user_key_add(const char* username, const char* password, cons
 	*status = TT_STATUS__NO;
 	for( key_offset = 0; *status == TT_STATUS__NO && key_offset<DEFAULT__KEY_MAX; key_offset++ ) {
 		if( user.key[key_offset].data.key_size == identifier_size && memcmp( user.key[key_offset].data.key, identifier, identifier_size ) == 0) {
-			TT_DEBUG3( "plugin/default", "key with identifier '%s' found at key offset %zd in %s()", identifier, key_offset, __FUNCTION__ );
+			TT_DEBUG4( "plugin/default", "key with identifier '%s' already present at offset %zd", identifier, key_offset );
 			return TT_OK;
 		}
 		if( user.key[key_offset].data.key_size == 0 ) {
-			TT_DEBUG3( "plugin/default", "loading key with identifier '%s' into key offset %zd in %s()", identifier, key_offset, __FUNCTION__ );
-			strncpy( user.key[key_offset].data.key, identifier, sizeof(user.key[key_offset].data.key) );
+			TT_DEBUG4( "plugin/default", "loading key with identifier '%s' into key offset %zd", identifier, key_offset );
+			strncpy( user.key[key_offset].data.key, identifier, sizeof(user.key[key_offset].data.key)-1 );
 			user.key[key_offset].data.key_size = strnlen( user.key[key_offset].data.key, TT_IDENTIFIER_CHAR_MAX );
 			user.key[key_offset].data.value_size = sizeof(user.key[key_offset].data.value);
 			if( libtokentube_plugin__storage_load( TT_FILE__KEY, identifier, user.key[key_offset].data.value, &user.key[key_offset].data.value_size ) != TT_OK ) {

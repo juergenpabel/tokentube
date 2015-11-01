@@ -5,7 +5,7 @@
 #include <cmocka.h>
 #include <tokentube.h>
 
-int tt_reset();
+int libtokentube_reset();
 
 
 static void test_conf_00_file_not_found(void **state) {
@@ -21,7 +21,7 @@ static void test_conf_01_syntax_error(void **state) {
 	assert_true( tt_initialize( TT_VERSION ) == TT_OK );
 	assert_true( tt_configure( "01/tokentube.conf" ) == TT_ERR );
 	assert_true( tt_finalize() == TT_IGN );
-	tt_reset();
+	libtokentube_reset();
 }
 
 
@@ -30,7 +30,7 @@ static void test_conf_02_include_fnf(void **state) {
 	assert_true( tt_initialize( TT_VERSION ) == TT_OK );
 	assert_true( tt_configure( "02/tokentube.conf" ) == TT_ERR );
 	assert_true( tt_finalize() == TT_IGN );
-	tt_reset();
+	libtokentube_reset();
 }
 
 
@@ -39,7 +39,7 @@ static void test_conf_03_include_hash(void **state) {
 	assert_true( tt_initialize( TT_VERSION ) == TT_OK );
 	assert_true( tt_configure( "03/tokentube.conf" ) == TT_ERR );
 	assert_true( tt_finalize() == TT_IGN );
-	tt_reset();
+	libtokentube_reset();
 }
 
 

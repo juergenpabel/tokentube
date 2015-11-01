@@ -15,11 +15,12 @@ tt_module_t* g_modules[MAX_PLUGINS+1] = { NULL };
 
 __attribute__ ((visibility ("hidden")))
 int libtokentube_plugin__initialize() {
-	TT_DEBUG2( "library/plugin", "loading plugin 'default' (ID=%zd)...", MAX_PLUGINS );
+	TT_TRACE( "library/plugin", "%s()", __FUNCTION__ );
+	TT_DEBUG4( "library/plugin", "initializing plugin 'default'..." );
 	g_modules[MAX_PLUGINS] = (tt_module_t*)malloc( sizeof(tt_module_t) );
 	if( g_modules[MAX_PLUGINS] == NULL ) {
 		TT_LOG_FATAL( "library/plugin", "out-of-memory error while loading plugin 'default'" );
-		TT_DEBUG1( "library/plugin", "malloc() failed for plugin 'default' in %s()", __FUNCTION__ );
+		TT_DEBUG_SRC( "library/plugin", "malloc( sizeof(tt_module_t) ) failed" );
 		return TT_ERR;
 	}
 	g_modules[MAX_PLUGINS]->name = "default";
@@ -27,16 +28,16 @@ int libtokentube_plugin__initialize() {
 	g_modules[MAX_PLUGINS]->plugin = malloc( sizeof(tt_plugin_t) );
 	if( g_modules[MAX_PLUGINS]->plugin == NULL ) {
 		TT_LOG_FATAL( "library/plugin", "out-of-memory error while loading plugin 'default'" );
-		TT_DEBUG1( "library/plugin", "malloc() failed for plugin 'default' in %s()", __FUNCTION__ );
+		TT_DEBUG_SRC( "library/plugin", "malloc( sizeof(tt_plugin_t) ) failed" );
 		return TT_ERR;
 	}
 	memset( g_modules[MAX_PLUGINS]->plugin, '\0', sizeof(tt_plugin_t) );
 	if( default__initialize( g_modules[MAX_PLUGINS]->plugin ) != TT_OK ) {
 		TT_LOG_FATAL( "library/plugin", "initialization failed for plugin 'default'" );
-		TT_DEBUG1( "library/plugin", "default__initialize() failed in %s()", __FUNCTION__ );
+		TT_DEBUG_SRC( "library/plugin", "default__initialize() failed" );
 		return TT_ERR;
 	}
-	TT_DEBUG3( "library/plugin", "...plugin 'default' loaded (ID=%zd)", MAX_PLUGINS );
+	TT_DEBUG4( "library/plugin", "...plugin 'default' initialized" );
 	return TT_OK;
 }
 
@@ -51,6 +52,7 @@ int libtokentube_plugin__configure() {
 	size_t	config_size = sizeof(config);
 	size_t	i = 0;
 
+	TT_TRACE( "library/plugin", "%s()", __FUNCTION__ );
 	plugin_size = sizeof(plugin);
 	if( libtokentube_conf_read_list( "plugins|enabled", 0, plugin, &plugin_size ) != TT_OK ) {
 		TT_LOG_FATAL( "library/plugin", "failed to get enabled plugin from config ('plugins|enabled') at index=0" );
@@ -60,20 +62,20 @@ int libtokentube_plugin__configure() {
 		library_size = sizeof(library);
 		if( libtokentube_conf_read_plugin_library( plugin, library, &library_size ) != TT_OK ) {
 			TT_LOG_FATAL( "library/plugin", "failed to get plugin library from config ('plugin|%s|library')", plugin );
-			TT_DEBUG1( "library/plugin", "libtokentube_conf_read_plugin_library() failed in %s()", __FUNCTION__ );
+			TT_DEBUG_SRC( "library/plugin", "libtokentube_conf_read_plugin_library() failed" );
 			return TT_ERR;
 		}
 		g_modules[i] = (tt_module_t*)malloc( sizeof(tt_module_t) );
 		if( g_modules[i] == NULL ) {
 			TT_LOG_FATAL( "library/plugin", "out-of-memory error while loading plugin '%s'", plugin );
-			TT_DEBUG1( "library/plugin", "malloc() failed for plugin '%s'", plugin );
+			TT_DEBUG_SRC( "library/plugin", "malloc( sizeof(tt_module_t) ) failed" );
 			return TT_ERR;
 		}
-		TT_DEBUG3( "library/plugin", "loading plugin '%s' (ID=%zd)...", plugin, i );
-		g_modules[i]->name = strndup( plugin, 64 );
+		TT_DEBUG4( "library/plugin", "loading plugin '%s' (ID=%zd)...", plugin, i );
+		g_modules[i]->name = strndup( plugin, TT_IDENTIFIER_CHAR_MAX );
 		if( g_modules[i]->name == NULL ) {
 			TT_LOG_FATAL( "library/plugin", "out-of-memory error while loading plugin '%s'", plugin );
-			TT_DEBUG1( "library/plugin", "malloc() failed for plugin '%s'", plugin );
+			TT_DEBUG_SRC( "library/plugin", "strndup( plugin, 64 ) failed" );
 			return TT_ERR;
 		}
 		g_modules[i]->plugin = NULL;
@@ -87,15 +89,15 @@ int libtokentube_plugin__configure() {
 		}
 		if( g_modules[i]->plugin == NULL ) {
 			TT_LOG_FATAL( "library/plugin", "plugin '%s' is not compatible, unloading", plugin );
-			TT_DEBUG3( "library/plugin", "...unloading plugin '%s' (ID=%zd)", plugin, i );
+			TT_DEBUG_SRC( "library/plugin", "plugin failed to register itself" );
 			g_modules[i]->plugin = NULL;
 			dlclose( g_modules[i]->elf );
 			g_modules[i]->elf = NULL;
 			return TT_ERR;
 		}
 		if( tt_discover( &g_modules[i]->plugin->library ) != TT_OK ) {
-			TT_LOG_FATAL( "library/plugin", "tt_client_register() failed for plugin '%s'", plugin );
-			TT_DEBUG3( "library/plugin", "finalizing plugin '%s' (ID=%zd)...", plugin, i );
+			TT_LOG_FATAL( "library/plugin", "plugin '%s' is not compatible, unloading", plugin );
+			TT_DEBUG_SRC( "library/plugin", "tt_client_register() failed during tt_discover()" );
 			if( g_modules[i]->plugin->meta.finalize != NULL ) {
 				g_modules[i]->plugin->meta.finalize();
 			}
@@ -106,7 +108,7 @@ int libtokentube_plugin__configure() {
 			config_size = sizeof(config);
 			if( libtokentube_conf_read_plugin_config( g_modules[i]->name, config, &config_size ) != TT_OK ) {
 				TT_LOG_FATAL( "library/plugin", "failed to get config filename for plugin '%s'", plugin );
-				TT_DEBUG3( "library/plugin", "finalizing plugin '%s' (ID=%zd)...", plugin, i );
+				TT_DEBUG_SRC( "library/plugin", "libtokentube_conf_read_plugin_config() failed" );
 				if( g_modules[i]->plugin->meta.finalize != NULL ) {
 					g_modules[i]->plugin->meta.finalize();
 				}
@@ -115,7 +117,7 @@ int libtokentube_plugin__configure() {
 			}
 			if( g_modules[i]->plugin->meta.configure( config ) != TT_OK ) {
 				TT_LOG_FATAL( "library/plugin", "plugin '%s' failed to configure itself", plugin );
-				TT_DEBUG3( "library/plugin", "finalizing plugin '%s' (ID=%zd)...", plugin, i );
+				TT_DEBUG_SRC( "library/plugin", "plugin->configure() failed" );
 				if( g_modules[i]->plugin->meta.finalize != NULL ) {
 					g_modules[i]->plugin->meta.finalize();
 				}
@@ -123,7 +125,7 @@ int libtokentube_plugin__configure() {
 				return TT_ERR;
 			}
 		}
-		TT_DEBUG3( "library/plugin", "...plugin '%s' loaded (ID=%zd)", plugin, i );
+		TT_DEBUG4( "library/plugin", "...plugin '%s' loaded (ID=%zd)", plugin, i );
 		i++;
 		plugin_size = sizeof(plugin);
 		if( libtokentube_conf_read_list( "plugins|enabled", i, plugin, &plugin_size ) != TT_OK ) {
@@ -140,10 +142,11 @@ int libtokentube_plugin__finalize() {
 	tt_module_t*	module = NULL;
 	size_t		i = 0;
 
+	TT_TRACE( "library/plugin", "%s()", __FUNCTION__ );
 	for( i=MAX_PLUGINS; i>0; i-- ) {
 		if( g_modules[i-1] != NULL ) {
 			module =  g_modules[i-1];
-			TT_DEBUG3( "library/plugin", "unloading plugin '%s' (ID=%zd)", module->name, i-1 );
+			TT_DEBUG4( "library/plugin", "unloading plugin '%s' (ID=%zd)", module->name, i-1 );
 			if( module->plugin != NULL ) {
 				if( module->plugin->meta.finalize != NULL ) {
 					if( module->plugin->meta.finalize() != TT_OK ) {
@@ -162,7 +165,7 @@ int libtokentube_plugin__finalize() {
 		}
 	}
 	if( g_modules[MAX_PLUGINS] != NULL ) {
-		TT_DEBUG3( "library/plugin", "unloading plugin 'default'" );
+		TT_DEBUG4( "library/plugin", "unloading plugin 'default'" );
 		default__finalize();
 		free( g_modules[MAX_PLUGINS]->plugin );
 		free( g_modules[MAX_PLUGINS] );
@@ -178,7 +181,7 @@ int tt_plugin_register(tt_plugin_t* plugin) {
 	char	str_plugin[12] = {0};
 	size_t	id = 0, offset = 0;
 
-	TT_DEBUG2( "library/plugin", "%s(plugin='%p')", __FUNCTION__, plugin );
+	TT_TRACE( "library/plugin", "%s(plugin='%p')", __FUNCTION__, plugin );
 	if( plugin == NULL ) {
 		TT_LOG_ERROR( "library/plugin", "invalid parameter in %s()", __FUNCTION__ );
 		return TT_ERR;
@@ -221,17 +224,11 @@ int tt_plugin_register(tt_plugin_t* plugin) {
 		if( strncasecmp( filter, "storage", 8 ) == 0 ) {
 			memset( &plugin->interface.api.storage, '\0', sizeof(plugin->interface.api.storage) );
 		}
-		if( strncasecmp( filter, "pba", 4 ) == 0 ) {
-			memset( &plugin->interface.api.pba, '\0', sizeof(plugin->interface.api.pba) );
-		}
 		if( strncasecmp( filter, "database", 5 ) == 0 ) {
 			memset( &plugin->interface.api.database, '\0', sizeof(plugin->interface.api.database) );
 		}
-		if( strncasecmp( filter, "user", 5 ) == 0 ) {
-			memset( &plugin->interface.api.database.user, '\0', sizeof(plugin->interface.api.database.user) );
-		}
-		if( strncasecmp( filter, "otp", 4 ) == 0 ) {
-			memset( &plugin->interface.api.database.otp, '\0', sizeof(plugin->interface.api.database.otp) );
+		if( strncasecmp( filter, "auth", 5 ) == 0 ) {
+			memset( &plugin->interface.api.auth, '\0', sizeof(plugin->interface.api.auth) );
 		}
 		offset++;
 		filter_size = sizeof(filter);
@@ -261,7 +258,7 @@ int tt_plugin_register(tt_plugin_t* plugin) {
 		}
 	}
 	g_modules[id]->plugin = plugin;
-	TT_DEBUG2( "library/plugin", "plugin '%s' registered (ID=%zd)", g_modules[id]->name, id );
+	TT_DEBUG4( "library/plugin", "plugin '%s' registered (ID=%zd)", g_modules[id]->name, id );
 	return TT_OK;
 }
 

@@ -100,15 +100,15 @@ static int exec__exec( cfg_t* cfg, const char* event, const char* identifier ) {
 			close( fd );
 			break;
 		case 0:
-			g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY4, "plugin/exec", "fork()ed as child in exec__exec()" );
+			g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY5, "plugin/exec", "fork()ed as child in exec__exec()" );
 			if( cfg_getbool( section, "detach" ) == cfg_true ) {
-				g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY4, "plugin/exec", "detaching from parent in %s()", __FUNCTION__ );
+				g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY5, "plugin/exec", "detaching from parent in %s()", __FUNCTION__ );
 				close( 2 );
 				close( 1 );
 				close( 0 );
 				setsid();
 			}
-			g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY3, "plugin/exec", "executing '%s' as child in exec__exec()", exec );
+			g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY4, "plugin/exec", "executing '%s' as child in exec__exec()", exec );
 			if( fexecve( fd, argv, envp ) < 0 )  {
 				switch( errno ) {
 					case EINVAL:
@@ -129,11 +129,11 @@ static int exec__exec( cfg_t* cfg, const char* event, const char* identifier ) {
 			g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY5, "plugin/exec", "fork()ed as parent in exec__exec()" );
 			close( fd );
 			if( cfg_getbool( section, "detach" ) == cfg_false ) {
-				g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY3, "plugin/exec", "waiting on child (pid=%d) in exec__exec()...", pid );
+				g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY5, "plugin/exec", "waiting on child (pid=%d) in exec__exec()...", pid );
 				waitpid( pid, NULL, 0 );
-				g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY3, "plugin/exec", "...child (pid=%d) finished in exec__exec()", pid );
+				g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY5, "plugin/exec", "...child (pid=%d) finished in exec__exec()", pid );
 			} else {
-				g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY3, "plugin/exec", "letting child (pid=%d) do on its own in exec__exec()", pid );
+				g_self.library.api.runtime.system.debug( TT_DEBUG__VERBOSITY5, "plugin/exec", "letting child (pid=%d) do on its own in exec__exec()", pid );
 			}
 			result = TT_OK;
 	}

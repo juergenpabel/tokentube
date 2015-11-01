@@ -185,7 +185,7 @@ int default__storage_ext2fs_save(tt_file_t type, const char* identifier, const c
 		return TT_ERR;
 	}
 	if( strncasecmp( username, "$USER", sizeof(username) ) == 0 ) {
-		strncpy( username, identifier, sizeof(username) );
+		strncpy( username, identifier, sizeof(username)-1 );
 		username_size = strnlen( username, sizeof(username) );
 	}
 	if( libtokentube_conf_read_str( conf_group, groupname, &groupname_size ) != TT_OK ) {
@@ -347,7 +347,7 @@ int default__storage_ext2fs_exists(tt_file_t type, const char* identifier, const
 		}
 	}
 	if( ext2fs_lookup( e2fs, e2dir, filename, strnlen(filename, FILENAME_MAX), NULL, &e2file ) == EXT2_ET_FILE_NOT_FOUND ) {
-		TT_DEBUG1( "plugin/default", "file '%s' not found on EXT2 filesystem '%s'", filename, device );
+		TT_DEBUG5( "plugin/default", "file '%s' not found on EXT2 filesystem '%s'", filename, device );
 		ext2fs_close( e2fs );
 		*status = TT_NO;
 		return TT_OK;
@@ -402,7 +402,7 @@ int default__storage_ext2fs_delete(tt_file_t type, const char* identifier, const
 		}
 	}
 	if( ext2fs_lookup( e2fs, e2dir, filename, strnlen(filename, FILENAME_MAX), NULL, &e2file ) == EXT2_ET_FILE_NOT_FOUND ) {
-		TT_DEBUG1( "plugin/default", "file '%s' not found on EXT2 filesystem '%s'", filename, device );
+		TT_DEBUG5( "plugin/default", "file '%s' not found on EXT2 filesystem '%s'", filename, device );
 		ext2fs_close( e2fs );
 		*status = TT_NO;
 		return TT_OK;

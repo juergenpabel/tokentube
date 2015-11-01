@@ -18,6 +18,7 @@ PyObject* py_tt_user_create(PyObject* self __attribute__((unused)), PyObject *ar
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
+	g_library->api.runtime.system.debug( TT_DEBUG__VERBOSITY2, "binding/python", "invoking API:database.user.create('%s')", py_username );
 	if( g_library->api.database.user.create( py_username, py_password, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.user.create failed" );
 		return NULL;
@@ -41,6 +42,7 @@ PyObject* py_tt_user_chpass(PyObject* self __attribute__((unused)), PyObject *ar
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
+	g_library->api.runtime.system.debug( TT_DEBUG__VERBOSITY2, "binding/python", "invoking API:database.user.modify('%s', TT_MODIFY__USER_PASSWORD)", py_username );
 	if( g_library->api.database.user.modify( py_username, py_password_cur, TT_MODIFY__USER_PASSWORD, py_password_new, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.user.modify failed" );
 		return NULL;
@@ -74,6 +76,7 @@ PyObject* py_tt_user_exists(PyObject* self __attribute__((unused)), PyObject *ar
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
+	g_library->api.runtime.system.debug( TT_DEBUG__VERBOSITY2, "binding/python", "invoking API:database.user.exists('%s')", py_username );
 	if( g_library->api.database.user.exists( py_username, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.user.exists failed" );
 		return NULL;
@@ -107,6 +110,7 @@ PyObject* py_tt_user_delete(PyObject* self __attribute__((unused)), PyObject *ar
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
+	g_library->api.runtime.system.debug( TT_DEBUG__VERBOSITY2, "binding/python", "invoking API:database.user.delete('%s')", py_username );
 	if( g_library->api.database.user.delete( py_username, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.user.delete failed" );
 		return NULL;
@@ -142,6 +146,7 @@ PyObject* py_tt_user_key_add(PyObject* self __attribute__((unused)), PyObject *a
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
+	g_library->api.runtime.system.debug( TT_DEBUG__VERBOSITY2, "binding/python", "invoking API:database.user.modify('%s', TT_MODIFY__USER_KEY_ADD, '%s')", py_username, py_identifier );
 	if( g_library->api.database.user.modify( py_username, py_password, TT_MODIFY__USER_KEY_ADD, py_identifier, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.user.key_add failed" );
 		return NULL;
@@ -168,6 +173,7 @@ PyObject* py_tt_user_key_del(PyObject* self __attribute__((unused)), PyObject *a
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
+	g_library->api.runtime.system.debug( TT_DEBUG__VERBOSITY2, "binding/python", "invoking API:database.user.modify('%s', TT_MODIFY__USER_KEY_DEL, '%s')", py_username, py_identifier );
 	if( g_library->api.database.user.modify( py_username, py_password, TT_MODIFY__USER_KEY_DEL, py_identifier, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.database.user.key_del failed" );
 		return NULL;
@@ -193,6 +199,7 @@ PyObject* py_tt_auth_user_verify(PyObject* self __attribute__((unused)), PyObjec
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
+	g_library->api.runtime.system.debug( TT_DEBUG__VERBOSITY2, "binding/python", "invoking API:database.user.verify('%s')", py_username );
 	if( g_library->api.auth.user.verify( py_username, py_password, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.auth.user.verify failed" );
 		return NULL;
@@ -231,6 +238,7 @@ PyObject* py_tt_auth_user_loadkey(PyObject* self __attribute__((unused)), PyObje
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
+	g_library->api.runtime.system.debug( TT_DEBUG__VERBOSITY2, "binding/python", "invoking API:database.user.loadkey('%s','%s')", py_username, py_identifier );
 	if( g_library->api.auth.user.loadkey( py_username, py_password, py_identifier, data, &data_size ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.auth.user.loadkey failed" );
 		return NULL;
@@ -259,6 +267,7 @@ PyObject* py_tt_auth_user_autoenrollment(PyObject* self __attribute__((unused)),
 		PyErr_SetString(PyExc_TypeError, "PyArg_ParseTuple failed" );
 		return NULL;
 	}
+	g_library->api.runtime.system.debug( TT_DEBUG__VERBOSITY2, "binding/python", "invoking API:database.user.autoenrollment('%s')", py_username );
 	if( g_library->api.auth.user.autoenrollment( py_username, py_password, &status ) != TT_OK ) {
 		PyErr_SetString(PyExc_TypeError, "libtokentube.api.auth.user.autoenrollment failed" );
 		return NULL;

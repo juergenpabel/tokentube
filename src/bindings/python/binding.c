@@ -73,6 +73,8 @@ static PyMethodDef g_tokentube_funcs[] = {
 	{ "auth_otp_response", (PyCFunction)py_tt_auth_otp_response, METH_VARARGS, "otp response function" },
 	{ "auth_otp_loadkey", (PyCFunction)py_tt_auth_otp_loadkey, METH_VARARGS, "otp load-key function" },
 	{ "runtime_install_pba", (PyCFunction)py_tt_runtime_install_pba, METH_VARARGS, "pba install function" },
+	{ "log", (PyCFunction)py_tt_runtime_log, METH_VARARGS, "log function" },
+	{ "debug", (PyCFunction)py_tt_runtime_debug, METH_VARARGS, "debug function" },
 	{ NULL }
 };
 
@@ -96,6 +98,15 @@ PyMODINIT_FUNC PyInit_tokentube(void) {
 	}
 	PyModule_AddIntConstant( module, "TT_KEY_BITS_MAX", TT_KEY_BITS_MAX );
 	PyModule_AddIntConstant( module, "TT_OTP_TEXT_MAX", TT_OTP_TEXT_MAX );
+	PyModule_AddIntConstant( module, "TT_LOG__FATAL", TT_LOG__FATAL );
+	PyModule_AddIntConstant( module, "TT_LOG__ERROR", TT_LOG__ERROR );
+	PyModule_AddIntConstant( module, "TT_LOG__WARN", TT_LOG__WARN );
+	PyModule_AddIntConstant( module, "TT_LOG__INFO", TT_LOG__INFO );
+	PyModule_AddIntConstant( module, "TT_DEBUG__VERBOSITY1", TT_DEBUG__VERBOSITY1 );
+	PyModule_AddIntConstant( module, "TT_DEBUG__VERBOSITY2", TT_DEBUG__VERBOSITY2 );
+	PyModule_AddIntConstant( module, "TT_DEBUG__VERBOSITY3", TT_DEBUG__VERBOSITY3 );
+	PyModule_AddIntConstant( module, "TT_DEBUG__VERBOSITY4", TT_DEBUG__VERBOSITY4 );
+	PyModule_AddIntConstant( module, "TT_DEBUG__VERBOSITY5", TT_DEBUG__VERBOSITY5 );
 	return module;
 }
 

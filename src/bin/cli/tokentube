@@ -16,14 +16,13 @@ if __name__ == '__main__':
 		os.environ["TT_RUNTIME_BOOTDEVICE"] = args.boot_device
 	if args.debug:
 		os.environ["TT_DEBUG_LEVEL"] = str( args.debug )
+	os.environ["TT_LOG_LEVEL"] = "fatal"
 	if args.verbose:
-		if args.verbose <= 1:
-			os.environ["TT_LOG_LEVEL"] = "fatal"
-		if args.verbose == 2:
+		if args.verbose == 1:
 			os.environ["TT_LOG_LEVEL"] = "error"
-		if args.verbose == 3:
+		if args.verbose == 2:
 			os.environ["TT_LOG_LEVEL"] = "warn"
-		if args.verbose >= 4:
+		if args.verbose >= 3:
 			os.environ["TT_LOG_LEVEL"] = "info"
 		os.environ["TT_LOG_TARGET"] = "FILE"
 		os.environ["TT_LOG_TARGET_FILE"] = "/proc/self/fd/2"
